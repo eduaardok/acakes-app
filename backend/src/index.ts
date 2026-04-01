@@ -1,13 +1,19 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import express from 'express'
 import cors from 'cors'
-import dotenv from 'dotenv'
 
 import authRoutes from './routes/auth.routes'
 import clientesRoutes from './routes/clientes.routes'
 import pedidosRoutes from './routes/pedidos.routes'
 import { authenticateToken } from './middleware/auth.middleware'
-
-dotenv.config()
+// import {prisma} from './lib/prisma'
+// // Smoke test — borra esto después
+// async function testDB() {
+//     const count = await prisma.cliente.count()
+//     console.log(`✅ Conexión OK — Clientes en DB: ${count}`)
+// }
+// testDB()
 
 const app = express()
 const PORT = process.env.PORT || 3000

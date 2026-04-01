@@ -5,9 +5,71 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────
+
+enum EstadoPedido {
+  BORRADOR
+  CONFIRMADO
+  EN_PROCESO
+  LISTO
+  ENTREGADO
+  CANCELADO
+  NO_RETIRADO
+}
+
+enum TipoObservacion {
+  PAGO_TARDIO
+  NO_RETIRO
+  CANCELACION_TARDE
+  POSITIVA
+  OTRO
+}
+
+// ─── Modelos ─────────────────────────────────────────
+
+model Usuario {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  creadoEn     DateTime @default(now())
+}
+
+model Cliente {
+  id           Int            @id @default(autoincrement())
+  nombre       String
+  telefono     String         @unique
+  email        String?
+  creadoEn     DateTime       @default(now())
+  pedidos      Pedido[]
+  observaciones Observacion[]
+}
+
+model Pedido {
+  id            Int          @id @default(autoincrement())
+  clienteId     Int
+  descripcion   String
+  precio        Decimal      @db.Decimal(10, 2)
+  fechaEntrega  DateTime
+  estado        EstadoPedido @default(BORRADOR)
+  notas         String?
+  creadoEn      DateTime     @default(now())
+  actualizadoEn DateTime     @updatedAt
+  cliente       Cliente      @relation(fields: [clienteId], references: [id])
+}
+
+model Observacion {
+  id            Int             @id @default(autoincrement())
+  clienteId     Int
+  tipo          TipoObservacion
+  descripcion   String
+  fecha         DateTime        @default(now())
+  autoGenerada  Boolean         @default(false)
+  cliente       Cliente         @relation(fields: [clienteId], references: [id])
 }
