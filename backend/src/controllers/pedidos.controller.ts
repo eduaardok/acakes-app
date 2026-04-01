@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import { prisma } from '../lib/prisma'
+import { EstadoPedido } from '@prisma/client'
+import { esTransicionValida } from '../lib/transiciones'
 
 // GET /pedidos?fecha=2024-01-15&estado=CONFIRMADO
 export async function getPedidos(req: Request, res: Response) {
@@ -85,3 +87,48 @@ export async function createPedido(req: Request, res: Response) {
 
     res.status(201).json(pedido)
 }
+// PATCH /pedidos/:id/estado
+export async function updateEstadoPedido(req: Request, res: Response) {
+    const { id } = req.params
+    const { estado } = req.body
+
+    if (!estado) {
+        res.status(400).json({ message: 'estado es requerido' })
+        return
+    }
+
+    const pedido = await prisma.pedido.findUnique({ where: { id: Number(id) } })
+    if (!pedido) {
+        res.status(404).json({ message: 'Pedido no encontrado' })
+        return
+    }
+
+    if (!esTransicionValida(pedido.estado, estado as EstadoPedido)) {
+        res.status(400).json({
+            message: `Transición inválida: no se puede pasar de ${pedido.estado} a ${estado}`
+        })
+        return
+    }
+
+    const pedidoActualizado = await prisma.pedido.update({
+        where: { id: Number(id) },
+        data: { estado: estado as EstadoPedido },
+        include: { cliente: true }
+    })
+
+    // Regla de negocio: NO_RETIRADO → crear observación automática
+    if (estado === 'NO_RETIRADO') {
+        await prisma.observacion.create({
+            data: {
+                clienteId: pedido.clienteId,
+                tipo: 'NO_RETIRO',
+                descripcion: `Pedido #${pedido.id} no fue retirado. Entrega programada: ${pedido.fechaEntrega.toLocaleDateString('es-PE')}`,
+                autoGenerada: true
+            }
+        })
+    }
+
+    res.json(pedidoActualizado)
+}
+
+// POST /clientes/:id/observaciones  — este va en clientes, pero lo dejamos aquí por ahora

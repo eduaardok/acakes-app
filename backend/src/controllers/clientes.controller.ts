@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { prisma } from '../lib/prisma'
+import { TipoObservacion } from '@prisma/client'
 
 // GET /clientes?buscar=nombre_o_telefono
 export async function getClientes(req: Request, res: Response) {
@@ -77,4 +78,40 @@ export async function updateCliente(req: Request, res: Response) {
     })
 
     res.json(cliente)
+}
+
+// POST /clientes/:id/observaciones
+export async function createObservacion(req: Request, res: Response) {
+    const { id } = req.params
+    const { tipo, descripcion } = req.body
+
+    if (!tipo || !descripcion) {
+        res.status(400).json({ message: 'tipo y descripcion son requeridos' })
+        return
+    }
+
+    const tiposValidos = Object.values(TipoObservacion)
+    if (!tiposValidos.includes(tipo)) {
+        res.status(400).json({
+            message: `tipo inválido. Valores permitidos: ${tiposValidos.join(', ')}`
+        })
+        return
+    }
+
+    const cliente = await prisma.cliente.findUnique({ where: { id: Number(id) } })
+    if (!cliente) {
+        res.status(404).json({ message: 'Cliente no encontrado' })
+        return
+    }
+
+    const observacion = await prisma.observacion.create({
+        data: {
+            clienteId: Number(id),
+            tipo: tipo as TipoObservacion,
+            descripcion,
+            autoGenerada: false
+        }
+    })
+
+    res.status(201).json(observacion)
 }
