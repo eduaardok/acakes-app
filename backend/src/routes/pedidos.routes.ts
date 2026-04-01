@@ -1,11 +1,16 @@
 import { Router } from 'express'
+import {
+    getPedidos,
+    getPedidosHoy,
+    getPedidoById,
+    createPedido
+} from '../controllers/pedidos.controller'
 
 const router = Router()
 
-// GET    /pedidos         → Día 4
-// GET    /pedidos/hoy     → Día 4
-// GET    /pedidos/:id     → Día 4
-// POST   /pedidos         → Día 4
-// PATCH  /pedidos/:id/estado → Día 5
+router.get('/hoy', getPedidosHoy)
+router.get('/', getPedidos)
+router.get('/:id', getPedidoById)
+router.post('/', createPedido)
 
 export default router
