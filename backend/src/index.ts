@@ -16,9 +16,12 @@ import { authenticateToken } from './middleware/auth.middleware'
 // testDB()
 
 const app = express()
-const PORT = process.env.PORT || 3000
+const PORT = Number(process.env.PORT) || 3000;
 
-app.use(cors())
+app.use(cors({
+    origin: ["http://localhost:5173", "http://localhost:3000"],
+    credentials: true,
+}));
 app.use(express.json())
 
 // Rutas públicas (sin auth)
@@ -40,6 +43,6 @@ app.use((req, res) => {
     res.status(404).json({ message: 'Ruta no encontrada' })
 })
 
-app.listen(PORT, () => {
+app.listen(PORT,"0.0.0.0", () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`)
 })
