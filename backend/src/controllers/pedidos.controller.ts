@@ -132,3 +132,40 @@ export async function updateEstadoPedido(req: Request, res: Response) {
 }
 
 // POST /clientes/:id/observaciones  — este va en clientes, pero lo dejamos aquí por ahora
+export const getIngresos = async (req: Request, res: Response) => {
+    const { desde, hasta } = req.query;
+
+    if (!desde || !hasta) {
+        return res.status(400).json({ error: "Parámetros 'desde' y 'hasta' requeridos (YYYY-MM-DD)" });
+    }
+
+    const fechaDesde = new Date(desde as string);
+    const fechaHasta = new Date(hasta as string);
+    fechaHasta.setHours(23, 59, 59, 999); // incluir todo el día final
+
+    if (isNaN(fechaDesde.getTime()) || isNaN(fechaHasta.getTime())) {
+        return res.status(400).json({ error: "Formato de fecha inválido" });
+    }
+
+    const pedidos = await prisma.pedido.findMany({
+        where: {
+            estado: "ENTREGADO",
+            actualizadoEn: {
+                gte: fechaDesde,
+                lte: fechaHasta,
+            },
+        },
+        include: { cliente: true },
+        orderBy: { actualizadoEn: "desc" },
+    });
+
+    const total = pedidos.reduce((sum, p) => sum + p.precio.toNumber(), 0);
+
+    return res.json({
+        desde: fechaDesde.toISOString().split("T")[0],
+        hasta: fechaHasta.toISOString().split("T")[0],
+        cantidad: pedidos.length,
+        total,
+        pedidos,
+    });
+};
