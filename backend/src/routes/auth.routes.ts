@@ -1,8 +1,8 @@
-import { Router } from 'express'
+import { Router } from "express";
+import { login } from "../controllers/auth.controller";
 
-const router = Router()
+const router = Router();
 
-// POST /auth/login  → Día 6
-// POST /auth/logout → Día 6
+router.post("/login", login);
 
-export default router
+export default router;
