@@ -34,7 +34,7 @@ export function PedidoCard({ pedido, onClick }: Props) {
     return (
         <button
             onClick={onClick}
-            className="w-full text-left bg-white rounded-2xl shadow-sm border border-gray-100 p-4 active:bg-gray-50 transition-colors"
+            className="w-full text-left bg-white rounded-2xl shadow-sm border border-gray-100 p-4 min-h-[72px] active:bg-gray-50 transition-colors"
         >
             <div className="flex items-start justify-between gap-3">
                 {/* Info principal */}
