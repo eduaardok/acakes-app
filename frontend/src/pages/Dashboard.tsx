@@ -14,10 +14,10 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const { pedidos, loading, error, refetch } = usePedidosHoy();
 
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        navigate("/login");
-    };
+    // const handleLogout = () => {
+    //     localStorage.removeItem("token");
+    //     navigate("/login");
+    // };
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -50,12 +50,6 @@ export default function Dashboard() {
                             >
                                 <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                             </svg>
-                        </button>
-                        <button
-                            onClick={handleLogout}
-                            className="text-sm text-gray-400 hover:text-gray-600 transition-colors py-2 px-3"
-                        >
-                            Salir
                         </button>
                     </div>
                 </div>
@@ -124,14 +118,6 @@ export default function Dashboard() {
                         ))}
                     </div>
                 )}
-                {/* Botón flotante — nuevo pedido */}
-                <button
-                    onClick={() => navigate("/pedidos/nuevo")}
-                    className="fixed bottom-6 right-6 w-14 h-14 bg-pink-600 text-white rounded-full shadow-lg text-3xl flex items-center justify-center active:scale-90 transition-transform"
-                    aria-label="Nuevo pedido"
-                >
-                    +
-                </button>
             </main>
         </div>
     );
