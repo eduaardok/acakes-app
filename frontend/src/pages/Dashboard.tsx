@@ -124,6 +124,14 @@ export default function Dashboard() {
                         ))}
                     </div>
                 )}
+                {/* Botón flotante — nuevo pedido */}
+                <button
+                    onClick={() => navigate("/pedidos/nuevo")}
+                    className="fixed bottom-6 right-6 w-14 h-14 bg-pink-600 text-white rounded-full shadow-lg text-3xl flex items-center justify-center active:scale-90 transition-transform"
+                    aria-label="Nuevo pedido"
+                >
+                    +
+                </button>
             </main>
         </div>
     );

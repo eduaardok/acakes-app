@@ -4,7 +4,13 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./index.css";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import PrivateRoute from "./components/PrivateRoute";
+import NuevoPedido from "./pages/NuevoPedido";
+
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+    const token = localStorage.getItem("token");
+    if (!token) return <Navigate to="/login" replace />;
+    return <>{children}</>;
+}
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
@@ -12,14 +18,22 @@ createRoot(document.getElementById("root")!).render(
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route
-                    path="/dashboard"
+                    path="/"
                     element={
                         <PrivateRoute>
                             <Dashboard />
                         </PrivateRoute>
                     }
                 />
-                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                <Route
+                    path="/pedidos/nuevo"
+                    element={
+                        <PrivateRoute>
+                            <NuevoPedido />
+                        </PrivateRoute>
+                    }
+                />
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>
     </StrictMode>

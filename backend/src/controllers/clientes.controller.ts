@@ -4,13 +4,13 @@ import { TipoObservacion } from '@prisma/client'
 
 // GET /clientes?buscar=nombre_o_telefono
 export async function getClientes(req: Request, res: Response) {
-    const { buscar } = req.query
+    const { q } = req.query
 
     const clientes = await prisma.cliente.findMany({
-        where: buscar ? {
+        where: q ? {
             OR: [
-                { nombre: { contains: String(buscar), mode: 'insensitive' } },
-                { telefono: { contains: String(buscar) } }
+                { nombre: { contains: String(q), mode: 'insensitive' } },
+                { telefono: { contains: String(q) } }
             ]
         } : undefined,
         orderBy: { creadoEn: 'desc' }

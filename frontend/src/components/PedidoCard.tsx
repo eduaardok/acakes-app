@@ -25,7 +25,7 @@ function formatHora(fechaISO: string): string {
 }
 
 function formatPrecio(precio: number): string {
-    return `$${precio.toFixed(2)}`;
+    return `$${Number(precio).toFixed(2)}`;
 }
 
 export function PedidoCard({ pedido, onClick }: Props) {
