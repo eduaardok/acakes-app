@@ -139,9 +139,8 @@ export const getIngresos = async (req: Request, res: Response) => {
         return res.status(400).json({ error: "Parámetros 'desde' y 'hasta' requeridos (YYYY-MM-DD)" });
     }
 
-    const fechaDesde = new Date(desde as string);
-    const fechaHasta = new Date(hasta as string);
-    fechaHasta.setHours(23, 59, 59, 999); // incluir todo el día final
+    const fechaDesde = new Date(`${desde}T00:00:00`);
+    const fechaHasta = new Date(`${hasta}T23:59:59`);
 
     if (isNaN(fechaDesde.getTime()) || isNaN(fechaHasta.getTime())) {
         return res.status(400).json({ error: "Formato de fecha inválido" });
