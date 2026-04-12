@@ -5,6 +5,8 @@ import "./index.css";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NuevoPedido from "./pages/NuevoPedido";
+import DetallePedido from "./pages/DetallePedido";
+
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
     const token = localStorage.getItem("token");
@@ -30,6 +32,14 @@ createRoot(document.getElementById("root")!).render(
                     element={
                         <PrivateRoute>
                             <NuevoPedido />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/pedidos/:id"
+                    element={
+                        <PrivateRoute>
+                            <DetallePedido />
                         </PrivateRoute>
                     }
                 />
