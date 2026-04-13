@@ -21,7 +21,7 @@ export default function Login() {
             });
 
             localStorage.setItem("token", data.token);
-            navigate("/dashboard");
+            navigate("/");
         } catch (err) {
             setError(err instanceof Error ? err.message : "Error al iniciar sesión");
         } finally {
@@ -42,14 +42,14 @@ export default function Login() {
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Email
+                            Usuario
                         </label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-pink-300"
-                            placeholder="admin@pasteleria.com"
+                            placeholder="usuario"
                             autoComplete="email"
                         />
                     </div>

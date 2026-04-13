@@ -4,18 +4,41 @@ import { EstadoPedido } from '@prisma/client'
 import { esTransicionValida } from '../lib/transiciones'
 
 // GET /pedidos?fecha=2024-01-15&estado=CONFIRMADO
+// GET /pedidos?desde=2024-01-01&hasta=2024-01-31  (rango por fechaEntrega, inclusive)
+// GET /pedidos  sin filtros de fecha → todos los pedidos
 export async function getPedidos(req: Request, res: Response) {
-    const { fecha, estado } = req.query
+    const { fecha, estado, desde, hasta } = req.query
+
+    if ((desde && !hasta) || (!desde && hasta)) {
+        res.status(400).json({ message: 'desde y hasta deben enviarse juntos (YYYY-MM-DD)' })
+        return
+    }
+
+    let rangoFecha: { gte: Date; lte: Date } | undefined
+
+    if (desde && hasta) {
+        const gte = new Date(`${desde}T00:00:00`)
+        const lte = new Date(`${hasta}T23:59:59`)
+        if (isNaN(gte.getTime()) || isNaN(lte.getTime())) {
+            res.status(400).json({ message: 'Formato desde/hasta inválido' })
+            return
+        }
+        if (gte > lte) {
+            res.status(400).json({ message: 'desde no puede ser mayor que hasta' })
+            return
+        }
+        rangoFecha = { gte, lte }
+    } else if (fecha) {
+        rangoFecha = {
+            gte: new Date(`${fecha}T00:00:00`),
+            lte: new Date(`${fecha}T23:59:59`)
+        }
+    }
 
     const pedidos = await prisma.pedido.findMany({
         where: {
             ...(estado ? { estado: estado as any } : {}),
-            ...(fecha ? {
-                fechaEntrega: {
-                    gte: new Date(`${fecha}T00:00:00`),
-                    lte: new Date(`${fecha}T23:59:59`)
-                }
-            } : {})
+            ...(rangoFecha ? { fechaEntrega: rangoFecha } : {})
         },
         include: { cliente: true },
         orderBy: { fechaEntrega: 'asc' }
@@ -56,6 +79,72 @@ export async function getPedidoById(req: Request, res: Response) {
     }
 
     res.json(pedido)
+}
+
+// PATCH /pedidos/:id — corregir descripción, precio, fecha de entrega o notas (sin cambiar estado)
+export async function updatePedido(req: Request, res: Response) {
+    const { id } = req.params
+    const { descripcion, precio, fechaEntrega, notas } = req.body
+
+    const pedido = await prisma.pedido.findUnique({ where: { id: Number(id) } })
+    if (!pedido) {
+        res.status(404).json({ message: 'Pedido no encontrado' })
+        return
+    }
+
+    const data: {
+        descripcion?: string
+        precio?: number
+        fechaEntrega?: Date
+        notas?: string | null
+    } = {}
+
+    if (descripcion !== undefined) {
+        if (typeof descripcion !== 'string' || !descripcion.trim()) {
+            res.status(400).json({ message: 'La descripción no puede estar vacía' })
+            return
+        }
+        data.descripcion = descripcion.trim()
+    }
+    if (precio !== undefined) {
+        const n = Number(precio)
+        if (Number.isNaN(n) || n <= 0) {
+            res.status(400).json({ message: 'Precio inválido' })
+            return
+        }
+        data.precio = n
+    }
+    if (fechaEntrega !== undefined) {
+        const d = new Date(fechaEntrega)
+        if (Number.isNaN(d.getTime())) {
+            res.status(400).json({ message: 'Fecha de entrega inválida' })
+            return
+        }
+        data.fechaEntrega = d
+    }
+    if (notas !== undefined) {
+        if (notas === null || notas === '') {
+            data.notas = null
+        } else if (typeof notas === 'string') {
+            data.notas = notas.trim() || null
+        } else {
+            res.status(400).json({ message: 'Notas inválidas' })
+            return
+        }
+    }
+
+    if (Object.keys(data).length === 0) {
+        res.status(400).json({ message: 'No hay datos para actualizar' })
+        return
+    }
+
+    const actualizado = await prisma.pedido.update({
+        where: { id: Number(id) },
+        data,
+        include: { cliente: true }
+    })
+
+    res.json(actualizado)
 }
 
 // POST /pedidos

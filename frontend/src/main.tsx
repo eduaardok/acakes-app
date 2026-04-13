@@ -7,8 +7,10 @@ import Dashboard from "./pages/Dashboard";
 import NuevoPedido from "./pages/NuevoPedido";
 import DetallePedido from "./pages/DetallePedido";
 import Clientes from "./pages/Clientes";
+import NuevoCliente from "./pages/NuevoCliente";
 import DetalleCliente from "./pages/DetalleCliente";
 import Ingresos from "./pages/Ingresos";
+import Cuenta from "./pages/Cuenta";
 import { Layout } from "./components/Layout";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -35,10 +37,12 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="/" element={<PrivateLayout><Dashboard /></PrivateLayout>} />
                 <Route path="/clientes" element={<PrivateLayout><Clientes /></PrivateLayout>} />
                 <Route path="/ingresos" element={<PrivateLayout><Ingresos /></PrivateLayout>} />
+                <Route path="/cuenta" element={<PrivateLayout><Cuenta /></PrivateLayout>} />
 
                 {/* Sin bottom nav */}
                 <Route path="/pedidos/nuevo" element={<PrivateRoute><NuevoPedido /></PrivateRoute>} />
                 <Route path="/pedidos/:id" element={<PrivateRoute><DetallePedido /></PrivateRoute>} />
+                <Route path="/clientes/nuevo" element={<PrivateRoute><NuevoCliente /></PrivateRoute>} />
                 <Route path="/clientes/:id" element={<PrivateRoute><DetalleCliente /></PrivateRoute>} />
 
                 <Route path="*" element={<Navigate to="/" replace />} />

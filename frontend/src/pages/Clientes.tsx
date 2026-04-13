@@ -12,7 +12,29 @@ export default function Clientes() {
             {/* Header */}
             <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-10 shadow-sm">
                 <div className="max-w-lg mx-auto">
-                    <h1 className="text-xl font-bold text-gray-900 mb-3">Clientes</h1>
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                        <h1 className="text-xl font-bold text-gray-900">Clientes</h1>
+                        <button
+                            type="button"
+                            onClick={() => navigate("/clientes/nuevo")}
+                            className="shrink-0 p-2.5 rounded-full bg-pink-600 text-white shadow-sm active:scale-95 transition-transform"
+                            aria-label="Nuevo cliente"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="22"
+                                height="22"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.25"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                        </button>
+                    </div>
                     <input
                         type="text"
                         value={q}

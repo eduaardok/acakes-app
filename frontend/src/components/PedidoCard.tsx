@@ -3,6 +3,8 @@ import type { PedidoHoy } from "../hooks/usePedidosHoy";
 interface Props {
     pedido: PedidoHoy;
     onClick: () => void;
+    /** Si true, muestra fecha de entrega (día) además de la hora (p. ej. listados por semana/mes). */
+    mostrarFechaDeEntrega?: boolean;
 }
 
 const estadoConfig = {
@@ -24,11 +26,23 @@ function formatHora(fechaISO: string): string {
     });
 }
 
+function formatFechaEntregaLista(fechaISO: string): string {
+    const fecha = new Date(fechaISO);
+    return fecha
+        .toLocaleDateString("es-EC", {
+            weekday: "short",
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        })
+        .replace(/^./, (c) => c.toUpperCase());
+}
+
 function formatPrecio(precio: number): string {
     return `$${Number(precio).toFixed(2)}`;
 }
 
-export function PedidoCard({ pedido, onClick }: Props) {
+export function PedidoCard({ pedido, onClick, mostrarFechaDeEntrega }: Props) {
     const config = estadoConfig[pedido.estado];
 
     return (
@@ -47,9 +61,16 @@ export function PedidoCard({ pedido, onClick }: Props) {
                     </p>
                 </div>
 
-                {/* Hora de entrega */}
+                {/* Fecha / hora de entrega */}
                 <div className="text-right shrink-0">
-                    <p className="text-sm font-medium text-gray-700">
+                    {mostrarFechaDeEntrega && (
+                        <p className="text-xs text-gray-500 leading-tight max-w-[9.5rem] ml-auto">
+                            {formatFechaEntregaLista(pedido.fechaEntrega)}
+                        </p>
+                    )}
+                    <p
+                        className={`text-sm font-medium text-gray-700 ${mostrarFechaDeEntrega ? "mt-0.5" : ""}`}
+                    >
                         {formatHora(pedido.fechaEntrega)}
                     </p>
                     <p className="text-sm font-semibold text-gray-900 mt-0.5">

@@ -24,7 +24,11 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
     if (!res.ok) {
         const error = await res.json().catch(() => ({}));
-        throw new Error(error.error || "Error del servidor");
+        throw new Error(
+            (error as { error?: string; message?: string }).error ||
+                (error as { message?: string }).message ||
+                "Error del servidor"
+        );
     }
 
     return res.json();

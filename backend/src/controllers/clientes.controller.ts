@@ -61,7 +61,7 @@ export async function createCliente(req: Request, res: Response) {
     res.status(201).json(cliente)
 }
 
-// PATCH /clientes/:id
+// PATCH /clientes/:id  — actualización parcial (nombre, teléfono, email)
 export async function updateCliente(req: Request, res: Response) {
     const { id } = req.params
     const { nombre, telefono, email } = req.body
@@ -72,9 +72,57 @@ export async function updateCliente(req: Request, res: Response) {
         return
     }
 
-    const cliente = await prisma.cliente.update({
+    const data: { nombre?: string; telefono?: string; email?: string | null } = {}
+
+    if (nombre !== undefined) {
+        if (typeof nombre !== 'string' || !nombre.trim()) {
+            res.status(400).json({ message: 'El nombre no puede estar vacío' })
+            return
+        }
+        data.nombre = nombre.trim()
+    }
+    if (telefono !== undefined) {
+        if (typeof telefono !== 'string' || !telefono.trim()) {
+            res.status(400).json({ message: 'El teléfono no puede estar vacío' })
+            return
+        }
+        const t = telefono.trim()
+        if (t !== existe.telefono) {
+            const duplicado = await prisma.cliente.findUnique({ where: { telefono: t } })
+            if (duplicado) {
+                res.status(409).json({ message: 'Ya existe un cliente con ese teléfono' })
+                return
+            }
+        }
+        data.telefono = t
+    }
+    if (email !== undefined) {
+        if (email === null || email === '') {
+            data.email = null
+        } else if (typeof email === 'string') {
+            data.email = email.trim() || null
+        } else {
+            res.status(400).json({ message: 'Email inválido' })
+            return
+        }
+    }
+
+    if (Object.keys(data).length === 0) {
+        res.status(400).json({ message: 'No hay datos para actualizar' })
+        return
+    }
+
+    await prisma.cliente.update({
         where: { id: Number(id) },
-        data: { nombre, telefono, email }
+        data
+    })
+
+    const cliente = await prisma.cliente.findUnique({
+        where: { id: Number(id) },
+        include: {
+            pedidos: { orderBy: { creadoEn: 'desc' } },
+            observaciones: { orderBy: { fecha: 'desc' } }
+        }
     })
 
     res.json(cliente)

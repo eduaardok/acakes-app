@@ -38,12 +38,67 @@ function formatFecha(fechaISO: string): string {
     });
 }
 
+function fechaEntregaToDatetimeLocal(iso: string): string {
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export default function DetallePedido() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { pedido, loading, error, refetch } = usePedido(id!);
     const [cambiando, setCambiando] = useState(false);
     const [errorAccion, setErrorAccion] = useState<string | null>(null);
+
+    const [editandoPedido, setEditandoPedido] = useState(false);
+    const [descripcionEdit, setDescripcionEdit] = useState("");
+    const [precioEdit, setPrecioEdit] = useState("");
+    const [fechaEdit, setFechaEdit] = useState("");
+    const [notasEdit, setNotasEdit] = useState("");
+    const [guardandoPedido, setGuardandoPedido] = useState(false);
+    const [errorEdicion, setErrorEdicion] = useState<string | null>(null);
+
+    const abrirEdicionPedido = () => {
+        if (!pedido) return;
+        setDescripcionEdit(pedido.descripcion);
+        setPrecioEdit(String(Number(pedido.precio)));
+        setFechaEdit(fechaEntregaToDatetimeLocal(pedido.fechaEntrega));
+        setNotasEdit(pedido.notas ?? "");
+        setErrorEdicion(null);
+        setEditandoPedido(true);
+    };
+
+    const handleGuardarPedido = async () => {
+        if (!descripcionEdit.trim()) {
+            setErrorEdicion("La descripción es obligatoria");
+            return;
+        }
+        if (!precioEdit || Number.isNaN(Number(precioEdit)) || Number(precioEdit) <= 0) {
+            setErrorEdicion("Ingresa un precio válido");
+            return;
+        }
+        if (!fechaEdit) {
+            setErrorEdicion("La fecha de entrega es obligatoria");
+            return;
+        }
+        setGuardandoPedido(true);
+        setErrorEdicion(null);
+        try {
+            await api.patch(`/pedidos/${id}`, {
+                descripcion: descripcionEdit.trim(),
+                precio: Number(precioEdit),
+                fechaEntrega: new Date(fechaEdit).toISOString(),
+                notas: notasEdit.trim() || null,
+            });
+            setEditandoPedido(false);
+            await refetch();
+        } catch (err) {
+            setErrorEdicion(err instanceof Error ? err.message : "Error al guardar");
+        } finally {
+            setGuardandoPedido(false);
+        }
+    };
 
     const cambiarEstado = async (nuevoEstado: EstadoPedido) => {
         setCambiando(true);
@@ -123,27 +178,118 @@ export default function DetallePedido() {
                 {/* Card: Pedido */}
                 <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
                     <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">Pedido</p>
-                    <p className="text-gray-900">{pedido.descripcion}</p>
 
-                    <div className="flex justify-between items-center pt-1 border-t border-gray-50">
-                        <span className="text-sm text-gray-500">Precio</span>
-                        <span className="font-bold text-gray-900 text-lg">
-                            ${Number(pedido.precio).toFixed(2)}
-                        </span>
-                    </div>
+                    {!editandoPedido ? (
+                        <>
+                            <p className="text-gray-900">{pedido.descripcion}</p>
 
-                    <div className="flex justify-between items-start pt-1 border-t border-gray-50">
-                        <span className="text-sm text-gray-500">Entrega</span>
-                        <span className="text-sm text-gray-700 text-right capitalize">
-                            {formatFecha(pedido.fechaEntrega)}
-                        </span>
-                    </div>
+                            <div className="flex justify-between items-center pt-1 border-t border-gray-50">
+                                <span className="text-sm text-gray-500">Precio</span>
+                                <span className="font-bold text-gray-900 text-lg">
+                                    ${Number(pedido.precio).toFixed(2)}
+                                </span>
+                            </div>
 
-                    {pedido.notas && (
-                        <div className="pt-1 border-t border-gray-50">
-                            <p className="text-xs text-gray-400 mb-1">Notas</p>
-                            <p className="text-sm text-gray-600">{pedido.notas}</p>
+                            <div className="flex justify-between items-start pt-1 border-t border-gray-50">
+                                <span className="text-sm text-gray-500">Entrega</span>
+                                <span className="text-sm text-gray-700 text-right capitalize">
+                                    {formatFecha(pedido.fechaEntrega)}
+                                </span>
+                            </div>
+
+                            <div className="pt-1 border-t border-gray-50">
+                                <p className="text-xs text-gray-400 mb-1">Notas</p>
+                                <p className="text-sm text-gray-600">{pedido.notas || "—"}</p>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="space-y-3">
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                    Descripción
+                                </label>
+                                <textarea
+                                    value={descripcionEdit}
+                                    onChange={(e) => setDescripcionEdit(e.target.value)}
+                                    rows={3}
+                                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 resize-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                    Precio
+                                </label>
+                                <div className="relative mt-1">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                                        $
+                                    </span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={precioEdit}
+                                        onChange={(e) => setPrecioEdit(e.target.value)}
+                                        className="w-full border border-gray-200 rounded-xl pl-7 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                    Fecha y hora de entrega
+                                </label>
+                                <input
+                                    type="datetime-local"
+                                    value={fechaEdit}
+                                    onChange={(e) => setFechaEdit(e.target.value)}
+                                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                    Notas (opcional)
+                                </label>
+                                <textarea
+                                    value={notasEdit}
+                                    onChange={(e) => setNotasEdit(e.target.value)}
+                                    rows={2}
+                                    placeholder="Vacío para quitar notas"
+                                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 resize-none"
+                                />
+                            </div>
+                            {errorEdicion && (
+                                <p className="text-xs text-red-600">{errorEdicion}</p>
+                            )}
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setEditandoPedido(false);
+                                        setErrorEdicion(null);
+                                    }}
+                                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleGuardarPedido}
+                                    disabled={guardandoPedido}
+                                    className="flex-1 py-2.5 rounded-xl bg-pink-600 text-white text-sm font-medium disabled:opacity-50"
+                                >
+                                    {guardandoPedido ? "Guardando..." : "Guardar"}
+                                </button>
+                            </div>
                         </div>
+                    )}
+
+                    {!editandoPedido && (
+                        <button
+                            type="button"
+                            onClick={abrirEdicionPedido}
+                            className="text-sm font-medium text-pink-600"
+                        >
+                            Editar detalles del pedido
+                        </button>
                     )}
                 </div>
 
@@ -176,10 +322,11 @@ export default function DetallePedido() {
                     </button>
                 )}
 
-                {/* Estados finales — sin acciones */}
                 {["ENTREGADO", "CANCELADO", "NO_RETIRADO"].includes(pedido.estado) && (
-                    <p className="text-center text-sm text-gray-400 py-2">
-                        Este pedido ya no puede modificarse
+                    <p className="text-center text-sm text-gray-400 py-1">
+                        El estado del pedido ya no avanza desde aquí; puedes corregir descripción,
+                        precio, fecha o notas con &quot;Editar detalles del pedido&quot; si hubo un
+                        error al registrar.
                     </p>
                 )}
 
