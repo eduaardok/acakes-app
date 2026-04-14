@@ -20,7 +20,7 @@ const PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors({
     origin: ["http://localhost:5173", "http://localhost:3000","http://192.168.1.9:5173","http://192.168.1.14:5173",
-    "https://69dd846bab808f332e879359--calm-squirrel-5232fd.netlify.app/login"],
+        "https://calm-squirrel-5232fd.netlify.app"],
     credentials: true,
 }));
 app.use(express.json())
