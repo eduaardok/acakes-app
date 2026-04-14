@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { useCliente } from "../hooks/useCliente";
+import { usePageTitle } from "../hooks/usePageTitle";
 import type { TipoObservacion } from "../hooks/useCliente";
 
 // Badge de comportamiento — negativo si tiene observaciones negativas
@@ -30,6 +31,9 @@ export default function DetalleCliente() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { cliente, loading, error, refetch } = useCliente(id!);
+
+    const pageTitle = useMemo(() => (cliente ? cliente.nombre : "Cliente"), [cliente]);
+    usePageTitle(pageTitle);
 
     // Form de observación manual
     const [mostrarForm, setMostrarForm] = useState(false);

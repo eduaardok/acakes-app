@@ -12,6 +12,7 @@ import DetalleCliente from "./pages/DetalleCliente";
 import Ingresos from "./pages/Ingresos";
 import Cuenta from "./pages/Cuenta";
 import { Layout } from "./components/Layout";
+import { ScrollToTop } from "./components/ScrollToTop";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
     const token = localStorage.getItem("token");
@@ -29,6 +30,7 @@ function PrivateLayout({ children }: { children: React.ReactNode }) {
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <BrowserRouter>
+            <ScrollToTop />
             <Routes>
                 {/* Pública */}
                 <Route path="/login" element={<Login />} />

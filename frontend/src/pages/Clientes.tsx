@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClientes } from "../hooks/useClientes";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 export default function Clientes() {
+    usePageTitle("Clientes");
     const navigate = useNavigate();
     const [q, setQ] = useState("");
     const { clientes, loading, error } = useClientes(q);

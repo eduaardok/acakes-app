@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 export default function Login() {
+    usePageTitle("Iniciar sesión");
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -34,7 +36,11 @@ export default function Login() {
             <div className="bg-white rounded-2xl shadow-sm p-8 w-full max-w-sm">
 
                 <div className="text-center mb-8">
-                    <div className="text-4xl mb-2">🧁</div>
+                    <img
+                        src="/logo.png"
+                        alt="Ainoa's Cakes"
+                        className="mx-auto mb-3 h-24 w-auto max-w-full object-contain"
+                    />
                     <h1 className="text-2xl font-bold text-gray-800">Ainoa's Cakes</h1>
                     <p className="text-gray-500 text-sm mt-1">Ingresa para continuar</p>
                 </div>

@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { BuscadorCliente } from "../components/BuscadorCliente";
 import type { ClienteResumen } from "../hooks/useClienteBusqueda";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 export default function NuevoPedido() {
+    usePageTitle("Nuevo pedido");
     const navigate = useNavigate();
 
     // Cliente seleccionado

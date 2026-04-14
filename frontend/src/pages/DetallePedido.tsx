@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { usePedido } from "../hooks/usePedido";
+import { usePageTitle } from "../hooks/usePageTitle";
 import type { EstadoPedido } from "../hooks/usePedidosHoy";
 
 // Misma config que PedidoCard — colores por estado
@@ -58,6 +59,14 @@ export default function DetallePedido() {
     const [notasEdit, setNotasEdit] = useState("");
     const [guardandoPedido, setGuardandoPedido] = useState(false);
     const [errorEdicion, setErrorEdicion] = useState<string | null>(null);
+
+    const pageTitle = useMemo(() => {
+        if (!pedido) return "Pedido";
+        const d = pedido.descripcion.trim();
+        const short = d.length > 40 ? `${d.slice(0, 37)}…` : d;
+        return `${pedido.cliente.nombre} — ${short}`;
+    }, [pedido]);
+    usePageTitle(pageTitle);
 
     const abrirEdicionPedido = () => {
         if (!pedido) return;

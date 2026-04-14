@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useIngresos, hoy, haceDias } from "../hooks/useIngresos";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 // Rangos rápidos predefinidos
 const RANGOS = [
@@ -22,6 +23,7 @@ function formatFecha(fechaISO: string): string {
 }
 
 export default function Ingresos() {
+    usePageTitle("Ingresos");
     const navigate = useNavigate();
 
     // Rango activo — por defecto "Hoy"

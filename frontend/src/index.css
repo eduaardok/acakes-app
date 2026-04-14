@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+/* iOS Safari: fuente mínima 16px en controles evita zoom automático al enfocar */
+@layer base {
+    input,
+    textarea,
+    select {
+        font-size: max(1rem, 16px);
+    }
+}

@@ -17,6 +17,7 @@ import {
     labelMesAncla,
 } from "../lib/fechasPeriodo";
 import { PedidoCard } from "../components/PedidoCard";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 type VistaPrincipal = "dia" | "listado";
 type ListadoPeriodo = "semana" | "mes" | "año" | "todos";
@@ -29,6 +30,7 @@ function mensajeListaVaciaDia(fechaKey: string): string {
 }
 
 export default function Dashboard() {
+    usePageTitle("Pedidos");
     const navigate = useNavigate();
     const [vista, setVista] = useState<VistaPrincipal>("dia");
     const [fechaKey, setFechaKey] = useState(getTodayLocalKey);

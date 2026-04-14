@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 interface UsuarioMe {
     id: number;
@@ -9,6 +10,7 @@ interface UsuarioMe {
 }
 
 export default function Cuenta() {
+    usePageTitle("Cuenta");
     const navigate = useNavigate();
     const [cargandoPerfil, setCargandoPerfil] = useState(true);
     const [nombreUsuario, setNombreUsuario] = useState("");

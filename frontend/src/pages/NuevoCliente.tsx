@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import type { ClienteResumen } from "../hooks/useClienteBusqueda";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 export default function NuevoCliente() {
+    usePageTitle("Nuevo cliente");
     const navigate = useNavigate();
 
     const [nombre, setNombre] = useState("");
