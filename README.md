@@ -5,11 +5,10 @@ Aplicación web para **gestionar pedidos y clientes** en una pastelería, con co
 - **Repo**: `https://github.com/eduaardok/acakes-app`
 - **Demo**: `https://ainoascakes.netlify.app/`
 
-## Screenshot / GIF (placeholder)
+## Screenshot 
 
-> Placeholder: reemplazar por una captura/GIF real de la demo.
->
-> `https://ainoascakes.netlify.app/` (Dashboard / flujo Nuevo Pedido)
+![ACakes — Dashboard](docs/screenshot.png)
+
 
 ## Stack tecnológico (y por qué)
 
