@@ -170,3 +170,17 @@ Notas:
 - `skills-lock.json` (raíz del repo) registra el hash del skill `animate` instalado vía `skills add`, para poder verificar/actualizar más adelante con `npx skills update`.
 - Ambos skills se activan automáticamente por descripción (trigger semántico) cuando se pide diseño, rediseño, pulido visual o animaciones — no hace falta invocarlos por nombre.
 - Reinstalación en otra máquina: correr los dos comandos de la columna "Instalado con" desde la raíz del repo.
+
+---
+
+## Cron de notificaciones por email (FechaEspecial)
+
+Job diario (`backend/src/jobs/notificarFechasEspeciales.ts`, registrado en `index.ts` vía `iniciarCronNotificaciones()`) que revisa `FechaEspecial` y envía un recordatorio por email cuando la fecha está a 7 días o menos.
+
+- Envío por Gmail SMTP con `nodemailer` (`backend/src/lib/mailer.ts`), cuenta dedicada. Credenciales en `SMTP_USER` / `SMTP_PASS` (ver `backend/.env.example`) — **configurar manualmente en las variables de entorno de Render**, no se versionan valores reales. `SMTP_PASS` es un App Password de Gmail, no la contraseña normal de la cuenta.
+- Scheduling con `node-cron`, expresión `0 13 * * *` (13:00 UTC = 8:00 AM Ecuador, UTC-5 sin horario de verano).
+- El rango "próximo" (fecha entre ahora y ahora+7 días) se calcula al vuelo en cada corrida, no se persiste ningún estado intermedio.
+- `notificadoEmail` solo se marca `true` tras un envío exitoso; si el envío falla se deja en `false` para reintentar al día siguiente, y el error se loguea sin detener el resto del batch (falla por registro, no por corrida completa).
+
+**Riesgo de cold start en Render (free tier) — sin resolver, pendiente de decisión:**
+Render duerme el proceso tras ~15 min de inactividad y tarda 30-60s en despertar con el primer tráfico entrante. El cron (`node-cron`) corre dentro del mismo proceso Node del servidor Express, así que si el proceso está dormido a las 8:00 AM (sin tráfico previo), el cron simplemente no dispara — no hay nada que lo "despierte" a esa hora. Esto puede hacer que el recordatorio no se envíe algunos días. No se implementó ninguna mitigación (ej. un servicio externo de ping tipo cron-job.org/UptimeRobot para mantener el proceso despierto, o mover el cron a un servicio externo) porque implica una decisión de infraestructura fuera del alcance de esta tarea. Si el problema se confirma en producción, evaluar alguna de esas opciones.

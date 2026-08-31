@@ -8,6 +8,7 @@ import clientesRoutes from './routes/clientes.routes'
 import pedidosRoutes from './routes/pedidos.routes'
 import publicRoutes from './routes/public.routes'
 import { authenticateToken } from './middleware/auth.middleware'
+import { iniciarCronNotificaciones } from './jobs/notificarFechasEspeciales'
 // import {prisma} from './lib/prisma'
 // // Smoke test — borra esto después
 // async function testDB() {
@@ -52,3 +53,5 @@ app.use((req, res) => {
 app.listen(PORT,"0.0.0.0", () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`)
 })
+
+iniciarCronNotificaciones()
