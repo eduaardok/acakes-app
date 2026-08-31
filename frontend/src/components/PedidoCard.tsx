@@ -5,6 +5,8 @@ interface Props {
     onClick: () => void;
     /** Si true, muestra fecha de entrega (día) además de la hora (p. ej. listados por semana/mes). */
     mostrarFechaDeEntrega?: boolean;
+    /** Retraso opcional (ms) para escalonar la animación de entrada en una lista. */
+    animationDelayMs?: number;
 }
 
 const estadoConfig = {
@@ -42,13 +44,14 @@ function formatPrecio(precio: number): string {
     return `$${Number(precio).toFixed(2)}`;
 }
 
-export function PedidoCard({ pedido, onClick, mostrarFechaDeEntrega }: Props) {
+export function PedidoCard({ pedido, onClick, mostrarFechaDeEntrega, animationDelayMs }: Props) {
     const config = estadoConfig[pedido.estado];
 
     return (
         <button
             onClick={onClick}
-            className="w-full text-left bg-white rounded-2xl shadow-sm border border-gray-100 p-4 min-h-[72px] active:bg-gray-50 transition-colors"
+            style={animationDelayMs ? { animationDelay: `${animationDelayMs}ms` } : undefined}
+            className="animate-rise-in w-full text-left bg-white rounded-2xl shadow-sm border border-gray-100 p-4 min-h-[72px] transition-[transform,box-shadow,background-color] duration-150 ease-out hover:shadow-md active:scale-[0.985] active:bg-gray-50"
         >
             <div className="flex items-start justify-between gap-3">
                 {/* Info principal */}

@@ -132,7 +132,7 @@ export default function Dashboard() {
                         <button
                             onClick={refetch}
                             disabled={loading}
-                            className="p-2 rounded-full text-gray-400 hover:text-gray-600 active:bg-gray-100 transition-colors disabled:opacity-40"
+                            className="p-2 rounded-full text-gray-400 hover:text-gray-600 active:bg-gray-100 active:scale-90 transition-[color,background-color,transform] duration-150 ease-out disabled:opacity-40"
                             aria-label="Recargar pedidos"
                         >
                             <svg
@@ -157,7 +157,7 @@ export default function Dashboard() {
                     <button
                         type="button"
                         onClick={() => setVista("dia")}
-                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
                             vista === "dia"
                                 ? "bg-white text-gray-900 shadow-sm"
                                 : "text-gray-500"
@@ -168,7 +168,7 @@ export default function Dashboard() {
                     <button
                         type="button"
                         onClick={() => setVista("listado")}
-                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
                             vista === "listado"
                                 ? "bg-white text-gray-900 shadow-sm"
                                 : "text-gray-500"
@@ -183,7 +183,7 @@ export default function Dashboard() {
                         <button
                             type="button"
                             onClick={() => setFechaKey((k) => addDaysLocalKey(k, -1))}
-                            className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 transition-colors"
+                            className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 active:scale-90 transition-[color,background-color,transform] duration-150 ease-out"
                             aria-label="Día anterior"
                         >
                             <svg
@@ -206,7 +206,7 @@ export default function Dashboard() {
                         <button
                             type="button"
                             onClick={() => setFechaKey((k) => addDaysLocalKey(k, 1))}
-                            className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 transition-colors"
+                            className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 active:scale-90 transition-[color,background-color,transform] duration-150 ease-out"
                             aria-label="Día siguiente"
                         >
                             <svg
@@ -241,7 +241,7 @@ export default function Dashboard() {
                                     key={id}
                                     type="button"
                                     onClick={() => setListadoPeriodo(id)}
-                                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-[color,background-color,transform] duration-150 ease-out active:scale-95 ${
                                         listadoPeriodo === id
                                             ? "bg-pink-600 text-white"
                                             : "bg-gray-100 text-gray-600"
@@ -256,7 +256,7 @@ export default function Dashboard() {
                                 type="button"
                                 onClick={goPrevListado}
                                 disabled={!canPrevNextListado}
-                                className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                                className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 active:scale-90 transition-[color,background-color,transform] duration-150 ease-out disabled:opacity-30 disabled:pointer-events-none"
                                 aria-label="Periodo anterior"
                             >
                                 <svg
@@ -280,7 +280,7 @@ export default function Dashboard() {
                                 type="button"
                                 onClick={goNextListado}
                                 disabled={!canPrevNextListado}
-                                className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                                className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 active:scale-90 transition-[color,background-color,transform] duration-150 ease-out disabled:opacity-30 disabled:pointer-events-none"
                                 aria-label="Periodo siguiente"
                             >
                                 <svg
@@ -367,12 +367,13 @@ export default function Dashboard() {
                                 {pedidos.length} pedido{pedidos.length !== 1 ? "s" : ""}
                             </p>
                         )}
-                        {pedidos.map((pedido) => (
+                        {pedidos.map((pedido, i) => (
                             <PedidoCard
                                 key={pedido.id}
                                 pedido={pedido}
                                 onClick={() => navigate(`/pedidos/${pedido.id}`)}
                                 mostrarFechaDeEntrega={vista === "listado"}
+                                animationDelayMs={Math.min(i, 8) * 35}
                             />
                         ))}
                     </div>
