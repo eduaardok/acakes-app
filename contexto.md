@@ -152,3 +152,21 @@ Actualmente el Dashboard solo muestra pedidos del día actual (`GET /pedidos/hoy
 ## Cómo actuar
 
 Eres mi mentor técnico. Guíame paso a paso por el día indicado. No agregues librerías ni patrones fuera del stack definido. No te adelantes a días siguientes.
+
+---
+
+## Skills de Claude Code instalados (diseño y animación)
+
+Skills comunitarios (no oficiales de Anthropic) instalados en `.claude/skills/` para mejorar el pulido visual y las animaciones del panel de admin y, más adelante, de la UI pública (`/catalogo`, `/producto/:id`).
+
+| Skill | Repo | Qué cubre | Instalado con |
+|---|---|---|---|
+| `impeccable` | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) (64k+ stars, activo) | Lenguaje de diseño general: 23 comandos (`polish`, `critique`, `audit`, `bolder`, `quieter`, `layout`, `animate`, etc.), detección de anti-patrones de "AI slop" (gradientes genéricos, cards anidadas, etc.), accesibilidad y responsive. | `npm install --no-save --prefix <tmp> impeccable@latest` seguido de `node <tmp>/node_modules/impeccable/cli/bin/cli.js install --providers=claude --scope=project --yes` |
+| `animate` | [delphi-ai/animate-skill](https://github.com/delphi-ai/animate-skill) | Patrones de animación para React basados en el curso de Emil Kowalski (animations.dev): easing/timing, CSS transitions, Framer Motion (layoutId, AnimatePresence, stagger), reglas de accesibilidad (`prefers-reduced-motion`) y performance (solo animar `transform`/`opacity`). | `npx -y skills add https://github.com/delphi-ai/animate-skill --skill animate --agent claude-code` (usa el paquete `skills` de vercel-labs) |
+
+Notas:
+- Se evaluó también `emilkowalski/skills` (skill `emil-design-eng`, 33k+ stars) pero se descartó por redundancia: cubre la misma filosofía de animación que `animate-skill` (ambos basados en el curso de Emil Kowalski) sin aportar algo que `impeccable` + `animate` no cubran ya.
+- `impeccable` instaló además un hook local en `.claude/settings.local.json` (corre su detector de anti-patrones después de editar archivos de UI). Ese archivo es local por máquina y está en `.gitignore` — si se reinstala en otra máquina, el hook se vuelve a generar solo.
+- `skills-lock.json` (raíz del repo) registra el hash del skill `animate` instalado vía `skills add`, para poder verificar/actualizar más adelante con `npx skills update`.
+- Ambos skills se activan automáticamente por descripción (trigger semántico) cuando se pide diseño, rediseño, pulido visual o animaciones — no hace falta invocarlos por nombre.
+- Reinstalación en otra máquina: correr los dos comandos de la columna "Instalado con" desde la raíz del repo.
