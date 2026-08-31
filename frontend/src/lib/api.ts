@@ -11,6 +11,9 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
         ...options,
         headers: {
             "Content-Type": "application/json",
+            // El backend usa este offset para interpretar "YYYY-MM-DD" según el calendario local del dispositivo.
+            // new Date().getTimezoneOffset(): minutos a sumar a la hora local para obtener UTC (ej. Ecuador = 300).
+            "X-TZ-Offset-Minutes": String(new Date().getTimezoneOffset()),
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...options.headers,
         },

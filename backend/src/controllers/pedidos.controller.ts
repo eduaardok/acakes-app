@@ -3,6 +3,40 @@ import { prisma } from '../lib/prisma'
 import { EstadoPedido } from '@prisma/client'
 import { esTransicionValida } from '../lib/transiciones'
 
+function getTzOffsetMinutes(req: Request): number | null {
+    const raw = req.header('X-TZ-Offset-Minutes')
+    if (!raw) return null
+    const n = Number(raw)
+    if (!Number.isFinite(n) || !Number.isInteger(n)) return null
+    // Zona horaria válida en minutos: [-14:00, +14:00]
+    if (n < -14 * 60 || n > 14 * 60) return null
+    return n
+}
+
+function parseDateKey(key: unknown): { y: number; m: number; d: number } | null {
+    if (typeof key !== 'string') return null
+    const m = key.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (!m) return null
+    const y = Number(m[1])
+    const mo = Number(m[2])
+    const d = Number(m[3])
+    if (!Number.isInteger(y) || !Number.isInteger(mo) || !Number.isInteger(d)) return null
+    if (mo < 1 || mo > 12) return null
+    if (d < 1 || d > 31) return null
+    return { y, m: mo, d }
+}
+
+function rangeForLocalDay(key: string, tzOffsetMinutes: number): { gte: Date; lte: Date } | null {
+    const parts = parseDateKey(key)
+    if (!parts) return null
+    const { y, m, d } = parts
+    // tzOffsetMinutes sigue la convención JS: minutos a sumar a local para obtener UTC.
+    const baseUtcMs = Date.UTC(y, m - 1, d, 0, 0, 0)
+    const gteMs = baseUtcMs + tzOffsetMinutes * 60_000
+    const lteMs = gteMs + (24 * 60 * 60 * 1000 - 1000) // 23:59:59 local
+    return { gte: new Date(gteMs), lte: new Date(lteMs) }
+}
+
 // GET /pedidos?fecha=2024-01-15&estado=CONFIRMADO
 // GET /pedidos?desde=2024-01-01&hasta=2024-01-31  (rango por fechaEntrega, inclusive)
 // GET /pedidos  sin filtros de fecha → todos los pedidos
@@ -15,23 +49,57 @@ export async function getPedidos(req: Request, res: Response) {
     }
 
     let rangoFecha: { gte: Date; lte: Date } | undefined
+    const tzOffset = getTzOffsetMinutes(req)
 
     if (desde && hasta) {
-        const gte = new Date(`${desde}T00:00:00`)
-        const lte = new Date(`${hasta}T23:59:59`)
-        if (isNaN(gte.getTime()) || isNaN(lte.getTime())) {
+        if (tzOffset !== null) {
+            const r1 = rangeForLocalDay(String(desde), tzOffset)
+            const r2 = rangeForLocalDay(String(hasta), tzOffset)
+            if (!r1 || !r2) {
+                res.status(400).json({ message: 'Formato desde/hasta inválido' })
+                return
+            }
+            const gte = r1.gte
+            const lte = r2.lte
+            if (gte > lte) {
+                res.status(400).json({ message: 'desde no puede ser mayor que hasta' })
+                return
+            }
+            rangoFecha = { gte, lte }
+        } else {
+            const gte = new Date(`${desde}T00:00:00`)
+            const lte = new Date(`${hasta}T23:59:59`)
+            if (isNaN(gte.getTime()) || isNaN(lte.getTime())) {
+                res.status(400).json({ message: 'Formato desde/hasta inválido' })
+                return
+            }
+            if (gte > lte) {
+                res.status(400).json({ message: 'desde no puede ser mayor que hasta' })
+                return
+            }
+            rangoFecha = { gte, lte }
+        }
+    } else if (fecha) {
+        if (tzOffset !== null) {
+            const r = rangeForLocalDay(String(fecha), tzOffset)
+            if (!r) {
+                res.status(400).json({ message: 'Formato fecha inválido' })
+                return
+            }
+            rangoFecha = r
+        } else {
+            rangoFecha = {
+                gte: new Date(`${fecha}T00:00:00`),
+                lte: new Date(`${fecha}T23:59:59`)
+            }
+        }
+    }
+
+    // Validación final por si el parseo "sin tz" produjo Invalid Date
+    if (rangoFecha) {
+        if (Number.isNaN(rangoFecha.gte.getTime()) || Number.isNaN(rangoFecha.lte.getTime())) {
             res.status(400).json({ message: 'Formato desde/hasta inválido' })
             return
-        }
-        if (gte > lte) {
-            res.status(400).json({ message: 'desde no puede ser mayor que hasta' })
-            return
-        }
-        rangoFecha = { gte, lte }
-    } else if (fecha) {
-        rangoFecha = {
-            gte: new Date(`${fecha}T00:00:00`),
-            lte: new Date(`${fecha}T23:59:59`)
         }
     }
 
@@ -49,9 +117,32 @@ export async function getPedidos(req: Request, res: Response) {
 
 // GET /pedidos/hoy
 export async function getPedidosHoy(req: Request, res: Response) {
-    const hoy = new Date()
-    const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0)
-    const fin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59)
+    const tzOffset = getTzOffsetMinutes(req)
+
+    let inicio: Date
+    let fin: Date
+
+    if (tzOffset !== null) {
+        // Calcula "hoy" en el calendario local del cliente, luego convierte a rango UTC.
+        const localNowMs = Date.now() - tzOffset * 60_000
+        const localNow = new Date(localNowMs)
+        const y = localNow.getUTCFullYear()
+        const m = localNow.getUTCMonth() + 1
+        const d = localNow.getUTCDate()
+        const key = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+        const r = rangeForLocalDay(key, tzOffset)
+        // r no debería ser null porque key la construimos nosotros, pero igual protegemos.
+        if (!r) {
+            res.status(500).json({ message: 'No se pudo calcular el rango de hoy' })
+            return
+        }
+        inicio = r.gte
+        fin = r.lte
+    } else {
+        const hoy = new Date()
+        inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0)
+        fin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59)
+    }
 
     const pedidos = await prisma.pedido.findMany({
         where: {

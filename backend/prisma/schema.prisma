@@ -49,6 +49,7 @@ model Cliente {
   creadoEn     DateTime       @default(now())
   pedidos      Pedido[]
   observaciones Observacion[]
+  usuarioCliente UsuarioCliente?
 }
 
 model Pedido {
@@ -72,4 +73,92 @@ model Observacion {
   fecha         DateTime        @default(now())
   autoGenerada  Boolean         @default(false)
   cliente       Cliente         @relation(fields: [clienteId], references: [id])
+}
+
+// ─── Capa pública (catálogo + interacciones sociales) ──
+
+model UsuarioCliente {
+  id             Int             @id @default(autoincrement())
+  email          String          @unique
+  passwordHash   String
+  nombre         String
+  createdAt      DateTime        @default(now())
+  clienteId      Int?            @unique
+  cliente        Cliente?        @relation(fields: [clienteId], references: [id])
+  resenas        Resena[]
+  fechasEspeciales FechaEspecial[]
+}
+
+model Producto {
+  id          Int             @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  tematica    String?
+  ocasion     String?
+  vistas      Int             @default(0)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  imagenes    ProductoImagen[]
+  resenas     Resena[]
+  likes       LikeProducto[]
+  favoritos   Favorito[]
+
+  @@index([tematica, ocasion])
+}
+
+model ProductoImagen {
+  id         Int      @id @default(autoincrement())
+  productoId Int
+  url        String
+  orden      Int      @default(0)
+  createdAt  DateTime @default(now())
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+}
+
+model Resena {
+  id           Int            @id @default(autoincrement())
+  productoId   Int
+  usuarioId    Int
+  calificacion Int
+  comentario   String?
+  createdAt    DateTime       @default(now())
+  producto     Producto       @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  usuario      UsuarioCliente @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  likes        LikeResena[]
+}
+
+model LikeProducto {
+  productoId Int
+  actorId    String
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@id([productoId, actorId])
+}
+
+model LikeResena {
+  resenaId  Int
+  actorId   String
+  resena    Resena   @relation(fields: [resenaId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([resenaId, actorId])
+}
+
+model Favorito {
+  productoId Int
+  actorId    String
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@id([productoId, actorId])
+}
+
+model FechaEspecial {
+  id              Int            @id @default(autoincrement())
+  usuarioId       Int
+  descripcion     String
+  fecha           DateTime
+  notificadoEmail Boolean        @default(false)
+  usuario         UsuarioCliente @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 }
