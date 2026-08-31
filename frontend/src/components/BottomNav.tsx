@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 
-const iconWrap = "flex h-6 w-6 shrink-0 items-center justify-center";
+const iconWrap =
+    "flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-[background-color,transform] duration-200 ease-out";
 
 const navItems = [
     {
@@ -91,7 +92,7 @@ const navItems = [
 ] as const;
 
 const itemBtn =
-    "flex min-h-[3.25rem] min-w-0 w-full flex-col items-center justify-center gap-0.5 px-1 py-2 touch-manipulation [-webkit-tap-highlight-color:transparent]";
+    "flex min-h-[3.25rem] min-w-0 w-full flex-col items-center justify-center gap-0.5 px-1 py-2 touch-manipulation [-webkit-tap-highlight-color:transparent] transition-colors duration-200 ease-out active:scale-95";
 
 export function BottomNav() {
     const navigate = useNavigate();
@@ -112,7 +113,11 @@ export function BottomNav() {
                             }`}
                             aria-current={active ? "page" : undefined}
                         >
-                            <span className={iconWrap}>{item.icon}</span>
+                            <span
+                                className={`${iconWrap} ${active ? "scale-105 bg-pink-50" : ""}`}
+                            >
+                                {item.icon}
+                            </span>
                             <span className="w-full min-w-0 px-0.5 text-center text-[11px] font-medium leading-tight sm:text-xs">
                                 {item.label}
                             </span>
