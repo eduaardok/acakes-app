@@ -128,6 +128,96 @@ export async function updateCliente(req: Request, res: Response) {
     res.json(cliente)
 }
 
+// GET /clientes/:id/usuario-cliente
+export async function getUsuarioClienteDeCliente(req: Request, res: Response) {
+    const clienteId = Number(req.params.id)
+
+    const cliente = await prisma.cliente.findUnique({
+        where: { id: clienteId },
+        select: {
+            usuarioCliente: {
+                select: { id: true, email: true, nombre: true, createdAt: true, clienteId: true }
+            }
+        }
+    })
+
+    if (!cliente) {
+        res.status(404).json({ message: 'Cliente no encontrado' })
+        return
+    }
+
+    res.json(cliente.usuarioCliente ?? null)
+}
+
+// PATCH /clientes/:id/vincular-usuario — body { usuarioClienteId }
+export async function vincularUsuarioCliente(req: Request, res: Response) {
+    const clienteId = Number(req.params.id)
+    const { usuarioClienteId } = req.body as { usuarioClienteId?: number }
+
+    if (!Number.isInteger(usuarioClienteId)) {
+        res.status(400).json({ message: 'usuarioClienteId es requerido' })
+        return
+    }
+
+    const cliente = await prisma.cliente.findUnique({
+        where: { id: clienteId },
+        include: { usuarioCliente: { select: { id: true } } }
+    })
+    if (!cliente) {
+        res.status(404).json({ message: 'Cliente no encontrado' })
+        return
+    }
+
+    if (cliente.usuarioCliente && cliente.usuarioCliente.id !== usuarioClienteId) {
+        res.status(409).json({ message: 'Este cliente ya tiene una cuenta pública vinculada' })
+        return
+    }
+
+    const usuarioCliente = await prisma.usuarioCliente.findUnique({ where: { id: usuarioClienteId } })
+    if (!usuarioCliente) {
+        res.status(404).json({ message: 'Cuenta pública no encontrada' })
+        return
+    }
+
+    if (usuarioCliente.clienteId !== null && usuarioCliente.clienteId !== clienteId) {
+        res.status(409).json({ message: 'Esa cuenta pública ya está vinculada a otro cliente' })
+        return
+    }
+
+    const actualizado = await prisma.usuarioCliente.update({
+        where: { id: usuarioClienteId },
+        data: { clienteId },
+        select: { id: true, email: true, nombre: true, createdAt: true, clienteId: true }
+    })
+
+    res.json(actualizado)
+}
+
+// DELETE /clientes/:id/vincular-usuario
+export async function desvincularUsuarioCliente(req: Request, res: Response) {
+    const clienteId = Number(req.params.id)
+
+    const cliente = await prisma.cliente.findUnique({
+        where: { id: clienteId },
+        include: { usuarioCliente: { select: { id: true } } }
+    })
+    if (!cliente) {
+        res.status(404).json({ message: 'Cliente no encontrado' })
+        return
+    }
+    if (!cliente.usuarioCliente) {
+        res.status(404).json({ message: 'Este cliente no tiene una cuenta pública vinculada' })
+        return
+    }
+
+    await prisma.usuarioCliente.update({
+        where: { id: cliente.usuarioCliente.id },
+        data: { clienteId: null }
+    })
+
+    res.status(204).send()
+}
+
 // POST /clientes/:id/observaciones
 export async function createObservacion(req: Request, res: Response) {
     const { id } = req.params

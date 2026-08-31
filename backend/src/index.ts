@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.routes'
 import clientesRoutes from './routes/clientes.routes'
 import pedidosRoutes from './routes/pedidos.routes'
 import publicRoutes from './routes/public.routes'
+import usuariosClienteRoutes from './routes/usuariosCliente.routes'
 import { authenticateToken } from './middleware/auth.middleware'
 import { iniciarCronNotificaciones } from './jobs/notificarFechasEspeciales'
 // import {prisma} from './lib/prisma'
@@ -40,6 +41,7 @@ app.use('/auth', authRoutes)
 // Rutas protegidas (con auth) — ADMIN, privadas, JWT con role: 'admin'
 app.use('/clientes', authenticateToken, clientesRoutes)
 app.use('/pedidos', authenticateToken, pedidosRoutes)
+app.use('/usuarios-cliente', authenticateToken, usuariosClienteRoutes)
 
 // Capa pública (catálogo + interacciones de clientes) — JWT con role: 'cliente',
 // completamente separada de las rutas de admin de arriba (ver auth.cliente.middleware.ts)

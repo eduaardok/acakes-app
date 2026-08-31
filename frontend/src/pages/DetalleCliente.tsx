@@ -4,6 +4,7 @@ import { api } from "../lib/api";
 import { useCliente } from "../hooks/useCliente";
 import { usePageTitle } from "../hooks/usePageTitle";
 import type { TipoObservacion } from "../hooks/useCliente";
+import { CuentaPublicaVinculada } from "../components/CuentaPublicaVinculada";
 
 // Badge de comportamiento — negativo si tiene observaciones negativas
 const obsNegativas = new Set<TipoObservacion>(["PAGO_TARDIO", "NO_RETIRO", "CANCELACION_TARDE"]);
@@ -253,6 +254,9 @@ export default function DetalleCliente() {
                         </div>
                     </div>
                 </div>
+
+                {/* Cuenta pública vinculada */}
+                <CuentaPublicaVinculada clienteId={id!} />
 
                 {/* Historial de pedidos */}
                 <section className="space-y-2">
