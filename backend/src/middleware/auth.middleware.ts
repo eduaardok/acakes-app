@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 interface TokenPayload {
     usuarioId: number | string;
     email: string;
+    role: "admin";
 }
 
 // Extendemos Request para poder acceder a req.usuario en los controllers
@@ -32,6 +33,12 @@ export const authenticateToken = (
             token,
             process.env.JWT_SECRET as string
         ) as TokenPayload;
+
+        // No basta con firma válida: un JWT de cliente firmado con el mismo
+        // secreto no debe poder acceder a rutas de admin.
+        if (payload.role !== "admin") {
+            return res.status(403).json({ error: "No autorizado para este recurso" });
+        }
 
         req.usuario = payload;
         next();

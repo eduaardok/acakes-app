@@ -93,7 +93,7 @@ export const updateMe = async (req: Request, res: Response) => {
     });
 
     const token = jwt.sign(
-        { usuarioId: actualizado.id, email: actualizado.email },
+        { usuarioId: actualizado.id, email: actualizado.email, role: "admin" },
         process.env.JWT_SECRET as string,
         { expiresIn: "7d" }
     );
@@ -121,7 +121,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign(
-        { usuarioId: usuario.id, email: usuario.email },
+        { usuarioId: usuario.id, email: usuario.email, role: "admin" },
         process.env.JWT_SECRET as string,
         { expiresIn: "7d" }  // hardcodeado, sin la variable de entorno
     );

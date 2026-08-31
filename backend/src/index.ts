@@ -6,6 +6,7 @@ import cors from 'cors'
 import authRoutes from './routes/auth.routes'
 import clientesRoutes from './routes/clientes.routes'
 import pedidosRoutes from './routes/pedidos.routes'
+import publicRoutes from './routes/public.routes'
 import { authenticateToken } from './middleware/auth.middleware'
 // import {prisma} from './lib/prisma'
 // // Smoke test — borra esto después
@@ -35,9 +36,13 @@ app.get('/health', (req, res) => {
 })
 app.use('/auth', authRoutes)
 
-// Rutas protegidas (con auth)
+// Rutas protegidas (con auth) — ADMIN, privadas, JWT con role: 'admin'
 app.use('/clientes', authenticateToken, clientesRoutes)
 app.use('/pedidos', authenticateToken, pedidosRoutes)
+
+// Capa pública (catálogo + interacciones de clientes) — JWT con role: 'cliente',
+// completamente separada de las rutas de admin de arriba (ver auth.cliente.middleware.ts)
+app.use('/api/public', publicRoutes)
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
