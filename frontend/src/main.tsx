@@ -13,6 +13,10 @@ import Ingresos from "./pages/Ingresos";
 import Cuenta from "./pages/Cuenta";
 import { Layout } from "./components/Layout";
 import { ScrollToTop } from "./components/ScrollToTop";
+import Catalogo from "./public/pages/Catalogo";
+import ProductoDetalle from "./public/pages/ProductoDetalle";
+import LoginCliente from "./public/pages/LoginCliente";
+import RegistroCliente from "./public/pages/RegistroCliente";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
     const token = localStorage.getItem("token");
@@ -46,6 +50,12 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="/pedidos/:id" element={<PrivateRoute><DetallePedido /></PrivateRoute>} />
                 <Route path="/clientes/nuevo" element={<PrivateRoute><NuevoCliente /></PrivateRoute>} />
                 <Route path="/clientes/:id" element={<PrivateRoute><DetalleCliente /></PrivateRoute>} />
+
+                {/* UI pública (catálogo/clientes finales) — sin auth de admin */}
+                <Route path="/catalogo" element={<Catalogo />} />
+                <Route path="/producto/:id" element={<ProductoDetalle />} />
+                <Route path="/login-cliente" element={<LoginCliente />} />
+                <Route path="/registro-cliente" element={<RegistroCliente />} />
 
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
