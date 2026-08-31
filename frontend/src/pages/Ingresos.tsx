@@ -54,7 +54,7 @@ export default function Ingresos() {
                         <button
                             key={r.label}
                             onClick={() => setRangoIdx(i)}
-                            className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                            className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-[color,background-color,border-color,transform] duration-150 ease-out active:scale-95 ${
                                 rangoIdx === i
                                     ? "bg-pink-600 text-white"
                                     : "bg-white border border-gray-200 text-gray-600"
@@ -67,7 +67,7 @@ export default function Ingresos() {
 
                 {/* Selector de fechas custom */}
                 {esCustom && (
-                    <div className="flex gap-3">
+                    <div className="animate-rise-in flex gap-3">
                         <div className="flex-1">
                             <label className="text-xs text-gray-400 mb-1 block">Desde</label>
                             <input
@@ -109,11 +109,11 @@ export default function Ingresos() {
                 {data && !loading && (
                     <>
                         {/* Total destacado */}
-                        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+                        <div className="animate-rise-in bg-white rounded-2xl border border-gray-100 p-5">
                             <p className="text-xs text-gray-400 uppercase tracking-wide font-medium mb-1">
                                 Total del período
                             </p>
-                            <p className="text-4xl font-bold text-gray-900">
+                            <p className="text-4xl font-bold text-gray-900 tabular-nums">
                                 ${Number(data.total).toFixed(2)}
                             </p>
                             <p className="text-sm text-gray-400 mt-1">
@@ -150,11 +150,12 @@ export default function Ingresos() {
                                 </div>
                             ) : (
                                 <div className="space-y-2">
-                                    {data.pedidos.map((p) => (
+                                    {data.pedidos.map((p, i) => (
                                         <button
                                             key={p.id}
                                             onClick={() => navigate(`/pedidos/${p.id}`)}
-                                            className="w-full text-left bg-white rounded-2xl border border-gray-100 px-4 py-3 active:bg-gray-50 transition-colors"
+                                            style={{ animationDelay: `${Math.min(i, 8) * 35}ms` }}
+                                            className="animate-rise-in w-full text-left bg-white rounded-2xl border border-gray-100 px-4 py-3 transition-[background-color,transform] duration-150 ease-out active:scale-[0.985] active:bg-gray-50"
                                         >
                                             <div className="flex justify-between items-start gap-2">
                                                 <div className="flex-1 min-w-0">
