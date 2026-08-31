@@ -33,7 +33,7 @@ export default function Login() {
 
     return (
         <div className="min-h-screen bg-pink-50 flex items-center justify-center p-6">
-            <div className="bg-white rounded-2xl shadow-sm p-8 w-full max-w-sm">
+            <div className="animate-rise-in bg-white rounded-2xl shadow-sm p-8 w-full max-w-sm">
 
                 <div className="text-center mb-8">
                     <img
@@ -54,7 +54,7 @@ export default function Login() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-pink-300"
+                            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base transition-shadow duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300"
                             placeholder="usuario"
                             autoComplete="email"
                         />
@@ -68,14 +68,14 @@ export default function Login() {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-pink-300"
+                            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base transition-shadow duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300"
                             placeholder="••••••••"
                             autoComplete="current-password"
                         />
                     </div>
 
                     {error && (
-                        <div className="bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3">
+                        <div className="animate-rise-in bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3">
                             {error}
                         </div>
                     )}
@@ -83,8 +83,24 @@ export default function Login() {
                     <button
                         onClick={handleSubmit}
                         disabled={cargando || !email || !password}
-                        className="w-full bg-pink-500 hover:bg-pink-600 disabled:bg-pink-300 text-white font-semibold rounded-xl py-3 text-base transition-colors"
+                        className="w-full bg-pink-500 hover:bg-pink-600 hover:shadow-md hover:shadow-pink-200/60 disabled:bg-pink-300 disabled:shadow-none text-white font-semibold rounded-xl py-3 text-base transition-[background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] flex items-center justify-center gap-2"
                     >
+                        {cargando && (
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                className="animate-spin"
+                                aria-hidden
+                            >
+                                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                            </svg>
+                        )}
                         {cargando ? "Ingresando..." : "Ingresar"}
                     </button>
                 </div>
