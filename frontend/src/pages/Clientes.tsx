@@ -7,7 +7,7 @@ export default function Clientes() {
     usePageTitle("Clientes");
     const navigate = useNavigate();
     const [q, setQ] = useState("");
-    const { clientes, loading, error } = useClientes(q);
+    const { clientes, loading, error, hayMas, cargarMas } = useClientes(q);
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -49,8 +49,8 @@ export default function Clientes() {
 
             <main className="px-4 py-4 max-w-lg mx-auto">
 
-                {/* Carga */}
-                {loading && (
+                {/* Carga inicial */}
+                {loading && clientes.length === 0 && (
                     <div className="space-y-3">
                         {[1, 2, 3].map((i) => (
                             <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 animate-pulse">
@@ -79,7 +79,7 @@ export default function Clientes() {
                 )}
 
                 {/* Lista */}
-                {!loading && !error && clientes.length > 0 && (
+                {clientes.length > 0 && (
                     <div className="space-y-3">
                         <p className="text-xs text-gray-400 font-medium uppercase tracking-wide px-1">
                             {clientes.length} cliente{clientes.length !== 1 ? "s" : ""}
@@ -94,6 +94,19 @@ export default function Clientes() {
                                 <p className="text-sm text-gray-400 mt-0.5">{c.telefono}</p>
                             </button>
                         ))}
+
+                        {hayMas && (
+                            <div className="pt-1 flex justify-center">
+                                <button
+                                    type="button"
+                                    onClick={cargarMas}
+                                    disabled={loading}
+                                    className="rounded-full border border-pink-200 bg-white px-5 py-2.5 text-sm font-semibold text-pink-700 transition-[background-color,transform] duration-150 ease-out active:scale-95 disabled:opacity-50"
+                                >
+                                    {loading ? "Cargando..." : "Cargar más"}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
             </main>

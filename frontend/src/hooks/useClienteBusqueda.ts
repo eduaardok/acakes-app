@@ -9,6 +9,10 @@ export interface ClienteResumen {
     email?: string | null;
 }
 
+interface ClientesResponse {
+    clientes: ClienteResumen[];
+}
+
 export function useClienteBusqueda() {
     const [query, setQuery] = useState("");
     const [resultados, setResultados] = useState<ClienteResumen[]>([]);
@@ -27,10 +31,10 @@ export function useClienteBusqueda() {
         timeoutRef.current = setTimeout(async () => {
             setBuscando(true);
             try {
-                const data = await api.get<ClienteResumen[]>(
+                const data = await api.get<ClientesResponse>(
                     `/clientes?q=${encodeURIComponent(query.trim())}`
                 );
-                setResultados(data);
+                setResultados(data.clientes);
             } catch {
                 setResultados([]);
             } finally {

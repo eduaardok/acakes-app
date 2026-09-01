@@ -2,21 +2,43 @@ import { Request, Response } from 'express'
 import { prisma } from '../lib/prisma'
 import { TipoObservacion } from '@prisma/client'
 
-// GET /clientes?buscar=nombre_o_telefono
+const PAGE_SIZE_DEFAULT = 30
+const PAGE_SIZE_MAX = 100
+
+// GET /clientes?q=nombre_o_telefono&page=1&pageSize=30
 export async function getClientes(req: Request, res: Response) {
     const { q } = req.query
 
-    const clientes = await prisma.cliente.findMany({
-        where: q ? {
-            OR: [
-                { nombre: { contains: String(q), mode: 'insensitive' } },
-                { telefono: { contains: String(q) } }
-            ]
-        } : undefined,
-        orderBy: { creadoEn: 'desc' }
-    })
+    const page = Math.max(1, Number(req.query.page) || 1)
+    const pageSize = Math.min(
+        PAGE_SIZE_MAX,
+        Math.max(1, Number(req.query.pageSize) || PAGE_SIZE_DEFAULT)
+    )
 
-    res.json(clientes)
+    const where = q ? {
+        OR: [
+            { nombre: { contains: String(q), mode: 'insensitive' as const } },
+            { telefono: { contains: String(q) } }
+        ]
+    } : undefined
+
+    const [clientes, total] = await Promise.all([
+        prisma.cliente.findMany({
+            where,
+            orderBy: { creadoEn: 'desc' },
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+        }),
+        prisma.cliente.count({ where }),
+    ])
+
+    res.json({
+        clientes,
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+    })
 }
 
 // GET /clientes/:id
