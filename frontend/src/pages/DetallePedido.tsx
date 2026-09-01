@@ -125,8 +125,22 @@ export default function DetallePedido() {
     // --- Estados de carga y error ---
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <p className="text-gray-400 text-sm">Cargando...</p>
+            <div className="min-h-screen bg-gray-50">
+                <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-10 shadow-sm">
+                    <div className="h-6 w-40 max-w-lg mx-auto animate-pulse rounded bg-gray-200" />
+                </header>
+                <main className="px-4 py-6 max-w-lg mx-auto space-y-4">
+                    <div className="h-7 w-24 animate-pulse rounded-full bg-gray-200" />
+                    <div className="bg-white rounded-2xl border border-gray-100 p-4 animate-pulse space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-1/2" />
+                        <div className="h-4 bg-gray-100 rounded w-1/3" />
+                    </div>
+                    <div className="bg-white rounded-2xl border border-gray-100 p-4 animate-pulse space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-2/3" />
+                        <div className="h-4 bg-gray-100 rounded w-1/2" />
+                        <div className="h-4 bg-gray-100 rounded w-1/2" />
+                    </div>
+                </main>
             </div>
         );
     }
