@@ -48,8 +48,8 @@ const navItems = [
         ),
     },
     {
-        path: "/panel/calendario",
-        label: "Calendario",
+        path: "/panel/productos",
+        label: "Productos",
         icon: (
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -63,8 +63,9 @@ const navItems = [
                 strokeLinejoin="round"
                 aria-hidden
             >
-                <rect x="3" y="4" width="18" height="18" rx="2" />
-                <path d="M16 2v4M8 2v4M3 10h18" />
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="9" cy="9" r="2" />
+                <path d="M21 15l-5-5L5 21" />
             </svg>
         ),
     },
@@ -123,7 +124,12 @@ export function BottomNav() {
         <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-gray-100 bg-white pb-[max(0.5rem,env(safe-area-inset-bottom))]">
             <div className="mx-auto grid w-full max-w-lg grid-cols-5">
                 {navItems.map((item) => {
-                    const active = pathname === item.path;
+                    // La mayoría son rutas exactas; "Productos" también cubre sus
+                    // subrutas (/nuevo, /:id) para que el ítem quede activo ahí.
+                    const active =
+                        item.path === "/panel/productos"
+                            ? pathname === item.path || pathname.startsWith(`${item.path}/`)
+                            : pathname === item.path;
                     return (
                         <button
                             key={item.path}

@@ -17,12 +17,13 @@ import {
     labelMesAncla,
 } from "../lib/fechasPeriodo";
 import { PedidoCard } from "../components/PedidoCard";
+import { CalendarioPedidos } from "../components/CalendarioPedidos";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { IconButton } from "../components/IconButton";
 import { Skeleton } from "../components/Skeleton";
 import { CakeIcon } from "../components/icons";
 
-type VistaPrincipal = "dia" | "listado";
+type VistaPrincipal = "dia" | "listado" | "calendario";
 type ListadoPeriodo = "semana" | "mes" | "año" | "todos";
 
 function mensajeListaVaciaDia(fechaKey: string): string {
@@ -70,10 +71,12 @@ export default function Dashboard() {
     const dia = usePedidosDelDia(fechaKey);
     const listado = usePedidosListado(vista === "listado", listParams);
 
-    const loading = vista === "dia" ? dia.loading : listado.loading;
-    const error = vista === "dia" ? dia.error : listado.error;
-    const pedidos = vista === "dia" ? dia.pedidos : listado.pedidos;
-    const refetch = () => (vista === "dia" ? dia.refetch() : listado.refetch());
+    // La vista "calendario" administra su propia carga/refetch dentro de
+    // CalendarioPedidos — estos valores solo aplican a "dia"/"listado".
+    const loading = vista === "dia" ? dia.loading : vista === "listado" ? listado.loading : false;
+    const error = vista === "dia" ? dia.error : vista === "listado" ? listado.error : null;
+    const pedidos = vista === "dia" ? dia.pedidos : vista === "listado" ? listado.pedidos : [];
+    const refetch = () => (vista === "dia" ? dia.refetch() : vista === "listado" ? listado.refetch() : undefined);
 
     const listadoLabel = useMemo(() => {
         if (vista !== "listado") return "";
@@ -132,21 +135,23 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                     <h1 className="text-xl font-bold text-gray-900">Pedidos</h1>
                     <div className="flex items-center gap-1">
-                        <IconButton onClick={refetch} disabled={loading} spinning={loading} aria-label="Recargar pedidos">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                            </svg>
-                        </IconButton>
+                        {vista !== "calendario" && (
+                            <IconButton onClick={refetch} disabled={loading} spinning={loading} aria-label="Recargar pedidos">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                                </svg>
+                            </IconButton>
+                        )}
                     </div>
                 </div>
 
@@ -172,6 +177,17 @@ export default function Dashboard() {
                         }`}
                     >
                         Listado
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setVista("calendario")}
+                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
+                            vista === "calendario"
+                                ? "bg-white text-gray-900 shadow-sm"
+                                : "text-gray-500"
+                        }`}
+                    >
+                        Calendario
                     </button>
                 </div>
 
@@ -296,7 +312,9 @@ export default function Dashboard() {
             </header>
 
             <main className="px-4 py-4 max-w-lg mx-auto">
-                {loading && (
+                {vista === "calendario" && <CalendarioPedidos />}
+
+                {vista !== "calendario" && loading && (
                     <div className="space-y-3">
                         {[1, 2, 3].map((i) => (
                             <div
@@ -319,7 +337,7 @@ export default function Dashboard() {
                     </div>
                 )}
 
-                {error && !loading && (
+                {vista !== "calendario" && error && !loading && (
                     <div className="bg-red-50 rounded-2xl p-4 text-center">
                         <p className="text-sm text-red-600">{error}</p>
                         <button
@@ -342,7 +360,7 @@ export default function Dashboard() {
                     </div>
                 )}
 
-                {!loading && !error && pedidos.length === 0 && (
+                {vista !== "calendario" && !loading && !error && pedidos.length === 0 && (
                     <div className="text-center py-16">
                         <CakeIcon className="mx-auto h-10 w-10 text-gray-300" />
                         <p className="text-gray-500 mt-3">
@@ -353,7 +371,7 @@ export default function Dashboard() {
                     </div>
                 )}
 
-                {!loading && !error && pedidos.length > 0 && (
+                {vista !== "calendario" && !loading && !error && pedidos.length > 0 && (
                     <div className="space-y-3">
                         {vista === "dia" && (
                             <p className="text-xs text-gray-400 font-medium uppercase tracking-wide px-1">

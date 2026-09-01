@@ -11,7 +11,6 @@ import NuevoCliente from "./pages/NuevoCliente";
 import DetalleCliente from "./pages/DetalleCliente";
 import Ingresos from "./pages/Ingresos";
 import Cuenta from "./pages/Cuenta";
-import Calendario from "./pages/Calendario";
 import Productos from "./pages/Productos";
 import NuevoProducto from "./pages/NuevoProducto";
 import DetalleProducto from "./pages/DetalleProducto";
@@ -48,7 +47,6 @@ createRoot(document.getElementById("root")!).render(
                 {/* Admin — con bottom nav */}
                 <Route path="/panel" element={<PrivateLayout><Dashboard /></PrivateLayout>} />
                 <Route path="/panel/clientes" element={<PrivateLayout><Clientes /></PrivateLayout>} />
-                <Route path="/panel/calendario" element={<PrivateLayout><Calendario /></PrivateLayout>} />
                 <Route path="/panel/ingresos" element={<PrivateLayout><Ingresos /></PrivateLayout>} />
                 <Route path="/panel/cuenta" element={<PrivateLayout><Cuenta /></PrivateLayout>} />
 
