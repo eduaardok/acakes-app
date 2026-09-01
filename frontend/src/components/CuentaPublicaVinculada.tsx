@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../lib/api";
 import { useUsuarioClienteVinculado, type UsuarioClienteResumen } from "../hooks/useUsuarioClienteVinculado";
+import { Button } from "./Button";
 
 interface Props {
     clienteId: string;
@@ -115,14 +116,16 @@ export function CuentaPublicaVinculada({ clienteId }: Props) {
                                 placeholder="Buscar por email..."
                                 className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
                             />
-                            <button
+                            <Button
                                 type="button"
+                                size="sm"
+                                className="shrink-0"
                                 onClick={handleBuscar}
-                                disabled={buscando || !email.trim()}
-                                className="shrink-0 px-4 py-2.5 rounded-xl bg-pink-600 text-white text-sm font-medium disabled:opacity-50"
+                                disabled={!email.trim()}
+                                loading={buscando}
                             >
                                 {buscando ? "Buscando..." : "Buscar"}
-                            </button>
+                            </Button>
                         </div>
 
                         {errorAccion && <p className="text-xs text-red-600">{errorAccion}</p>}
