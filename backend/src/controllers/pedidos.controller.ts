@@ -365,13 +365,16 @@ export const getIngresos = async (req: Request, res: Response) => {
     const pedidos = await prisma.pedido.findMany({
         where: {
             estado: "ENTREGADO",
-            actualizadoEn: {
+            // El ingreso se atribuye a la fecha programada del pedido, no al
+            // momento en que se lo marcó como ENTREGADO (que puede ser mucho
+            // después, ej. un pedido de hace 3 meses cerrado hoy).
+            fechaEntrega: {
                 gte: fechaDesde,
                 lte: fechaHasta,
             },
         },
         include: { cliente: true },
-        orderBy: { actualizadoEn: "desc" },
+        orderBy: { fechaEntrega: "desc" },
     });
 
     const total = pedidos.reduce((sum, p) => sum + p.precio.toNumber(), 0);

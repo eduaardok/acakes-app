@@ -172,7 +172,7 @@ export default function Ingresos() {
                                                 </p>
                                             </div>
                                             <p className="text-xs text-gray-300 mt-1">
-                                                Entregado el {formatFecha(p.actualizadoEn)}
+                                                Entrega programada {formatFecha(p.fechaEntrega)}
                                             </p>
                                         </button>
                                     ))}

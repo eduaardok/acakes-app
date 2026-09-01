@@ -5,7 +5,7 @@ export interface PedidoIngreso {
     id: string;
     descripcion: string;
     precio: number;
-    actualizadoEn: string;
+    fechaEntrega: string;
     cliente: {
         id: string;
         nombre: string;
