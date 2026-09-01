@@ -8,6 +8,7 @@ import { CuentaPublicaVinculada } from "../components/CuentaPublicaVinculada";
 import { Button } from "../components/Button";
 import { IconButton } from "../components/IconButton";
 import { Skeleton } from "../components/Skeleton";
+import { AlertTriangleIcon } from "../components/icons";
 
 // Badge de comportamiento — negativo si tiene observaciones negativas
 const obsNegativas = new Set<TipoObservacion>(["PAGO_TARDIO", "NO_RETIRO", "CANCELACION_TARDE"]);
@@ -237,8 +238,9 @@ export default function DetalleCliente() {
                         </div>
                         {/* Badge de comportamiento */}
                         {!editandoCliente && tieneObsNegativas && (
-                            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-700 shrink-0">
-                                ⚠️ Atención
+                            <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-700 shrink-0">
+                                <AlertTriangleIcon className="h-3.5 w-3.5" />
+                                Atención
                             </span>
                         )}
                     </div>

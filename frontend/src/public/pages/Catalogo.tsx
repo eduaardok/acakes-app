@@ -4,6 +4,7 @@ import { ProductoCard } from "../components/ProductoCard";
 import { useCatalogo } from "../hooks/useCatalogo";
 import { useFiltrosCatalogo } from "../hooks/useFiltrosCatalogo";
 import { usePageTitle } from "../../hooks/usePageTitle";
+import { CakeIcon } from "../../components/icons";
 
 function FiltroChips({
     label,
@@ -94,7 +95,7 @@ export default function Catalogo() {
 
                 {!error && !loading && productos.length === 0 && (
                     <div className="py-16 text-center">
-                        <p className="text-4xl">🎂</p>
+                        <CakeIcon className="mx-auto h-10 w-10 text-gray-300" />
                         <p className="mt-3 text-gray-500">No hay productos con estos filtros por ahora.</p>
                     </div>
                 )}

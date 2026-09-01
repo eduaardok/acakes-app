@@ -6,6 +6,7 @@ import { publicApi } from "../lib/publicApi";
 import { getVisitanteId } from "../lib/visitante";
 import { whatsappCotizarUrl } from "../lib/whatsapp";
 import { usePageTitle } from "../../hooks/usePageTitle";
+import { CakeIcon, StarIcon, HeartIcon } from "../../components/icons";
 
 type Resena = ProductoDetalleData["resenas"][number];
 
@@ -17,9 +18,14 @@ interface ResenasResponse {
 
 function Estrellas({ calificacion }: { calificacion: number }) {
     return (
-        <span className="text-amber-400" aria-label={`${calificacion} de 5 estrellas`}>
-            {"★".repeat(calificacion)}
-            <span className="text-gray-200">{"★".repeat(5 - calificacion)}</span>
+        <span className="inline-flex gap-0.5" aria-label={`${calificacion} de 5 estrellas`}>
+            {Array.from({ length: 5 }, (_, i) => (
+                <StarIcon
+                    key={i}
+                    className={`h-4 w-4 ${i < calificacion ? "text-amber-400" : "text-gray-200"}`}
+                    filled
+                />
+            ))}
         </span>
     );
 }
@@ -142,7 +148,9 @@ export default function ProductoDetalle() {
                             className="h-full w-full object-cover"
                         />
                     ) : (
-                        <div className="flex h-full w-full items-center justify-center text-5xl">🎂</div>
+                        <div className="flex h-full w-full items-center justify-center text-gray-300">
+                            <CakeIcon className="h-16 w-16" />
+                        </div>
                     )}
                 </div>
 
@@ -197,7 +205,7 @@ export default function ProductoDetalle() {
                                 liked ? "border-pink-500 bg-pink-50 text-pink-600" : "border-gray-200 text-gray-400"
                             }`}
                         >
-                            ♥
+                            <HeartIcon className="h-5 w-5" filled={liked} />
                         </button>
                         <button
                             type="button"
@@ -208,7 +216,7 @@ export default function ProductoDetalle() {
                                 favorito ? "border-amber-400 bg-amber-50 text-amber-500" : "border-gray-200 text-gray-400"
                             }`}
                         >
-                            ★
+                            <StarIcon className="h-5 w-5" filled={favorito} />
                         </button>
                     </div>
                 </div>

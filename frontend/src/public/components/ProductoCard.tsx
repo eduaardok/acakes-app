@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { ReactNode } from "react";
+import { CakeIcon } from "../../components/icons";
 
 // Subconjunto de campos que la card necesita — permite reusarla con
 // respuestas distintas (catálogo completo vs. resumen de /mis-favoritos).
@@ -40,7 +41,9 @@ export function ProductoCard({ producto, animationDelayMs, accionExtra }: Props)
                         className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                     />
                 ) : (
-                    <div className="flex h-full w-full items-center justify-center text-3xl">🎂</div>
+                    <div className="flex h-full w-full items-center justify-center text-gray-300">
+                        <CakeIcon className="h-10 w-10" />
+                    </div>
                 )}
             </div>
             <div className="p-3">

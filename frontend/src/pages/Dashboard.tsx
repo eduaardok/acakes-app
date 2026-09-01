@@ -20,6 +20,7 @@ import { PedidoCard } from "../components/PedidoCard";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { IconButton } from "../components/IconButton";
 import { Skeleton } from "../components/Skeleton";
+import { CakeIcon } from "../components/icons";
 
 type VistaPrincipal = "dia" | "listado";
 type ListadoPeriodo = "semana" | "mes" | "año" | "todos";
@@ -343,7 +344,7 @@ export default function Dashboard() {
 
                 {!loading && !error && pedidos.length === 0 && (
                     <div className="text-center py-16">
-                        <p className="text-4xl">🎂</p>
+                        <CakeIcon className="mx-auto h-10 w-10 text-gray-300" />
                         <p className="text-gray-500 mt-3">
                             {vista === "dia"
                                 ? mensajeListaVaciaDia(fechaKey)

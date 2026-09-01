@@ -4,6 +4,7 @@ import { ProductoCard } from "../components/ProductoCard";
 import { useMisFavoritos } from "../hooks/useMisFavoritos";
 import { getClienteToken } from "../lib/publicApi";
 import { usePageTitle } from "../../hooks/usePageTitle";
+import { HeartIcon, StarIcon } from "../../components/icons";
 
 export default function MisFavoritos() {
     usePageTitle("Mis favoritos");
@@ -47,7 +48,7 @@ export default function MisFavoritos() {
 
                 {!error && !loading && favoritos.length === 0 && (
                     <div className="py-16 text-center">
-                        <p className="text-4xl">🤍</p>
+                        <HeartIcon className="mx-auto h-10 w-10 text-gray-300" />
                         <p className="mt-3 text-gray-500">Aún no tienes favoritos guardados.</p>
                         <Link
                             to="/catalogo"
@@ -77,7 +78,7 @@ export default function MisFavoritos() {
                                         aria-label="Quitar de favoritos"
                                         className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-amber-500 shadow-sm backdrop-blur transition-transform duration-150 ease-out active:scale-90 disabled:opacity-50"
                                     >
-                                        ★
+                                        <StarIcon className="h-4 w-4" filled />
                                     </button>
                                 }
                             />
