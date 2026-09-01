@@ -19,8 +19,7 @@ export function PublicLayout({ children }: Props) {
             <header className="sticky top-0 z-20 border-b border-gray-100 bg-white/90 backdrop-blur">
                 <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
                     <Link to="/" className="flex items-center gap-2">
-                        <img src="/logo.png" alt="Ainoa's Cakes" className="h-8 w-auto object-contain" />
-                        <span className="font-bold text-gray-800">Ainoa's Cakes</span>
+                        <img src="/wordmark.png" alt="Ainoa's Cakes" className="h-8 w-auto object-contain" />
                     </Link>
 
                     <nav className="flex items-center gap-3 text-sm font-medium text-gray-600">
