@@ -47,6 +47,7 @@ createRoot(document.getElementById("root")!).render(
                 {/* Admin — con bottom nav */}
                 <Route path="/panel" element={<PrivateLayout><Dashboard /></PrivateLayout>} />
                 <Route path="/panel/clientes" element={<PrivateLayout><Clientes /></PrivateLayout>} />
+                <Route path="/panel/productos" element={<PrivateLayout><Productos /></PrivateLayout>} />
                 <Route path="/panel/ingresos" element={<PrivateLayout><Ingresos /></PrivateLayout>} />
                 <Route path="/panel/cuenta" element={<PrivateLayout><Cuenta /></PrivateLayout>} />
 
@@ -55,7 +56,6 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="/panel/pedidos/:id" element={<PrivateRoute><DetallePedido /></PrivateRoute>} />
                 <Route path="/panel/clientes/nuevo" element={<PrivateRoute><NuevoCliente /></PrivateRoute>} />
                 <Route path="/panel/clientes/:id" element={<PrivateRoute><DetalleCliente /></PrivateRoute>} />
-                <Route path="/panel/productos" element={<PrivateRoute><Productos /></PrivateRoute>} />
                 <Route path="/panel/productos/nuevo" element={<PrivateRoute><NuevoProducto /></PrivateRoute>} />
                 <Route path="/panel/productos/:id" element={<PrivateRoute><DetalleProducto /></PrivateRoute>} />
 
