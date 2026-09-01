@@ -228,6 +228,26 @@ export default function Cuenta() {
                 <section className="border-t border-gray-200 pt-6 space-y-3">
                     <div>
                         <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            Catálogo
+                        </h2>
+                        <p className="text-xs text-gray-400 mt-1">
+                            Productos que se muestran en la tienda pública.
+                        </p>
+                    </div>
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        fullWidth
+                        onClick={() => navigate("/panel/productos")}
+                    >
+                        Gestionar productos
+                    </Button>
+                </section>
+
+                <section className="border-t border-gray-200 pt-6 space-y-3">
+                    <div>
+                        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                             Sesión
                         </h2>
                         <p className="text-xs text-gray-400 mt-1">

@@ -2,11 +2,13 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { usePedido } from "../hooks/usePedido";
+import { usePedidoImagenes, type PedidoImagen } from "../hooks/usePedidoImagenes";
 import { usePageTitle } from "../hooks/usePageTitle";
 import type { EstadoPedido } from "../hooks/usePedidosHoy";
 import { Button } from "../components/Button";
 import { IconButton } from "../components/IconButton";
 import { Skeleton } from "../components/Skeleton";
+import { CakeIcon } from "../components/icons";
 
 // Misma config que PedidoCard — colores por estado
 const estadoConfig: Record<EstadoPedido, { label: string; bg: string; text: string }> = {
@@ -52,8 +54,14 @@ export default function DetallePedido() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { pedido, loading, error, refetch } = usePedido(id!);
+    const { imagenes, refetch: refetchImagenes } = usePedidoImagenes(id!);
     const [cambiando, setCambiando] = useState(false);
     const [errorAccion, setErrorAccion] = useState<string | null>(null);
+
+    const [descripcionFoto, setDescripcionFoto] = useState("");
+    const [subiendoFoto, setSubiendoFoto] = useState(false);
+    const [errorFoto, setErrorFoto] = useState<string | null>(null);
+    const [eliminandoFotoId, setEliminandoFotoId] = useState<number | null>(null);
 
     const [editandoPedido, setEditandoPedido] = useState(false);
     const [descripcionEdit, setDescripcionEdit] = useState("");
@@ -109,6 +117,38 @@ export default function DetallePedido() {
             setErrorEdicion(err instanceof Error ? err.message : "Error al guardar");
         } finally {
             setGuardandoPedido(false);
+        }
+    };
+
+    const handleSubirFoto = async (file: File | null) => {
+        if (!file) return;
+        setSubiendoFoto(true);
+        setErrorFoto(null);
+        try {
+            const formData = new FormData();
+            formData.set("imagen", file);
+            if (descripcionFoto.trim()) formData.set("descripcion", descripcionFoto.trim());
+            await api.postForm<PedidoImagen>(`/pedidos/${id}/imagenes`, formData);
+            setDescripcionFoto("");
+            await refetchImagenes();
+        } catch (err) {
+            setErrorFoto(err instanceof Error ? err.message : "Error al subir la foto");
+        } finally {
+            setSubiendoFoto(false);
+        }
+    };
+
+    const handleEliminarFoto = async (imagenId: number) => {
+        if (!window.confirm("¿Eliminar esta foto? Esta acción no se puede deshacer.")) return;
+        setEliminandoFotoId(imagenId);
+        setErrorFoto(null);
+        try {
+            await api.del(`/pedidos/${id}/imagenes/${imagenId}`);
+            await refetchImagenes();
+        } catch (err) {
+            setErrorFoto(err instanceof Error ? err.message : "Error al eliminar la foto");
+        } finally {
+            setEliminandoFotoId(null);
         }
     };
 
@@ -316,6 +356,61 @@ export default function DetallePedido() {
                             Editar detalles del pedido
                         </button>
                     )}
+                </div>
+
+                {/* Card: Fotos de referencia */}
+                <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
+                    <div>
+                        <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">
+                            Fotos de referencia
+                        </p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                            Uso interno del admin — nunca se muestran en el catálogo público.
+                        </p>
+                    </div>
+
+                    {imagenes.length > 0 ? (
+                        <div className="grid grid-cols-3 gap-2">
+                            {imagenes.map((img) => (
+                                <div key={img.id} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100">
+                                    <img src={img.url} alt={img.descripcion ?? ""} className="h-full w-full object-cover" />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleEliminarFoto(img.id)}
+                                        disabled={eliminandoFotoId === img.id}
+                                        className="absolute top-1 right-1 bg-black/60 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs leading-none disabled:opacity-50"
+                                        aria-label="Eliminar foto"
+                                    >
+                                        {eliminandoFotoId === img.id ? "…" : "×"}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="py-4 flex flex-col items-center gap-1.5">
+                            <CakeIcon className="h-7 w-7 text-gray-300" />
+                            <p className="text-sm text-gray-400">Sin fotos todavía</p>
+                        </div>
+                    )}
+
+                    <input
+                        type="text"
+                        value={descripcionFoto}
+                        onChange={(e) => setDescripcionFoto(e.target.value)}
+                        placeholder="Descripción (opcional)"
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
+                    />
+                    <label className="flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-3 text-sm text-gray-500 cursor-pointer active:bg-gray-50">
+                        {subiendoFoto ? "Subiendo..." : "Subir nueva foto"}
+                        <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            className="hidden"
+                            disabled={subiendoFoto}
+                            onChange={(e) => handleSubirFoto(e.target.files?.[0] ?? null)}
+                        />
+                    </label>
+                    {errorFoto && <p className="text-xs text-red-600">{errorFoto}</p>}
                 </div>
 
                 {/* Error de acción */}
