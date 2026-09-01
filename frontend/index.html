@@ -17,9 +17,79 @@
     <meta name="twitter:title" content="Ainoa's Cakes" />
     <meta name="twitter:description" content="Pasteles personalizados en El Empalme, Ecuador" />
     <meta name="twitter:image" content="https://ainoascakes.netlify.app/og-image.jpg" />
+
+    <!--
+      Shell de carga estático: cubre el hueco en blanco entre el HTML inicial
+      y el primer render de React (descarga/parseo/ejecución del bundle).
+      Deliberadamente sin Tailwind ni nada del bundle — debe pintar antes de
+      que llegue cualquier CSS/JS de la app. React lo reemplaza solo al
+      montar (createRoot().render() sobreescribe el contenido de #root).
+    -->
+    <style>
+      #app-loading-shell {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        background: #fdf2f8;
+      }
+      #app-loading-shell img {
+        width: 84px;
+        height: 84px;
+        object-fit: contain;
+      }
+      #app-loading-shell .app-loading-dots {
+        display: flex;
+        gap: 6px;
+      }
+      #app-loading-shell .app-loading-dots span {
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+        background: #db2777;
+        opacity: 0.3;
+        animation: app-loading-pulse 1.2s ease-in-out infinite;
+      }
+      #app-loading-shell .app-loading-dots span:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      #app-loading-shell .app-loading-dots span:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      @keyframes app-loading-pulse {
+        0%,
+        80%,
+        100% {
+          opacity: 0.3;
+          transform: scale(0.85);
+        }
+        40% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #app-loading-shell .app-loading-dots span {
+          animation: none;
+          opacity: 0.6;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="app-loading-shell">
+        <img src="/logo.png" alt="Ainoa's Cakes" />
+        <div class="app-loading-dots" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
