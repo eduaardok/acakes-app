@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { publicApi } from "../lib/publicApi";
 
 export interface ProductoDetalle {
@@ -24,6 +24,7 @@ export function useProductoDetalle(id: string | undefined) {
     const [producto, setProducto] = useState<ProductoDetalle | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [reloadToken, setReloadToken] = useState(0);
 
     useEffect(() => {
         if (!id) return;
@@ -47,7 +48,9 @@ export function useProductoDetalle(id: string | undefined) {
         return () => {
             cancelado = true;
         };
-    }, [id]);
+    }, [id, reloadToken]);
 
-    return { producto, loading, error };
+    const refetch = useCallback(() => setReloadToken((n) => n + 1), []);
+
+    return { producto, loading, error, refetch };
 }

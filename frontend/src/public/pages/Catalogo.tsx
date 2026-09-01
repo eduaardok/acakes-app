@@ -54,7 +54,7 @@ export default function Catalogo() {
     const [ocasion, setOcasion] = useState("");
 
     const { tematicas, ocasiones } = useFiltrosCatalogo();
-    const { productos, loading, error, hayMas, cargarMas } = useCatalogo(tematica, ocasion);
+    const { productos, loading, error, hayMas, cargarMas, refetch } = useCatalogo(tematica, ocasion);
 
     return (
         <PublicLayout>
@@ -70,8 +70,11 @@ export default function Catalogo() {
                 </div>
 
                 {error && (
-                    <div className="mt-6 rounded-2xl bg-red-50 p-4 text-center text-sm text-red-600">
-                        {error}
+                    <div className="mt-6 rounded-2xl bg-red-50 p-4 text-center text-sm text-red-600 space-y-2">
+                        <p>{error}</p>
+                        <button type="button" onClick={refetch} className="font-medium text-red-700 underline">
+                            Reintentar
+                        </button>
                     </div>
                 )}
 

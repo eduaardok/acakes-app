@@ -8,7 +8,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 export default function MisFavoritos() {
     usePageTitle("Mis favoritos");
     const logueado = Boolean(getClienteToken());
-    const { favoritos, loading, error, quitar, quitandoId } = useMisFavoritos();
+    const { favoritos, loading, error, quitar, quitandoId, refetch } = useMisFavoritos();
 
     if (!logueado) {
         return <Navigate to="/login-cliente" replace />;
@@ -23,8 +23,11 @@ export default function MisFavoritos() {
                 </p>
 
                 {error && (
-                    <div className="mt-6 rounded-2xl bg-red-50 p-4 text-center text-sm text-red-600">
-                        {error}
+                    <div className="mt-6 rounded-2xl bg-red-50 p-4 text-center text-sm text-red-600 space-y-2">
+                        <p>{error}</p>
+                        <button type="button" onClick={refetch} className="font-medium text-red-700 underline">
+                            Reintentar
+                        </button>
                     </div>
                 )}
 

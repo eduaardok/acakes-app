@@ -26,7 +26,7 @@ function Estrellas({ calificacion }: { calificacion: number }) {
 
 export default function ProductoDetalle() {
     const { id } = useParams<{ id: string }>();
-    const { producto, loading, error } = useProductoDetalle(id);
+    const { producto, loading, error, refetch } = useProductoDetalle(id);
     usePageTitle(producto?.nombre ?? "Producto");
 
     const [imagenActiva, setImagenActiva] = useState(0);
@@ -84,7 +84,19 @@ export default function ProductoDetalle() {
             <PublicLayout>
                 <div className="mx-auto max-w-3xl px-4 py-6">
                     <div className="aspect-square animate-pulse rounded-2xl bg-gray-100" />
-                    <div className="mt-4 h-6 w-2/3 animate-pulse rounded bg-gray-200" />
+                    <div className="mt-5 flex items-start justify-between gap-3">
+                        <div className="flex-1 space-y-2">
+                            <div className="h-6 w-2/3 animate-pulse rounded bg-gray-200" />
+                            <div className="h-5 w-1/3 animate-pulse rounded-full bg-gray-100" />
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-100" />
+                            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-100" />
+                        </div>
+                    </div>
+                    <div className="mt-3 h-4 w-full animate-pulse rounded bg-gray-100" />
+                    <div className="mt-1.5 h-4 w-2/3 animate-pulse rounded bg-gray-100" />
+                    <div className="mt-5 h-12 w-full animate-pulse rounded-xl bg-gray-100" />
                 </div>
             </PublicLayout>
         );
@@ -94,8 +106,17 @@ export default function ProductoDetalle() {
         return (
             <PublicLayout>
                 <div className="mx-auto max-w-3xl px-4 py-6">
-                    <div className="rounded-2xl bg-red-50 p-4 text-center text-sm text-red-600">
-                        {error ?? "Producto no encontrado."}
+                    <div className="rounded-2xl bg-red-50 p-4 text-center text-sm text-red-600 space-y-2">
+                        <p>{error ?? "Producto no encontrado."}</p>
+                        {error && (
+                            <button
+                                type="button"
+                                onClick={refetch}
+                                className="font-medium text-red-700 underline"
+                            >
+                                Reintentar
+                            </button>
+                        )}
                     </div>
                     <Link to="/catalogo" className="mt-4 block text-center text-sm font-medium text-pink-700 underline">
                         Volver al catálogo

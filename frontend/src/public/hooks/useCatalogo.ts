@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { publicApi } from "../lib/publicApi";
 
 const PAGE_SIZE = 12;
@@ -27,6 +27,7 @@ export function useCatalogo(tematica: string, ocasion: string) {
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [reloadToken, setReloadToken] = useState(0);
 
     // Filtro cambió: reinicia la lista y vuelve a la página 1
     useEffect(() => {
@@ -61,7 +62,9 @@ export function useCatalogo(tematica: string, ocasion: string) {
         return () => {
             cancelado = true;
         };
-    }, [tematica, ocasion, page]);
+    }, [tematica, ocasion, page, reloadToken]);
+
+    const refetch = useCallback(() => setReloadToken((n) => n + 1), []);
 
     return {
         productos,
@@ -69,5 +72,6 @@ export function useCatalogo(tematica: string, ocasion: string) {
         error,
         hayMas: page < totalPages,
         cargarMas: () => setPage((p) => p + 1),
+        refetch,
     };
 }
