@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from "react";
 import { Spinner } from "./Spinner";
 
-type Variant = "primary" | "secondary" | "danger";
+type Variant = "primary" | "secondary" | "danger" | "custom";
 type Size = "sm" | "md";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -19,6 +19,9 @@ const VARIANTS: Record<Variant, string> = {
     primary: "bg-pink-600 text-white hover:bg-pink-700 hover:shadow-md hover:shadow-pink-200/60",
     secondary: "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50",
     danger: "border border-red-200 text-red-600 hover:bg-red-50",
+    // Sin color propio — para acciones cuyo color codifica significado (ej. el
+    // estado destino de un pedido) y no debe forzarse al tono primario/pink.
+    custom: "",
 };
 
 const SIZES: Record<Size, string> = {

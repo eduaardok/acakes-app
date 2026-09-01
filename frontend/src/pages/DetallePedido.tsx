@@ -4,6 +4,9 @@ import { api } from "../lib/api";
 import { usePedido } from "../hooks/usePedido";
 import { usePageTitle } from "../hooks/usePageTitle";
 import type { EstadoPedido } from "../hooks/usePedidosHoy";
+import { Button } from "../components/Button";
+import { IconButton } from "../components/IconButton";
+import { Skeleton } from "../components/Skeleton";
 
 // Misma config que PedidoCard — colores por estado
 const estadoConfig: Record<EstadoPedido, { label: string; bg: string; text: string }> = {
@@ -127,18 +130,18 @@ export default function DetallePedido() {
         return (
             <div className="min-h-screen bg-gray-50">
                 <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-10 shadow-sm">
-                    <div className="h-6 w-40 max-w-lg mx-auto animate-pulse rounded bg-gray-200" />
+                    <Skeleton className="h-6 w-40 max-w-lg mx-auto" />
                 </header>
                 <main className="px-4 py-6 max-w-lg mx-auto space-y-4">
-                    <div className="h-7 w-24 animate-pulse rounded-full bg-gray-200" />
-                    <div className="bg-white rounded-2xl border border-gray-100 p-4 animate-pulse space-y-2">
-                        <div className="h-4 bg-gray-200 rounded w-1/2" />
-                        <div className="h-4 bg-gray-100 rounded w-1/3" />
+                    <Skeleton className="h-7 w-24 rounded-full" />
+                    <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-2">
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-4 w-1/3" />
                     </div>
-                    <div className="bg-white rounded-2xl border border-gray-100 p-4 animate-pulse space-y-2">
-                        <div className="h-4 bg-gray-200 rounded w-2/3" />
-                        <div className="h-4 bg-gray-100 rounded w-1/2" />
-                        <div className="h-4 bg-gray-100 rounded w-1/2" />
+                    <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-2">
+                        <Skeleton className="h-4 w-2/3" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-4 w-1/2" />
                     </div>
                 </main>
             </div>
@@ -164,17 +167,13 @@ export default function DetallePedido() {
             {/* Header */}
             <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-10 shadow-sm">
                 <div className="flex items-center gap-3 max-w-lg mx-auto">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="p-2 -ml-2 rounded-full text-gray-400 hover:text-gray-600 active:bg-gray-100"
-                        aria-label="Volver"
-                    >
+                    <IconButton onClick={() => navigate(-1)} className="-ml-2" aria-label="Volver">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                              viewBox="0 0 24 24" fill="none" stroke="currentColor"
                              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M15 18l-6-6 6-6" />
                         </svg>
-                    </button>
+                    </IconButton>
                     <h1 className="text-xl font-bold text-gray-900">Detalle del pedido</h1>
                 </div>
             </header>
@@ -283,24 +282,27 @@ export default function DetallePedido() {
                                 <p className="text-xs text-red-600">{errorEdicion}</p>
                             )}
                             <div className="flex gap-2">
-                                <button
+                                <Button
                                     type="button"
+                                    variant="secondary"
+                                    size="sm"
+                                    className="flex-1"
                                     onClick={() => {
                                         setEditandoPedido(false);
                                         setErrorEdicion(null);
                                     }}
-                                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600"
                                 >
                                     Cancelar
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     type="button"
+                                    size="sm"
+                                    className="flex-1"
                                     onClick={handleGuardarPedido}
-                                    disabled={guardandoPedido}
-                                    className="flex-1 py-2.5 rounded-xl bg-pink-600 text-white text-sm font-medium disabled:opacity-50"
+                                    loading={guardandoPedido}
                                 >
                                     {guardandoPedido ? "Guardando..." : "Guardar"}
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     )}
@@ -325,28 +327,32 @@ export default function DetallePedido() {
 
                 {/* Botón de acción principal */}
                 {accion && (
-                    <button
+                    <Button
+                        variant="custom"
+                        fullWidth
+                        loading={cambiando}
                         onClick={() => cambiarEstado(accion.estado)}
-                        disabled={cambiando}
-                        className={`w-full ${accion.color} text-white font-semibold py-4 rounded-2xl text-base disabled:opacity-50 active:scale-95 transition-transform`}
+                        className={`${accion.color} text-white hover:brightness-95`}
                     >
                         {cambiando ? "Actualizando..." : accion.label}
-                    </button>
+                    </Button>
                 )}
 
                 {/* Botón cancelar — solo en estados donde tiene sentido */}
                 {puedeCancel.has(pedido.estado) && (
-                    <button
+                    <Button
+                        variant="danger"
+                        size="sm"
+                        fullWidth
+                        disabled={cambiando}
                         onClick={() => {
                             if (window.confirm("¿Cancelar este pedido? Esta acción no se puede deshacer.")) {
                                 cambiarEstado("CANCELADO");
                             }
                         }}
-                        disabled={cambiando}
-                        className="w-full border border-red-200 text-red-500 font-medium py-3 rounded-2xl text-sm disabled:opacity-50"
                     >
                         Cancelar pedido
-                    </button>
+                    </Button>
                 )}
 
                 {["ENTREGADO", "CANCELADO", "NO_RETIRADO"].includes(pedido.estado) && (
