@@ -5,6 +5,9 @@ import { useCliente } from "../hooks/useCliente";
 import { usePageTitle } from "../hooks/usePageTitle";
 import type { TipoObservacion } from "../hooks/useCliente";
 import { CuentaPublicaVinculada } from "../components/CuentaPublicaVinculada";
+import { Button } from "../components/Button";
+import { IconButton } from "../components/IconButton";
+import { Skeleton } from "../components/Skeleton";
 
 // Badge de comportamiento — negativo si tiene observaciones negativas
 const obsNegativas = new Set<TipoObservacion>(["PAGO_TARDIO", "NO_RETIRO", "CANCELACION_TARDE"]);
@@ -105,17 +108,17 @@ export default function DetalleCliente() {
         return (
             <div className="min-h-screen bg-gray-50">
                 <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-10 shadow-sm">
-                    <div className="h-6 w-32 max-w-lg mx-auto animate-pulse rounded bg-gray-200" />
+                    <Skeleton className="h-6 w-32 max-w-lg mx-auto" />
                 </header>
                 <main className="px-4 py-6 max-w-lg mx-auto space-y-4">
-                    <div className="bg-white rounded-2xl border border-gray-100 p-4 animate-pulse space-y-2">
-                        <div className="h-5 bg-gray-200 rounded w-1/2" />
-                        <div className="h-4 bg-gray-100 rounded w-1/3" />
-                        <div className="h-4 bg-gray-100 rounded w-2/3" />
+                    <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-2">
+                        <Skeleton className="h-5 w-1/2" />
+                        <Skeleton className="h-4 w-1/3" />
+                        <Skeleton className="h-4 w-2/3" />
                     </div>
-                    <div className="bg-white rounded-2xl border border-gray-100 p-4 animate-pulse space-y-2">
-                        <div className="h-4 bg-gray-200 rounded w-2/3" />
-                        <div className="h-4 bg-gray-100 rounded w-1/2" />
+                    <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-2">
+                        <Skeleton className="h-4 w-2/3" />
+                        <Skeleton className="h-4 w-1/2" />
                     </div>
                 </main>
             </div>
@@ -139,17 +142,13 @@ export default function DetalleCliente() {
             {/* Header */}
             <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-10 shadow-sm">
                 <div className="flex items-center gap-3 max-w-lg mx-auto">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="p-2 -ml-2 rounded-full text-gray-400 hover:text-gray-600 active:bg-gray-100"
-                        aria-label="Volver"
-                    >
+                    <IconButton onClick={() => navigate(-1)} className="-ml-2" aria-label="Volver">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                              viewBox="0 0 24 24" fill="none" stroke="currentColor"
                              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M15 18l-6-6 6-6" />
                         </svg>
-                    </button>
+                    </IconButton>
                     <h1 className="text-xl font-bold text-gray-900 truncate">{cliente.nombre}</h1>
                 </div>
             </header>
@@ -211,24 +210,27 @@ export default function DetalleCliente() {
                                         <p className="text-xs text-red-600">{errorCliente}</p>
                                     )}
                                     <div className="flex gap-2">
-                                        <button
+                                        <Button
                                             type="button"
+                                            variant="secondary"
+                                            size="sm"
+                                            className="flex-1"
                                             onClick={() => {
                                                 setEditandoCliente(false);
                                                 setErrorCliente(null);
                                             }}
-                                            className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600"
                                         >
                                             Cancelar
-                                        </button>
-                                        <button
+                                        </Button>
+                                        <Button
                                             type="button"
+                                            size="sm"
+                                            className="flex-1"
                                             onClick={handleGuardarCliente}
-                                            disabled={guardandoCliente}
-                                            className="flex-1 py-2.5 rounded-xl bg-pink-600 text-white text-sm font-medium disabled:opacity-50"
+                                            loading={guardandoCliente}
                                         >
                                             {guardandoCliente ? "Guardando..." : "Guardar"}
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
                             )}
@@ -341,21 +343,24 @@ export default function DetalleCliente() {
                             />
                             {errorForm && <p className="text-xs text-red-600">{errorForm}</p>}
                             <div className="flex gap-2">
-                                <button
+                                <Button
                                     type="button"
+                                    variant="secondary"
+                                    size="sm"
+                                    className="flex-1"
                                     onClick={() => { setMostrarForm(false); setErrorForm(null); }}
-                                    className="flex-1 py-3 rounded-xl border border-gray-200 text-sm text-gray-500 bg-white"
                                 >
                                     Cancelar
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     type="button"
+                                    size="sm"
+                                    className="flex-1"
                                     onClick={handleGuardarObservacion}
-                                    disabled={guardando}
-                                    className="flex-1 py-3 rounded-xl bg-pink-600 text-white text-sm font-medium disabled:opacity-50"
+                                    loading={guardando}
                                 >
                                     {guardando ? "Guardando..." : "Guardar"}
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     )}
