@@ -63,6 +63,18 @@ model Pedido {
   creadoEn      DateTime     @default(now())
   actualizadoEn DateTime     @updatedAt
   cliente       Cliente      @relation(fields: [clienteId], references: [id])
+  imagenes      PedidoImagen[]
+}
+
+// Fotos de referencia/evidencia subidas por el admin (ej. al entregar el
+// pedido). Exclusivamente de uso interno — nunca se expone en /api/public.
+model PedidoImagen {
+  id          Int      @id @default(autoincrement())
+  pedidoId    Int
+  url         String
+  descripcion String?
+  createdAt   DateTime @default(now())
+  pedido      Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
 }
 
 model Observacion {
