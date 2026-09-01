@@ -19,6 +19,7 @@ import ProductoDetalle from "./public/pages/ProductoDetalle";
 import LoginCliente from "./public/pages/LoginCliente";
 import RegistroCliente from "./public/pages/RegistroCliente";
 import MisFavoritos from "./public/pages/MisFavoritos";
+import Landing from "./public/pages/Landing";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
     const token = localStorage.getItem("token");
@@ -38,23 +39,24 @@ createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
             <ScrollToTop />
             <Routes>
-                {/* Pública */}
+                {/* Admin — login */}
                 <Route path="/login" element={<Login />} />
 
-                {/* Con bottom nav */}
-                <Route path="/" element={<PrivateLayout><Dashboard /></PrivateLayout>} />
-                <Route path="/clientes" element={<PrivateLayout><Clientes /></PrivateLayout>} />
-                <Route path="/calendario" element={<PrivateLayout><Calendario /></PrivateLayout>} />
-                <Route path="/ingresos" element={<PrivateLayout><Ingresos /></PrivateLayout>} />
-                <Route path="/cuenta" element={<PrivateLayout><Cuenta /></PrivateLayout>} />
+                {/* Admin — con bottom nav */}
+                <Route path="/panel" element={<PrivateLayout><Dashboard /></PrivateLayout>} />
+                <Route path="/panel/clientes" element={<PrivateLayout><Clientes /></PrivateLayout>} />
+                <Route path="/panel/calendario" element={<PrivateLayout><Calendario /></PrivateLayout>} />
+                <Route path="/panel/ingresos" element={<PrivateLayout><Ingresos /></PrivateLayout>} />
+                <Route path="/panel/cuenta" element={<PrivateLayout><Cuenta /></PrivateLayout>} />
 
-                {/* Sin bottom nav */}
-                <Route path="/pedidos/nuevo" element={<PrivateRoute><NuevoPedido /></PrivateRoute>} />
-                <Route path="/pedidos/:id" element={<PrivateRoute><DetallePedido /></PrivateRoute>} />
-                <Route path="/clientes/nuevo" element={<PrivateRoute><NuevoCliente /></PrivateRoute>} />
-                <Route path="/clientes/:id" element={<PrivateRoute><DetalleCliente /></PrivateRoute>} />
+                {/* Admin — sin bottom nav */}
+                <Route path="/panel/pedidos/nuevo" element={<PrivateRoute><NuevoPedido /></PrivateRoute>} />
+                <Route path="/panel/pedidos/:id" element={<PrivateRoute><DetallePedido /></PrivateRoute>} />
+                <Route path="/panel/clientes/nuevo" element={<PrivateRoute><NuevoCliente /></PrivateRoute>} />
+                <Route path="/panel/clientes/:id" element={<PrivateRoute><DetalleCliente /></PrivateRoute>} />
 
                 {/* UI pública (catálogo/clientes finales) — sin auth de admin */}
+                <Route path="/" element={<Landing />} />
                 <Route path="/catalogo" element={<Catalogo />} />
                 <Route path="/producto/:id" element={<ProductoDetalle />} />
                 <Route path="/login-cliente" element={<LoginCliente />} />

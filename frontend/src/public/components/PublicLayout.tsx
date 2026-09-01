@@ -11,14 +11,14 @@ export function PublicLayout({ children }: Props) {
 
     const cerrarSesion = () => {
         clearClienteToken();
-        navigate("/catalogo");
+        navigate("/");
     };
 
     return (
         <div className="min-h-screen bg-pink-50/40">
             <header className="sticky top-0 z-20 border-b border-gray-100 bg-white/90 backdrop-blur">
                 <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-                    <Link to="/catalogo" className="flex items-center gap-2">
+                    <Link to="/" className="flex items-center gap-2">
                         <img src="/logo.png" alt="Ainoa's Cakes" className="h-8 w-auto object-contain" />
                         <span className="font-bold text-gray-800">Ainoa's Cakes</span>
                     </Link>

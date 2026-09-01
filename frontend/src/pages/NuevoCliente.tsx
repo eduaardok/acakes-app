@@ -31,7 +31,7 @@ export default function NuevoCliente() {
                 telefono: telefono.trim(),
                 email: email.trim() || undefined,
             });
-            navigate(`/clientes/${cliente.id}`, { replace: true });
+            navigate(`/panel/clientes/${cliente.id}`, { replace: true });
         } catch (err) {
             setError(err instanceof Error ? err.message : "Error al crear cliente");
         } finally {

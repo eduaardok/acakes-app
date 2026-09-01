@@ -6,9 +6,9 @@ const PAGE_SIZE_DEFAULT = 20
 const PAGE_SIZE_MAX = 50
 const RESENAS_PAGE_SIZE = 10
 
-// GET /catalogo?tematica=infantil&ocasion=quinceañera&page=1&pageSize=20
+// GET /catalogo?tematica=infantil&ocasion=quinceañera&page=1&pageSize=20&ordenarPor=vistas
 export async function getCatalogo(req: Request, res: Response) {
-    const { tematica, ocasion } = req.query
+    const { tematica, ocasion, ordenarPor } = req.query
 
     const page = Math.max(1, Number(req.query.page) || 1)
     const pageSize = Math.min(
@@ -20,6 +20,10 @@ export async function getCatalogo(req: Request, res: Response) {
         ...(tematica ? { tematica: String(tematica) } : {}),
         ...(ocasion ? { ocasion: String(ocasion) } : {}),
     }
+
+    // ordenarPor=vistas — usado por la landing pública para "destacados"
+    const orderBy: Prisma.ProductoOrderByWithRelationInput =
+        ordenarPor === 'vistas' ? { vistas: 'desc' } : { createdAt: 'desc' }
 
     const [productos, total] = await Promise.all([
         prisma.producto.findMany({
@@ -37,7 +41,7 @@ export async function getCatalogo(req: Request, res: Response) {
                     select: { id: true, url: true, orden: true },
                 },
             },
-            orderBy: { createdAt: 'desc' },
+            orderBy,
             skip: (page - 1) * pageSize,
             take: pageSize,
         }),

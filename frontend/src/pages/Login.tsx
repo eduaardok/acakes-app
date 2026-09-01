@@ -24,7 +24,7 @@ export default function Login() {
             });
 
             localStorage.setItem("token", data.token);
-            navigate("/");
+            navigate("/panel");
         } catch (err) {
             setError(err instanceof Error ? err.message : "Error al iniciar sesión");
         } finally {

@@ -56,7 +56,7 @@ export default function NuevoPedido() {
                 notas: notas.trim() || undefined,
                 // estado omitido → el backend asigna BORRADOR por defecto
             });
-            navigate("/");
+            navigate("/panel");
         } catch (err) {
             setError(err instanceof Error ? err.message : "Error al guardar el pedido");
         } finally {

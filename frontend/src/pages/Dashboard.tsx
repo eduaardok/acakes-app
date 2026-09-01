@@ -364,7 +364,7 @@ export default function Dashboard() {
                             <PedidoCard
                                 key={pedido.id}
                                 pedido={pedido}
-                                onClick={() => navigate(`/pedidos/${pedido.id}`)}
+                                onClick={() => navigate(`/panel/pedidos/${pedido.id}`)}
                                 mostrarFechaDeEntrega={vista === "listado"}
                                 animationDelayMs={Math.min(i, 8) * 35}
                             />

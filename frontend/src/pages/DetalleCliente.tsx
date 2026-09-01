@@ -287,7 +287,7 @@ export default function DetalleCliente() {
                             {cliente.pedidos.map((p) => (
                                 <button
                                     key={p.id}
-                                    onClick={() => navigate(`/pedidos/${p.id}`)}
+                                    onClick={() => navigate(`/panel/pedidos/${p.id}`)}
                                     className="w-full text-left bg-white rounded-2xl border border-gray-100 px-4 py-3 active:bg-gray-50 transition-colors"
                                 >
                                     <div className="flex justify-between items-start gap-2">

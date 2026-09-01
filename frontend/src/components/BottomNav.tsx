@@ -5,7 +5,7 @@ const iconWrap =
 
 const navItems = [
     {
-        path: "/",
+        path: "/panel",
         label: "Pedidos",
         icon: (
             <svg
@@ -27,7 +27,7 @@ const navItems = [
         ),
     },
     {
-        path: "/clientes",
+        path: "/panel/clientes",
         label: "Clientes",
         icon: (
             <svg
@@ -48,7 +48,7 @@ const navItems = [
         ),
     },
     {
-        path: "/calendario",
+        path: "/panel/calendario",
         label: "Calendario",
         icon: (
             <svg
@@ -69,7 +69,7 @@ const navItems = [
         ),
     },
     {
-        path: "/ingresos",
+        path: "/panel/ingresos",
         label: "Ingresos",
         icon: (
             <svg
@@ -90,7 +90,7 @@ const navItems = [
         ),
     },
     {
-        path: "/cuenta",
+        path: "/panel/cuenta",
         label: "Usuario",
         icon: (
             <svg

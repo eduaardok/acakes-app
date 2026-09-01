@@ -6,3 +6,9 @@ export function whatsappCotizarUrl(nombreProducto: string): string {
     const mensaje = `Hola, me interesa cotizar: ${nombreProducto}`;
     return `https://wa.me/${NUMERO}?text=${encodeURIComponent(mensaje)}`;
 }
+
+// Contacto genérico (landing) — sin producto puntual todavía.
+export function whatsappContactoUrl(): string {
+    const mensaje = "Hola, quisiera cotizar un pastel personalizado.";
+    return `https://wa.me/${NUMERO}?text=${encodeURIComponent(mensaje)}`;
+}

@@ -16,7 +16,7 @@ export function Layout({ children }: Props) {
             {/* Botón flotante + siempre visible en las páginas principales */}
             <IconButton
                 variant="solid"
-                onClick={() => navigate("/pedidos/nuevo")}
+                onClick={() => navigate("/panel/pedidos/nuevo")}
                 className="fixed bottom-20 right-5 z-20 h-14 w-14 text-3xl shadow-lg"
                 aria-label="Nuevo pedido"
             >

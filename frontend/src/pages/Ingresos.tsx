@@ -154,7 +154,7 @@ export default function Ingresos() {
                                     {data.pedidos.map((p, i) => (
                                         <button
                                             key={p.id}
-                                            onClick={() => navigate(`/pedidos/${p.id}`)}
+                                            onClick={() => navigate(`/panel/pedidos/${p.id}`)}
                                             style={{ animationDelay: `${Math.min(i, 8) * 35}ms` }}
                                             className="animate-rise-in w-full text-left bg-white rounded-2xl border border-gray-100 px-4 py-3 transition-[background-color,transform] duration-150 ease-out active:scale-[0.985] active:bg-gray-50"
                                         >

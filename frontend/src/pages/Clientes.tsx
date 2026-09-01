@@ -21,7 +21,7 @@ export default function Clientes() {
                         <h1 className="text-xl font-bold text-gray-900">Clientes</h1>
                         <IconButton
                             variant="solid"
-                            onClick={() => navigate("/clientes/nuevo")}
+                            onClick={() => navigate("/panel/clientes/nuevo")}
                             aria-label="Nuevo cliente"
                         >
                             <svg
@@ -89,7 +89,7 @@ export default function Clientes() {
                         {clientes.map((c) => (
                             <button
                                 key={c.id}
-                                onClick={() => navigate(`/clientes/${c.id}`)}
+                                onClick={() => navigate(`/panel/clientes/${c.id}`)}
                                 className="w-full text-left bg-white rounded-2xl border border-gray-100 px-4 py-3 active:bg-gray-50 transition-colors"
                             >
                                 <p className="font-semibold text-gray-900">{c.nombre}</p>

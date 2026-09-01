@@ -182,7 +182,7 @@ export default function Calendario() {
                                     <PedidoCard
                                         key={pedido.id}
                                         pedido={pedido}
-                                        onClick={() => navigate(`/pedidos/${pedido.id}`)}
+                                        onClick={() => navigate(`/panel/pedidos/${pedido.id}`)}
                                         animationDelayMs={Math.min(i, 8) * 35}
                                     />
                                 ))}
