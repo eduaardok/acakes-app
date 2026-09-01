@@ -17,6 +17,7 @@ export interface ProductoDetalle {
         createdAt: string;
         usuario: { id: number; nombre: string };
     }[];
+    resenasTotal: number;
 }
 
 export function useProductoDetalle(id: string | undefined) {

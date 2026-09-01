@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { PublicLayout } from "../components/PublicLayout";
-import { useProductoDetalle } from "../hooks/useProductoDetalle";
+import { useProductoDetalle, type ProductoDetalle as ProductoDetalleData } from "../hooks/useProductoDetalle";
 import { publicApi } from "../lib/publicApi";
 import { getVisitanteId } from "../lib/visitante";
 import { whatsappCotizarUrl } from "../lib/whatsapp";
 import { usePageTitle } from "../../hooks/usePageTitle";
+
+type Resena = ProductoDetalleData["resenas"][number];
+
+interface ResenasResponse {
+    resenas: Resena[];
+    page: number;
+    totalPages: number;
+}
 
 function Estrellas({ calificacion }: { calificacion: number }) {
     return (
@@ -25,6 +33,30 @@ export default function ProductoDetalle() {
     const [liked, setLiked] = useState(false);
     const [favorito, setFavorito] = useState(false);
     const [pendiente, setPendiente] = useState(false);
+
+    const [resenasExtra, setResenasExtra] = useState<Resena[]>([]);
+    const [resenasPage, setResenasPage] = useState(1);
+    const [cargandoResenas, setCargandoResenas] = useState(false);
+
+    const resenas = [...(producto?.resenas ?? []), ...resenasExtra];
+    const hayMasResenas = producto ? resenas.length < producto.resenasTotal : false;
+
+    const cargarMasResenas = async () => {
+        if (!id || cargandoResenas) return;
+        setCargandoResenas(true);
+        try {
+            const siguientePage = resenasPage + 1;
+            const res = await publicApi.get<ResenasResponse>(
+                `/producto/${id}/resenas?page=${siguientePage}`
+            );
+            setResenasExtra((prev) => [...prev, ...res.resenas]);
+            setResenasPage(siguientePage);
+        } catch {
+            // Si falla, el botón sigue disponible para reintentar.
+        } finally {
+            setCargandoResenas(false);
+        }
+    };
 
     const toggle = async (tipo: "like" | "favorito") => {
         if (!id || pendiente) return;
@@ -177,14 +209,14 @@ export default function ProductoDetalle() {
                 {/* Reseñas */}
                 <section className="mt-8">
                     <h2 className="text-lg font-bold text-gray-900">
-                        Reseñas {producto.resenas.length > 0 && `(${producto.resenas.length})`}
+                        Reseñas {producto.resenasTotal > 0 && `(${producto.resenasTotal})`}
                     </h2>
 
-                    {producto.resenas.length === 0 ? (
+                    {resenas.length === 0 ? (
                         <p className="mt-2 text-sm text-gray-400">Aún no hay reseñas para este producto.</p>
                     ) : (
                         <div className="mt-3 space-y-3">
-                            {producto.resenas.map((r) => (
+                            {resenas.map((r) => (
                                 <div key={r.id} className="rounded-2xl border border-gray-100 bg-white p-4">
                                     <div className="flex items-center justify-between">
                                         <p className="font-medium text-gray-900">{r.usuario.nombre}</p>
@@ -195,6 +227,19 @@ export default function ProductoDetalle() {
                                     )}
                                 </div>
                             ))}
+                        </div>
+                    )}
+
+                    {hayMasResenas && (
+                        <div className="mt-4 flex justify-center">
+                            <button
+                                type="button"
+                                onClick={cargarMasResenas}
+                                disabled={cargandoResenas}
+                                className="rounded-full border border-pink-200 bg-white px-5 py-2.5 text-sm font-semibold text-pink-700 transition-[background-color,transform] duration-150 ease-out active:scale-95 disabled:opacity-50"
+                            >
+                                {cargandoResenas ? "Cargando..." : "Ver más reseñas"}
+                            </button>
                         </div>
                     )}
                 </section>

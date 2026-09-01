@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { getCatalogo, getProductoDetalle } from '../controllers/catalogo.controller'
+import { getCatalogo, getProductoDetalle, getResenasProducto } from '../controllers/catalogo.controller'
 import { registroCliente, loginCliente } from '../controllers/clienteAuth.controller'
 import {
     crearResena,
@@ -23,6 +23,7 @@ const router = Router()
 // ─── Públicas (sin auth) ────────────────────────────────
 router.get('/catalogo', getCatalogo)
 router.get('/producto/:id', getProductoDetalle)
+router.get('/producto/:id/resenas', getResenasProducto)
 router.post('/registro-cliente', registroCliente)
 router.post('/login-cliente', loginCliente)
 
