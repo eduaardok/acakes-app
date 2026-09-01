@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "./BottomNav";
+import { IconButton } from "./IconButton";
 
 interface Props {
     children: React.ReactNode;
@@ -13,13 +14,14 @@ export function Layout({ children }: Props) {
             {children}
             <BottomNav />
             {/* Botón flotante + siempre visible en las páginas principales */}
-            <button
+            <IconButton
+                variant="solid"
                 onClick={() => navigate("/pedidos/nuevo")}
-                className="fixed bottom-20 right-5 w-14 h-14 bg-pink-600 text-white rounded-full shadow-lg text-3xl flex items-center justify-center active:scale-90 transition-transform z-20"
+                className="fixed bottom-20 right-5 z-20 h-14 w-14 text-3xl shadow-lg"
                 aria-label="Nuevo pedido"
             >
                 +
-            </button>
+            </IconButton>
         </div>
     );
 }
