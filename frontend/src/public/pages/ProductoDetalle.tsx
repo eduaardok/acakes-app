@@ -182,16 +182,22 @@ export default function ProductoDetalle() {
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">{producto.nombre}</h1>
                         <div className="mt-1.5 flex flex-wrap gap-1.5">
-                            {producto.tematica && (
-                                <span className="rounded-full bg-pink-50 px-2.5 py-1 text-xs font-medium text-pink-700">
-                                    {producto.tematica.nombre}
+                            {producto.tematicas.map((tematica) => (
+                                <span
+                                    key={tematica.id}
+                                    className="rounded-full bg-pink-50 px-2.5 py-1 text-xs font-medium text-pink-700"
+                                >
+                                    {tematica.nombre}
                                 </span>
-                            )}
-                            {producto.ocasion && (
-                                <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
-                                    {producto.ocasion.nombre}
+                            ))}
+                            {producto.ocasiones.map((ocasion) => (
+                                <span
+                                    key={ocasion.id}
+                                    className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600"
+                                >
+                                    {ocasion.nombre}
                                 </span>
-                            )}
+                            ))}
                         </div>
                     </div>
 

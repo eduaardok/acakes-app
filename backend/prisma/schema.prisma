@@ -102,36 +102,52 @@ model UsuarioCliente {
 }
 
 model Tematica {
-  id        String     @id @default(uuid())
-  nombre    String     @unique
-  productos Producto[]
-  creadoEn  DateTime   @default(now())
+  id        String             @id @default(uuid())
+  nombre    String             @unique
+  productos ProductoTematica[]
+  creadoEn  DateTime           @default(now())
 }
 
 model Ocasion {
-  id        String     @id @default(uuid())
-  nombre    String     @unique
-  productos Producto[]
-  creadoEn  DateTime   @default(now())
+  id        String            @id @default(uuid())
+  nombre    String            @unique
+  productos ProductoOcasion[]
+  creadoEn  DateTime          @default(now())
+}
+
+model ProductoTematica {
+  productoId Int
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  tematicaId String
+  tematica   Tematica @relation(fields: [tematicaId], references: [id], onDelete: Cascade)
+
+  @@id([productoId, tematicaId])
+  @@index([tematicaId])
+}
+
+model ProductoOcasion {
+  productoId Int
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  ocasionId  String
+  ocasion    Ocasion  @relation(fields: [ocasionId], references: [id], onDelete: Cascade)
+
+  @@id([productoId, ocasionId])
+  @@index([ocasionId])
 }
 
 model Producto {
-  id          Int             @id @default(autoincrement())
+  id          Int                @id @default(autoincrement())
   nombre      String
   descripcion String?
-  tematicaId  String?
-  tematica    Tematica?       @relation(fields: [tematicaId], references: [id])
-  ocasionId   String?
-  ocasion     Ocasion?        @relation(fields: [ocasionId], references: [id])
-  vistas      Int             @default(0)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  vistas      Int                @default(0)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
   imagenes    ProductoImagen[]
   resenas     Resena[]
   likes       LikeProducto[]
   favoritos   Favorito[]
-
-  @@index([tematicaId, ocasionId])
+  tematicas   ProductoTematica[]
+  ocasiones   ProductoOcasion[]
 }
 
 model ProductoImagen {

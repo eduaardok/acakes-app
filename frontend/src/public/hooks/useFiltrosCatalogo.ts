@@ -7,8 +7,8 @@ export interface CategoriaFiltro {
 }
 
 interface ProductoFiltro {
-    tematica: CategoriaFiltro | null;
-    ocasion: CategoriaFiltro | null;
+    tematicas: CategoriaFiltro[];
+    ocasiones: CategoriaFiltro[];
 }
 
 interface CatalogoResponse {
@@ -31,8 +31,8 @@ export function useFiltrosCatalogo() {
                 const t = new Map<string, CategoriaFiltro>();
                 const o = new Map<string, CategoriaFiltro>();
                 for (const p of res.productos) {
-                    if (p.tematica) t.set(p.tematica.id, p.tematica);
-                    if (p.ocasion) o.set(p.ocasion.id, p.ocasion);
+                    for (const tematica of p.tematicas) t.set(tematica.id, tematica);
+                    for (const ocasion of p.ocasiones) o.set(ocasion.id, ocasion);
                 }
                 setTematicas([...t.values()].sort((a, b) => a.nombre.localeCompare(b.nombre)));
                 setOcasiones([...o.values()].sort((a, b) => a.nombre.localeCompare(b.nombre)));

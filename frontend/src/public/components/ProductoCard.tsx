@@ -7,8 +7,8 @@ import { CakeIcon } from "../../components/icons";
 export interface ProductoCardData {
     id: number;
     nombre: string;
-    tematica: { id: string; nombre: string } | null;
-    ocasion: { id: string; nombre: string } | null;
+    tematicas: { id: string; nombre: string }[];
+    ocasiones: { id: string; nombre: string }[];
     imagenes: { url: string }[];
 }
 
@@ -48,18 +48,24 @@ export function ProductoCard({ producto, animationDelayMs, accionExtra }: Props)
             </div>
             <div className="p-3">
                 <p className="truncate font-semibold text-gray-900">{producto.nombre}</p>
-                {(producto.tematica || producto.ocasion) && (
+                {(producto.tematicas.length > 0 || producto.ocasiones.length > 0) && (
                     <div className="mt-1.5 flex flex-wrap gap-1.5">
-                        {producto.tematica && (
-                            <span className="rounded-full bg-pink-50 px-2 py-0.5 text-xs font-medium text-pink-700">
-                                {producto.tematica.nombre}
+                        {producto.tematicas.map((tematica) => (
+                            <span
+                                key={tematica.id}
+                                className="rounded-full bg-pink-50 px-2 py-0.5 text-xs font-medium text-pink-700"
+                            >
+                                {tematica.nombre}
                             </span>
-                        )}
-                        {producto.ocasion && (
-                            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                                {producto.ocasion.nombre}
+                        ))}
+                        {producto.ocasiones.map((ocasion) => (
+                            <span
+                                key={ocasion.id}
+                                className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600"
+                            >
+                                {ocasion.nombre}
                             </span>
-                        )}
+                        ))}
                     </div>
                 )}
             </div>

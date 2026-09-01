@@ -6,16 +6,20 @@ import { useFiltrosCatalogo, type CategoriaFiltro } from "../hooks/useFiltrosCat
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { CakeIcon } from "../../components/icons";
 
+// Checkboxes múltiples por filtro (temática/ocasión): el catálogo filtra en AND
+// entre las seleccionadas, cada chip se puede activar/desactivar independiente.
 function FiltroChips({
     label,
     opciones,
-    activo,
-    onChange,
+    activos,
+    onToggle,
+    onLimpiar,
 }: {
     label: string;
     opciones: CategoriaFiltro[];
-    activo: string;
-    onChange: (v: string) => void;
+    activos: string[];
+    onToggle: (id: string) => void;
+    onLimpiar: () => void;
 }) {
     if (opciones.length === 0) return null;
 
@@ -26,9 +30,9 @@ function FiltroChips({
             </span>
             <button
                 type="button"
-                onClick={() => onChange("")}
+                onClick={onLimpiar}
                 className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-[color,background-color,transform] duration-150 ease-out active:scale-95 ${
-                    activo === "" ? "bg-pink-600 text-white" : "bg-white border border-gray-200 text-gray-600"
+                    activos.length === 0 ? "bg-pink-600 text-white" : "bg-white border border-gray-200 text-gray-600"
                 }`}
             >
                 Todas
@@ -37,9 +41,10 @@ function FiltroChips({
                 <button
                     key={o.id}
                     type="button"
-                    onClick={() => onChange(o.id)}
+                    onClick={() => onToggle(o.id)}
+                    aria-pressed={activos.includes(o.id)}
                     className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-[color,background-color,transform] duration-150 ease-out active:scale-95 ${
-                        activo === o.id ? "bg-pink-600 text-white" : "bg-white border border-gray-200 text-gray-600"
+                        activos.includes(o.id) ? "bg-pink-600 text-white" : "bg-white border border-gray-200 text-gray-600"
                     }`}
                 >
                     {o.nombre}
@@ -51,11 +56,14 @@ function FiltroChips({
 
 export default function Catalogo() {
     usePageTitle("Catálogo");
-    const [tematicaId, setTematicaId] = useState("");
-    const [ocasionId, setOcasionId] = useState("");
+    const [tematicaIds, setTematicaIds] = useState<string[]>([]);
+    const [ocasionIds, setOcasionIds] = useState<string[]>([]);
+
+    const toggleId = (setter: typeof setTematicaIds) => (id: string) =>
+        setter((prev) => (prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]));
 
     const { tematicas, ocasiones } = useFiltrosCatalogo();
-    const { productos, loading, error, hayMas, cargarMas, refetch } = useCatalogo(tematicaId, ocasionId);
+    const { productos, loading, error, hayMas, cargarMas, refetch } = useCatalogo(tematicaIds, ocasionIds);
 
     return (
         <PublicLayout>
@@ -66,8 +74,20 @@ export default function Catalogo() {
                 </p>
 
                 <div className="mt-4 space-y-2">
-                    <FiltroChips label="Temática" opciones={tematicas} activo={tematicaId} onChange={setTematicaId} />
-                    <FiltroChips label="Ocasión" opciones={ocasiones} activo={ocasionId} onChange={setOcasionId} />
+                    <FiltroChips
+                        label="Temática"
+                        opciones={tematicas}
+                        activos={tematicaIds}
+                        onToggle={toggleId(setTematicaIds)}
+                        onLimpiar={() => setTematicaIds([])}
+                    />
+                    <FiltroChips
+                        label="Ocasión"
+                        opciones={ocasiones}
+                        activos={ocasionIds}
+                        onToggle={toggleId(setOcasionIds)}
+                        onLimpiar={() => setOcasionIds([])}
+                    />
                 </div>
 
                 {error && (

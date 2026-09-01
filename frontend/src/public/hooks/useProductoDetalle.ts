@@ -6,8 +6,8 @@ export interface ProductoDetalle {
     id: number;
     nombre: string;
     descripcion: string | null;
-    tematica: CategoriaFiltro | null;
-    ocasion: CategoriaFiltro | null;
+    tematicas: CategoriaFiltro[];
+    ocasiones: CategoriaFiltro[];
     vistas: number;
     createdAt: string;
     imagenes: { id: number; url: string; orden: number }[];

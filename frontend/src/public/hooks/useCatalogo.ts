@@ -8,8 +8,8 @@ export interface ProductoResumen {
     id: number;
     nombre: string;
     descripcion: string | null;
-    tematica: CategoriaFiltro | null;
-    ocasion: CategoriaFiltro | null;
+    tematicas: CategoriaFiltro[];
+    ocasiones: CategoriaFiltro[];
     createdAt: string;
     imagenes: { id: number; url: string; orden: number }[];
 }
@@ -22,7 +22,7 @@ interface CatalogoResponse {
     totalPages: number;
 }
 
-export function useCatalogo(tematicaId: string, ocasionId: string) {
+export function useCatalogo(tematicaIds: string[], ocasionIds: string[]) {
     const [productos, setProductos] = useState<ProductoResumen[]>([]);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -30,18 +30,23 @@ export function useCatalogo(tematicaId: string, ocasionId: string) {
     const [error, setError] = useState<string | null>(null);
     const [reloadToken, setReloadToken] = useState(0);
 
+    // Los arrays de filtro se comparan por contenido, no por referencia, para no
+    // reiniciar la página en cada render por un array nuevo con el mismo contenido.
+    const tematicaIdsKey = tematicaIds.join(",");
+    const ocasionIdsKey = ocasionIds.join(",");
+
     // Filtro cambió: reinicia la lista y vuelve a la página 1
     useEffect(() => {
         setProductos([]);
         setPage(1);
-    }, [tematicaId, ocasionId]);
+    }, [tematicaIdsKey, ocasionIdsKey]);
 
     useEffect(() => {
         let cancelado = false;
 
         const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) });
-        if (tematicaId) params.set("tematicaId", tematicaId);
-        if (ocasionId) params.set("ocasionId", ocasionId);
+        if (tematicaIdsKey) params.set("tematicaIds", tematicaIdsKey);
+        if (ocasionIdsKey) params.set("ocasionIds", ocasionIdsKey);
 
         setLoading(true);
         setError(null);
@@ -63,7 +68,7 @@ export function useCatalogo(tematicaId: string, ocasionId: string) {
         return () => {
             cancelado = true;
         };
-    }, [tematicaId, ocasionId, page, reloadToken]);
+    }, [tematicaIdsKey, ocasionIdsKey, page, reloadToken]);
 
     const refetch = useCallback(() => setReloadToken((n) => n + 1), []);
 

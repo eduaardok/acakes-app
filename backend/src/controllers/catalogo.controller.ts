@@ -1,14 +1,23 @@
 import { Request, Response } from 'express'
 import { Prisma } from '@prisma/client'
 import { prisma } from '../lib/prisma'
+import { includeCategorias, aplanarCategorias } from '../lib/categoriasProducto'
 
 const PAGE_SIZE_DEFAULT = 20
 const PAGE_SIZE_MAX = 50
 const RESENAS_PAGE_SIZE = 10
 
-// GET /catalogo?tematicaId=&ocasionId=&page=1&pageSize=20&ordenarPor=vistas
+function parseIdsCsv(value: unknown): string[] {
+    if (typeof value !== 'string' || !value.trim()) return []
+    return value.split(',').map((v) => v.trim()).filter(Boolean)
+}
+
+// GET /catalogo?tematicaIds=id1,id2&ocasionIds=id1,id2&page=1&pageSize=20&ordenarPor=vistas
+// AND múltiple: si se piden 2 tematicaIds, el producto debe tener AMBAS asignadas.
 export async function getCatalogo(req: Request, res: Response) {
-    const { tematicaId, ocasionId, ordenarPor } = req.query
+    const tematicaIds = parseIdsCsv(req.query.tematicaIds)
+    const ocasionIds = parseIdsCsv(req.query.ocasionIds)
+    const { ordenarPor } = req.query
 
     const page = Math.max(1, Number(req.query.page) || 1)
     const pageSize = Math.min(
@@ -16,10 +25,11 @@ export async function getCatalogo(req: Request, res: Response) {
         Math.max(1, Number(req.query.pageSize) || PAGE_SIZE_DEFAULT)
     )
 
-    const where = {
-        ...(tematicaId ? { tematicaId: String(tematicaId) } : {}),
-        ...(ocasionId ? { ocasionId: String(ocasionId) } : {}),
-    }
+    const and: Prisma.ProductoWhereInput[] = [
+        ...tematicaIds.map((id): Prisma.ProductoWhereInput => ({ tematicas: { some: { tematicaId: id } } })),
+        ...ocasionIds.map((id): Prisma.ProductoWhereInput => ({ ocasiones: { some: { ocasionId: id } } })),
+    ]
+    const where: Prisma.ProductoWhereInput = and.length > 0 ? { AND: and } : {}
 
     // ordenarPor=vistas — usado por la landing pública para "destacados"
     const orderBy: Prisma.ProductoOrderByWithRelationInput =
@@ -32,14 +42,13 @@ export async function getCatalogo(req: Request, res: Response) {
                 id: true,
                 nombre: true,
                 descripcion: true,
-                tematica: { select: { id: true, nombre: true } },
-                ocasion: { select: { id: true, nombre: true } },
                 createdAt: true,
                 imagenes: {
                     orderBy: { orden: 'asc' },
                     take: 1,
                     select: { id: true, url: true, orden: true },
                 },
+                ...includeCategorias,
             },
             orderBy,
             skip: (page - 1) * pageSize,
@@ -49,7 +58,7 @@ export async function getCatalogo(req: Request, res: Response) {
     ])
 
     res.json({
-        productos,
+        productos: productos.map(aplanarCategorias),
         page,
         pageSize,
         total,
@@ -76,8 +85,6 @@ export async function getProductoDetalle(req: Request, res: Response) {
                     id: true,
                     nombre: true,
                     descripcion: true,
-                    tematica: { select: { id: true, nombre: true } },
-                    ocasion: { select: { id: true, nombre: true } },
                     vistas: true,
                     createdAt: true,
                     imagenes: {
@@ -95,12 +102,13 @@ export async function getProductoDetalle(req: Request, res: Response) {
                             usuario: { select: { id: true, nombre: true } },
                         },
                     },
+                    ...includeCategorias,
                 },
             }),
             prisma.resena.count({ where: { productoId: id } }),
         ])
 
-        res.json({ ...producto, resenasTotal })
+        res.json({ ...aplanarCategorias(producto), resenasTotal })
     } catch (err) {
         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
             res.status(404).json({ message: 'Producto no encontrado' })

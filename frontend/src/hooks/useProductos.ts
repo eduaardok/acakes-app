@@ -14,8 +14,8 @@ export interface ProductoLista {
     id: number;
     nombre: string;
     descripcion: string | null;
-    tematica: Categoria | null;
-    ocasion: Categoria | null;
+    tematicas: Categoria[];
+    ocasiones: Categoria[];
     createdAt: string;
     imagenes: ProductoImagen[];
 }

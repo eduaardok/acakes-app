@@ -20,8 +20,8 @@ export default function DetalleProducto() {
     const [editando, setEditando] = useState(false);
     const [nombreEdit, setNombreEdit] = useState("");
     const [descripcionEdit, setDescripcionEdit] = useState("");
-    const [tematicaEdit, setTematicaEdit] = useState<Categoria | null>(null);
-    const [ocasionEdit, setOcasionEdit] = useState<Categoria | null>(null);
+    const [tematicasEdit, setTematicasEdit] = useState<Categoria[]>([]);
+    const [ocasionesEdit, setOcasionesEdit] = useState<Categoria[]>([]);
     const [guardando, setGuardando] = useState(false);
     const [errorEdicion, setErrorEdicion] = useState<string | null>(null);
 
@@ -36,8 +36,8 @@ export default function DetalleProducto() {
         if (!producto) return;
         setNombreEdit(producto.nombre);
         setDescripcionEdit(producto.descripcion ?? "");
-        setTematicaEdit(producto.tematica);
-        setOcasionEdit(producto.ocasion);
+        setTematicasEdit(producto.tematicas);
+        setOcasionesEdit(producto.ocasiones);
         setErrorEdicion(null);
         setEditando(true);
     };
@@ -53,8 +53,8 @@ export default function DetalleProducto() {
             await api.patch(`/productos/${id}`, {
                 nombre: nombreEdit.trim(),
                 descripcion: descripcionEdit.trim() || null,
-                tematicaId: tematicaEdit?.id ?? null,
-                ocasionId: ocasionEdit?.id ?? null,
+                tematicaIds: tematicasEdit.map((c) => c.id),
+                ocasionIds: ocasionesEdit.map((c) => c.id),
             });
             setEditando(false);
             await refetch();
@@ -214,12 +214,16 @@ export default function DetalleProducto() {
                             </div>
                             <div className="flex gap-4">
                                 <div className="flex-1">
-                                    <p className="text-xs text-gray-400">Temática</p>
-                                    <p className="text-sm text-gray-600">{producto.tematica?.nombre || "—"}</p>
+                                    <p className="text-xs text-gray-400">Temáticas</p>
+                                    <p className="text-sm text-gray-600">
+                                        {producto.tematicas.map((c) => c.nombre).join(", ") || "—"}
+                                    </p>
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-xs text-gray-400">Ocasión</p>
-                                    <p className="text-sm text-gray-600">{producto.ocasion?.nombre || "—"}</p>
+                                    <p className="text-xs text-gray-400">Ocasiones</p>
+                                    <p className="text-sm text-gray-600">
+                                        {producto.ocasiones.map((c) => c.nombre).join(", ") || "—"}
+                                    </p>
                                 </div>
                             </div>
                             <button type="button" onClick={abrirEdicion} className="text-sm font-medium text-pink-600">
@@ -244,17 +248,17 @@ export default function DetalleProducto() {
                             />
                             <CategoriaCombobox
                                 tipo="tematicas"
-                                label="Temática"
+                                label="Temáticas"
                                 placeholder="Buscar o crear temática"
-                                value={tematicaEdit}
-                                onChange={setTematicaEdit}
+                                value={tematicasEdit}
+                                onChange={setTematicasEdit}
                             />
                             <CategoriaCombobox
                                 tipo="ocasiones"
-                                label="Ocasión"
+                                label="Ocasiones"
                                 placeholder="Buscar o crear ocasión"
-                                value={ocasionEdit}
-                                onChange={setOcasionEdit}
+                                value={ocasionesEdit}
+                                onChange={setOcasionesEdit}
                             />
                             {errorEdicion && <p className="text-xs text-red-600">{errorEdicion}</p>}
                             <div className="flex gap-2">

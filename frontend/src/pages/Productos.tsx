@@ -112,7 +112,7 @@ export default function Productos() {
                                     <div className="p-3">
                                         <p className="font-semibold text-gray-900 text-sm truncate">{p.nombre}</p>
                                         <p className="text-xs text-gray-400 mt-0.5 truncate">
-                                            {[p.tematica?.nombre, p.ocasion?.nombre].filter(Boolean).join(" · ") || "—"}
+                                            {[...p.tematicas, ...p.ocasiones].map((c) => c.nombre).join(" · ") || "—"}
                                         </p>
                                     </div>
                                 </button>

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { prisma } from '../lib/prisma'
+import { includeCategorias, aplanarCategorias } from '../lib/categoriasProducto'
 
 // POST /producto/:id/resena — requiere JWT de cliente. Sin verificación de compra.
 export async function crearResena(req: Request, res: Response) {
@@ -49,15 +50,14 @@ export async function misFavoritos(req: Request, res: Response) {
                 select: {
                     id: true,
                     nombre: true,
-                    tematica: { select: { id: true, nombre: true } },
-                    ocasion: { select: { id: true, nombre: true } },
                     imagenes: { orderBy: { orden: 'asc' }, take: 1, select: { url: true } },
+                    ...includeCategorias,
                 },
             },
         },
     })
 
-    res.json(favoritos)
+    res.json(favoritos.map((f) => ({ ...f, producto: aplanarCategorias(f.producto) })))
 }
 
 // POST /fechas-especiales

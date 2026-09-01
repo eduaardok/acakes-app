@@ -16,8 +16,8 @@ export default function NuevoProducto() {
 
     const [nombre, setNombre] = useState("");
     const [descripcion, setDescripcion] = useState("");
-    const [tematica, setTematica] = useState<Categoria | null>(null);
-    const [ocasion, setOcasion] = useState<Categoria | null>(null);
+    const [tematicas, setTematicas] = useState<Categoria[]>([]);
+    const [ocasiones, setOcasiones] = useState<Categoria[]>([]);
     const [archivos, setArchivos] = useState<File[]>([]);
     const [previews, setPreviews] = useState<string[]>([]);
     const [guardando, setGuardando] = useState(false);
@@ -52,8 +52,8 @@ export default function NuevoProducto() {
             const formData = new FormData();
             formData.set("nombre", nombre.trim());
             if (descripcion.trim()) formData.set("descripcion", descripcion.trim());
-            if (tematica) formData.set("tematicaId", tematica.id);
-            if (ocasion) formData.set("ocasionId", ocasion.id);
+            if (tematicas.length > 0) formData.set("tematicaIds", JSON.stringify(tematicas.map((c) => c.id)));
+            if (ocasiones.length > 0) formData.set("ocasionIds", JSON.stringify(ocasiones.map((c) => c.id)));
             archivos.forEach((f) => formData.append("imagenes", f));
 
             const producto = await api.postForm<ProductoDetalle>("/productos", formData);
@@ -101,17 +101,17 @@ export default function NuevoProducto() {
                     />
                     <CategoriaCombobox
                         tipo="tematicas"
-                        label="Temática (opcional)"
+                        label="Temáticas (opcional)"
                         placeholder="Buscar o crear temática"
-                        value={tematica}
-                        onChange={setTematica}
+                        value={tematicas}
+                        onChange={setTematicas}
                     />
                     <CategoriaCombobox
                         tipo="ocasiones"
-                        label="Ocasión (opcional)"
+                        label="Ocasiones (opcional)"
                         placeholder="Buscar o crear ocasión"
-                        value={ocasion}
-                        onChange={setOcasion}
+                        value={ocasiones}
+                        onChange={setOcasiones}
                     />
                 </section>
 
