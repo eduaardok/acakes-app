@@ -17,6 +17,7 @@ import Catalogo from "./public/pages/Catalogo";
 import ProductoDetalle from "./public/pages/ProductoDetalle";
 import LoginCliente from "./public/pages/LoginCliente";
 import RegistroCliente from "./public/pages/RegistroCliente";
+import MisFavoritos from "./public/pages/MisFavoritos";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
     const token = localStorage.getItem("token");
@@ -56,6 +57,7 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="/producto/:id" element={<ProductoDetalle />} />
                 <Route path="/login-cliente" element={<LoginCliente />} />
                 <Route path="/registro-cliente" element={<RegistroCliente />} />
+                <Route path="/mis-favoritos" element={<MisFavoritos />} />
 
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

@@ -1,20 +1,35 @@
 import { Link } from "react-router-dom";
-import type { ProductoResumen } from "../hooks/useCatalogo";
+import type { ReactNode } from "react";
 
-interface Props {
-    producto: ProductoResumen;
-    animationDelayMs?: number;
+// Subconjunto de campos que la card necesita — permite reusarla con
+// respuestas distintas (catálogo completo vs. resumen de /mis-favoritos).
+export interface ProductoCardData {
+    id: number;
+    nombre: string;
+    tematica: string | null;
+    ocasion: string | null;
+    imagenes: { url: string }[];
 }
 
-export function ProductoCard({ producto, animationDelayMs }: Props) {
+interface Props {
+    producto: ProductoCardData;
+    animationDelayMs?: number;
+    /** Acción adicional (ej. quitar de favoritos), superpuesta sobre la imagen. */
+    accionExtra?: ReactNode;
+}
+
+export function ProductoCard({ producto, animationDelayMs, accionExtra }: Props) {
     const imagen = producto.imagenes[0];
 
     return (
         <Link
             to={`/producto/${producto.id}`}
             style={animationDelayMs ? { animationDelay: `${animationDelayMs}ms` } : undefined}
-            className="animate-rise-in group block overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-[transform,box-shadow] duration-150 ease-out hover:shadow-md active:scale-[0.985]"
+            className="animate-rise-in group relative block overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-[transform,box-shadow] duration-150 ease-out hover:shadow-md active:scale-[0.985]"
         >
+            {accionExtra && (
+                <div className="absolute right-2 top-2 z-10">{accionExtra}</div>
+            )}
             <div className="aspect-square w-full overflow-hidden bg-gray-100">
                 {imagen ? (
                     <img

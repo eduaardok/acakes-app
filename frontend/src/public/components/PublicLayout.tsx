@@ -31,13 +31,21 @@ export function PublicLayout({ children }: Props) {
                             Catálogo
                         </Link>
                         {logueado ? (
-                            <button
-                                type="button"
-                                onClick={cerrarSesion}
-                                className="rounded-full px-3 py-1.5 transition-colors duration-150 ease-out hover:bg-pink-50 hover:text-pink-700"
-                            >
-                                Cerrar sesión
-                            </button>
+                            <>
+                                <Link
+                                    to="/mis-favoritos"
+                                    className="rounded-full px-3 py-1.5 transition-colors duration-150 ease-out hover:bg-pink-50 hover:text-pink-700"
+                                >
+                                    Favoritos
+                                </Link>
+                                <button
+                                    type="button"
+                                    onClick={cerrarSesion}
+                                    className="rounded-full px-3 py-1.5 transition-colors duration-150 ease-out hover:bg-pink-50 hover:text-pink-700"
+                                >
+                                    Cerrar sesión
+                                </button>
+                            </>
                         ) : (
                             <Link
                                 to="/login-cliente"
