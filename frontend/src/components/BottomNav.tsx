@@ -48,6 +48,27 @@ const navItems = [
         ),
     },
     {
+        path: "/calendario",
+        label: "Calendario",
+        icon: (
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+            >
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <path d="M16 2v4M8 2v4M3 10h18" />
+            </svg>
+        ),
+    },
+    {
         path: "/ingresos",
         label: "Ingresos",
         icon: (
@@ -100,7 +121,7 @@ export function BottomNav() {
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-gray-100 bg-white pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-            <div className="mx-auto grid w-full max-w-lg grid-cols-4">
+            <div className="mx-auto grid w-full max-w-lg grid-cols-5">
                 {navItems.map((item) => {
                     const active = pathname === item.path;
                     return (

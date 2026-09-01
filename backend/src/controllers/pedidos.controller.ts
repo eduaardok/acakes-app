@@ -40,11 +40,15 @@ function rangeForLocalDay(key: string, tzOffsetMinutes: number): { gte: Date; lt
     return { gte: new Date(gteMs), lte: new Date(lteMs) }
 }
 
+// Estados que ya no cuentan como "pendientes" para el calendario de pedidos.
+const ESTADOS_CERRADOS: EstadoPedido[] = ['ENTREGADO', 'CANCELADO', 'NO_RETIRADO']
+
 // GET /pedidos?fecha=2024-01-15&estado=CONFIRMADO
 // GET /pedidos?desde=2024-01-01&hasta=2024-01-31  (rango por fechaEntrega, inclusive)
+// GET /pedidos?...&pendiente=true  (excluye ENTREGADO/CANCELADO/NO_RETIRADO — usado por el calendario)
 // GET /pedidos  sin filtros de fecha → todos los pedidos
 export async function getPedidos(req: Request, res: Response) {
-    const { fecha, estado, desde, hasta } = req.query
+    const { fecha, estado, desde, hasta, pendiente } = req.query
 
     if ((desde && !hasta) || (!desde && hasta)) {
         res.status(400).json({ message: 'desde y hasta deben enviarse juntos (YYYY-MM-DD)' })
@@ -107,7 +111,11 @@ export async function getPedidos(req: Request, res: Response) {
     }
 
     const where = {
-        ...(estado ? { estado: estado as any } : {}),
+        ...(estado
+            ? { estado: estado as any }
+            : pendiente === 'true'
+                ? { estado: { notIn: ESTADOS_CERRADOS } }
+                : {}),
         ...(rangoFecha ? { fechaEntrega: rangoFecha } : {})
     }
 

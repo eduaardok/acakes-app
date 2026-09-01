@@ -11,6 +11,7 @@ import NuevoCliente from "./pages/NuevoCliente";
 import DetalleCliente from "./pages/DetalleCliente";
 import Ingresos from "./pages/Ingresos";
 import Cuenta from "./pages/Cuenta";
+import Calendario from "./pages/Calendario";
 import { Layout } from "./components/Layout";
 import { ScrollToTop } from "./components/ScrollToTop";
 import Catalogo from "./public/pages/Catalogo";
@@ -43,6 +44,7 @@ createRoot(document.getElementById("root")!).render(
                 {/* Con bottom nav */}
                 <Route path="/" element={<PrivateLayout><Dashboard /></PrivateLayout>} />
                 <Route path="/clientes" element={<PrivateLayout><Clientes /></PrivateLayout>} />
+                <Route path="/calendario" element={<PrivateLayout><Calendario /></PrivateLayout>} />
                 <Route path="/ingresos" element={<PrivateLayout><Ingresos /></PrivateLayout>} />
                 <Route path="/cuenta" element={<PrivateLayout><Cuenta /></PrivateLayout>} />
 
