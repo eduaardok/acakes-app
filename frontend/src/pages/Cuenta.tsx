@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { usePageTitle } from "../hooks/usePageTitle";
+import { Button } from "../components/Button";
+import { Skeleton } from "../components/Skeleton";
 
 interface UsuarioMe {
     id: number;
@@ -114,9 +116,9 @@ export default function Cuenta() {
 
             <main className="px-4 py-6 max-w-lg mx-auto space-y-6">
                 {cargandoPerfil && (
-                    <div className="space-y-3 animate-pulse">
-                        <div className="h-10 bg-gray-200 rounded-xl" />
-                        <div className="h-10 bg-gray-200 rounded-xl" />
+                    <div className="space-y-3">
+                        <Skeleton className="h-10 rounded-xl" />
+                        <Skeleton className="h-10 rounded-xl" />
                     </div>
                 )}
 
@@ -217,14 +219,9 @@ export default function Cuenta() {
                             </div>
                         )}
 
-                        <button
-                            type="button"
-                            onClick={handleGuardar}
-                            disabled={guardando}
-                            className="w-full bg-pink-600 text-white font-semibold py-4 rounded-2xl text-base disabled:opacity-50 active:scale-[0.99] transition-transform"
-                        >
+                        <Button type="button" onClick={handleGuardar} loading={guardando} fullWidth>
                             {guardando ? "Guardando..." : "Guardar cambios"}
-                        </button>
+                        </Button>
                     </section>
                 )}
 
@@ -237,13 +234,9 @@ export default function Cuenta() {
                             Cierra la sesión solo en este dispositivo.
                         </p>
                     </div>
-                    <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="w-full py-3 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 bg-white active:bg-gray-50"
-                    >
+                    <Button type="button" variant="secondary" size="sm" fullWidth onClick={handleLogout}>
                         Cerrar sesión
-                    </button>
+                    </Button>
                 </section>
             </main>
         </div>
