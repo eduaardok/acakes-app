@@ -5,6 +5,8 @@ import { api } from "../lib/api";
 import { BuscadorCliente } from "../components/BuscadorCliente";
 import type { ClienteResumen } from "../hooks/useClienteBusqueda";
 import { usePageTitle } from "../hooks/usePageTitle";
+import { Button } from "../components/Button";
+import { IconButton } from "../components/IconButton";
 
 export default function NuevoPedido() {
     usePageTitle("Nuevo pedido");
@@ -67,11 +69,7 @@ export default function NuevoPedido() {
             {/* Header */}
             <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-10 shadow-sm">
                 <div className="flex items-center gap-3 max-w-lg mx-auto">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="p-2 -ml-2 rounded-full text-gray-400 hover:text-gray-600 active:bg-gray-100"
-                        aria-label="Volver"
-                    >
+                    <IconButton onClick={() => navigate(-1)} className="-ml-2" aria-label="Volver">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -85,7 +83,7 @@ export default function NuevoPedido() {
                         >
                             <path d="M15 18l-6-6 6-6" />
                         </svg>
-                    </button>
+                    </IconButton>
                     <h1 className="text-xl font-bold text-gray-900">Nuevo pedido</h1>
                 </div>
             </header>
@@ -178,14 +176,9 @@ export default function NuevoPedido() {
                 )}
 
                 {/* Botón guardar */}
-                <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={guardando}
-                    className="w-full bg-pink-600 text-white font-semibold py-4 rounded-2xl text-base disabled:opacity-50 active:scale-95 transition-transform"
-                >
+                <Button type="button" onClick={handleSubmit} loading={guardando} fullWidth>
                     {guardando ? "Guardando..." : "Guardar pedido"}
-                </button>
+                </Button>
 
                 {/* Espacio para que el botón no quede pegado al borde en iPhone */}
                 <div className="h-6" />
