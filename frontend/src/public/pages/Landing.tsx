@@ -82,12 +82,11 @@ export default function Landing() {
             {!loading && collage.length > 0 && (
                 <section className="mx-auto max-w-3xl px-4 pt-8 pb-2">
                     <div className="grid grid-cols-2 gap-3">
-                        {collage.map((p, i) => (
+                        {collage.map((p) => (
                             <Link
                                 key={p.id}
                                 to={`/producto/${p.id}`}
-                                style={{ animationDelay: `${i * 60}ms` }}
-                                className="animate-rise-in group aspect-square overflow-hidden rounded-2xl border border-gray-100 shadow-sm"
+                                className="group aspect-square overflow-hidden rounded-2xl border border-gray-100 shadow-sm transition-transform duration-150 ease-out active:scale-[0.97]"
                             >
                                 <img
                                     src={p.imagenes[0].url}

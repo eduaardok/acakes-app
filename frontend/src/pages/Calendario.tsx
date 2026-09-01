@@ -111,7 +111,7 @@ export default function Calendario() {
                 )}
 
                 {!error && (
-                    <div className="animate-rise-in grid grid-cols-7 gap-1.5">
+                    <div className="animate-rise-in grid grid-cols-7 gap-1">
                         {DIAS_SEMANA.map((d, i) => (
                             <p key={i} className="text-center text-xs font-semibold text-gray-400 uppercase pb-1">
                                 {d}

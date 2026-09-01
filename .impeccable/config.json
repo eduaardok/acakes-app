@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gray-on-color",
+        "value": "text-gray-600 on bg-pink-600",
+        "createdAt": "2026-09-01T07:12:31.218Z",
+        "reason": "Claude: false positive — ternary chip/toggle classes, active(bg-pink-600 text-white) and inactive(text-gray-600) branches never render together"
+      },
+      {
+        "rule": "gray-on-color",
+        "value": "text-gray-400 on bg-pink-50",
+        "createdAt": "2026-09-01T07:12:34.999Z",
+        "reason": "Claude: false positive — ternary like/favorito button, active(border-pink-500 bg-pink-50 text-pink-600) and inactive(text-gray-400) branches never render together"
+      },
+      {
+        "rule": "gray-on-color",
+        "value": "text-gray-400 on bg-amber-50",
+        "createdAt": "2026-09-01T07:12:35.150Z",
+        "reason": "Claude: false positive — ternary favorito button, active(border-amber-400 bg-amber-50 text-amber-500) and inactive(text-gray-400) branches never render together"
+      }
+    ]
+  }
+}
