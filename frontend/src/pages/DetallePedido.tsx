@@ -323,7 +323,11 @@ export default function DetallePedido() {
                 {/* Botón cancelar — solo en estados donde tiene sentido */}
                 {puedeCancel.has(pedido.estado) && (
                     <button
-                        onClick={() => cambiarEstado("CANCELADO")}
+                        onClick={() => {
+                            if (window.confirm("¿Cancelar este pedido? Esta acción no se puede deshacer.")) {
+                                cambiarEstado("CANCELADO");
+                            }
+                        }}
                         disabled={cambiando}
                         className="w-full border border-red-200 text-red-500 font-medium py-3 rounded-2xl text-sm disabled:opacity-50"
                     >
