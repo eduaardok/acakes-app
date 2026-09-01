@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { usePageTitle } from "../hooks/usePageTitle";
+import { Button } from "../components/Button";
 
 export default function Login() {
     usePageTitle("Iniciar sesión");
@@ -80,29 +81,15 @@ export default function Login() {
                         </div>
                     )}
 
-                    <button
+                    <Button
                         onClick={handleSubmit}
-                        disabled={cargando || !email || !password}
-                        className="w-full bg-pink-500 hover:bg-pink-600 hover:shadow-md hover:shadow-pink-200/60 disabled:bg-pink-300 disabled:shadow-none text-white font-semibold rounded-xl py-3 text-base transition-[background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] flex items-center justify-center gap-2"
+                        disabled={!email || !password}
+                        loading={cargando}
+                        fullWidth
+                        size="sm"
                     >
-                        {cargando && (
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                className="animate-spin"
-                                aria-hidden
-                            >
-                                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                            </svg>
-                        )}
                         {cargando ? "Ingresando..." : "Ingresar"}
-                    </button>
+                    </Button>
                 </div>
 
             </div>
