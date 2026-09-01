@@ -145,7 +145,7 @@ export default function ProductoDetalle() {
                             alt={producto.nombre}
                             loading="lazy"
                             decoding="async"
-                            className="h-full w-full object-cover"
+                            className="h-full w-full object-contain"
                         />
                     ) : (
                         <div className="flex h-full w-full items-center justify-center text-gray-300">
@@ -184,12 +184,12 @@ export default function ProductoDetalle() {
                         <div className="mt-1.5 flex flex-wrap gap-1.5">
                             {producto.tematica && (
                                 <span className="rounded-full bg-pink-50 px-2.5 py-1 text-xs font-medium text-pink-700">
-                                    {producto.tematica}
+                                    {producto.tematica.nombre}
                                 </span>
                             )}
                             {producto.ocasion && (
                                 <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
-                                    {producto.ocasion}
+                                    {producto.ocasion.nombre}
                                 </span>
                             )}
                         </div>

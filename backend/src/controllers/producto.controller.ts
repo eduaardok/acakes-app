@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { Prisma } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import { subirImagen, eliminarImagen } from '../lib/supabaseStorage'
 
@@ -6,9 +7,9 @@ const PAGE_SIZE_DEFAULT = 20
 const PAGE_SIZE_MAX = 50
 const MAX_IMAGENES_POR_PRODUCTO = 8
 
-// GET /productos?page=&pageSize=&tematica=&ocasion=
+// GET /productos?page=&pageSize=&tematicaId=&ocasionId=
 export async function getProductos(req: Request, res: Response) {
-    const { tematica, ocasion } = req.query
+    const { tematicaId, ocasionId } = req.query
 
     const page = Math.max(1, Number(req.query.page) || 1)
     const pageSize = Math.min(
@@ -17,14 +18,18 @@ export async function getProductos(req: Request, res: Response) {
     )
 
     const where = {
-        ...(tematica ? { tematica: String(tematica) } : {}),
-        ...(ocasion ? { ocasion: String(ocasion) } : {}),
+        ...(tematicaId ? { tematicaId: String(tematicaId) } : {}),
+        ...(ocasionId ? { ocasionId: String(ocasionId) } : {}),
     }
 
     const [productos, total] = await Promise.all([
         prisma.producto.findMany({
             where,
-            include: { imagenes: { orderBy: { orden: 'asc' } } },
+            include: {
+                imagenes: { orderBy: { orden: 'asc' } },
+                tematica: { select: { id: true, nombre: true } },
+                ocasion: { select: { id: true, nombre: true } },
+            },
             orderBy: { createdAt: 'desc' },
             skip: (page - 1) * pageSize,
             take: pageSize,
@@ -51,7 +56,11 @@ export async function getProductoById(req: Request, res: Response) {
 
     const producto = await prisma.producto.findUnique({
         where: { id },
-        include: { imagenes: { orderBy: { orden: 'asc' } } },
+        include: {
+            imagenes: { orderBy: { orden: 'asc' } },
+            tematica: { select: { id: true, nombre: true } },
+            ocasion: { select: { id: true, nombre: true } },
+        },
     })
 
     if (!producto) {
@@ -64,7 +73,7 @@ export async function getProductoById(req: Request, res: Response) {
 
 // POST /productos — multipart/form-data, campo "imagenes" con hasta 8 archivos
 export async function createProducto(req: Request, res: Response) {
-    const { nombre, descripcion, tematica, ocasion } = req.body
+    const { nombre, descripcion, tematicaId, ocasionId } = req.body
     const archivos = (req.files as Express.Multer.File[] | undefined) ?? []
 
     if (!nombre || typeof nombre !== 'string' || !nombre.trim()) {
@@ -89,18 +98,27 @@ export async function createProducto(req: Request, res: Response) {
             data: {
                 nombre: nombre.trim(),
                 descripcion: descripcion?.trim() || null,
-                tematica: tematica?.trim() || null,
-                ocasion: ocasion?.trim() || null,
+                tematicaId: tematicaId?.trim() || null,
+                ocasionId: ocasionId?.trim() || null,
                 imagenes: {
                     create: urlsSubidas.map((url, index) => ({ url, orden: index })),
                 },
             },
-            include: { imagenes: { orderBy: { orden: 'asc' } } },
+            include: {
+                imagenes: { orderBy: { orden: 'asc' } },
+                tematica: { select: { id: true, nombre: true } },
+                ocasion: { select: { id: true, nombre: true } },
+            },
         })
 
         res.status(201).json(producto)
     } catch (err) {
         await Promise.allSettled(urlsSubidas.map((url) => eliminarImagen(url)))
+
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2003') {
+            res.status(400).json({ message: 'Temática u ocasión inválida' })
+            return
+        }
         res.status(500).json({
             message: err instanceof Error ? err.message : 'Error al crear el producto',
         })
@@ -115,7 +133,7 @@ export async function updateProducto(req: Request, res: Response) {
         return
     }
 
-    const { nombre, descripcion, tematica, ocasion } = req.body
+    const { nombre, descripcion, tematicaId, ocasionId } = req.body
 
     const existente = await prisma.producto.findUnique({ where: { id } })
     if (!existente) {
@@ -126,8 +144,8 @@ export async function updateProducto(req: Request, res: Response) {
     const data: {
         nombre?: string
         descripcion?: string | null
-        tematica?: string | null
-        ocasion?: string | null
+        tematicaId?: string | null
+        ocasionId?: string | null
     } = {}
 
     if (nombre !== undefined) {
@@ -138,21 +156,33 @@ export async function updateProducto(req: Request, res: Response) {
         data.nombre = nombre.trim()
     }
     if (descripcion !== undefined) data.descripcion = descripcion === null ? null : String(descripcion).trim() || null
-    if (tematica !== undefined) data.tematica = tematica === null ? null : String(tematica).trim() || null
-    if (ocasion !== undefined) data.ocasion = ocasion === null ? null : String(ocasion).trim() || null
+    if (tematicaId !== undefined) data.tematicaId = tematicaId === null ? null : String(tematicaId).trim() || null
+    if (ocasionId !== undefined) data.ocasionId = ocasionId === null ? null : String(ocasionId).trim() || null
 
     if (Object.keys(data).length === 0) {
         res.status(400).json({ message: 'No hay datos para actualizar' })
         return
     }
 
-    const producto = await prisma.producto.update({
-        where: { id },
-        data,
-        include: { imagenes: { orderBy: { orden: 'asc' } } },
-    })
+    try {
+        const producto = await prisma.producto.update({
+            where: { id },
+            data,
+            include: {
+                imagenes: { orderBy: { orden: 'asc' } },
+                tematica: { select: { id: true, nombre: true } },
+                ocasion: { select: { id: true, nombre: true } },
+            },
+        })
 
-    res.json(producto)
+        res.json(producto)
+    } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2003') {
+            res.status(400).json({ message: 'Temática u ocasión inválida' })
+            return
+        }
+        throw err
+    }
 }
 
 // POST /productos/:id/imagenes — multipart, agrega hasta 8 imágenes nuevas

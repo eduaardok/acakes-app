@@ -6,9 +6,9 @@ const PAGE_SIZE_DEFAULT = 20
 const PAGE_SIZE_MAX = 50
 const RESENAS_PAGE_SIZE = 10
 
-// GET /catalogo?tematica=infantil&ocasion=quinceañera&page=1&pageSize=20&ordenarPor=vistas
+// GET /catalogo?tematicaId=&ocasionId=&page=1&pageSize=20&ordenarPor=vistas
 export async function getCatalogo(req: Request, res: Response) {
-    const { tematica, ocasion, ordenarPor } = req.query
+    const { tematicaId, ocasionId, ordenarPor } = req.query
 
     const page = Math.max(1, Number(req.query.page) || 1)
     const pageSize = Math.min(
@@ -17,8 +17,8 @@ export async function getCatalogo(req: Request, res: Response) {
     )
 
     const where = {
-        ...(tematica ? { tematica: String(tematica) } : {}),
-        ...(ocasion ? { ocasion: String(ocasion) } : {}),
+        ...(tematicaId ? { tematicaId: String(tematicaId) } : {}),
+        ...(ocasionId ? { ocasionId: String(ocasionId) } : {}),
     }
 
     // ordenarPor=vistas — usado por la landing pública para "destacados"
@@ -32,8 +32,8 @@ export async function getCatalogo(req: Request, res: Response) {
                 id: true,
                 nombre: true,
                 descripcion: true,
-                tematica: true,
-                ocasion: true,
+                tematica: { select: { id: true, nombre: true } },
+                ocasion: { select: { id: true, nombre: true } },
                 createdAt: true,
                 imagenes: {
                     orderBy: { orden: 'asc' },
@@ -76,8 +76,8 @@ export async function getProductoDetalle(req: Request, res: Response) {
                     id: true,
                     nombre: true,
                     descripcion: true,
-                    tematica: true,
-                    ocasion: true,
+                    tematica: { select: { id: true, nombre: true } },
+                    ocasion: { select: { id: true, nombre: true } },
                     vistas: true,
                     createdAt: true,
                     imagenes: {

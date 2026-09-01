@@ -15,25 +15,46 @@ export default function Productos() {
             <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-10 shadow-sm">
                 <div className="max-w-lg mx-auto flex items-center justify-between gap-2">
                     <h1 className="text-xl font-bold text-gray-900">Productos</h1>
-                    <IconButton
-                        variant="solid"
-                        onClick={() => navigate("/panel/productos/nuevo")}
-                        aria-label="Nuevo producto"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="22"
-                            height="22"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.25"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
+                    <div className="flex items-center gap-1">
+                        <IconButton
+                            onClick={() => navigate("/panel/categorias")}
+                            aria-label="Gestionar categorías"
                         >
-                            <path d="M12 5v14M5 12h14" />
-                        </svg>
-                    </IconButton>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24L4 3a1 1 0 0 0-1 1l.24 5.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.82Z" />
+                                <circle cx="7.5" cy="7.5" r="1.5" fill="currentColor" stroke="none" />
+                            </svg>
+                        </IconButton>
+                        <IconButton
+                            variant="solid"
+                            onClick={() => navigate("/panel/productos/nuevo")}
+                            aria-label="Nuevo producto"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="22"
+                                height="22"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.25"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                        </IconButton>
+                    </div>
                 </div>
             </header>
 
@@ -82,7 +103,7 @@ export default function Productos() {
                                             <img
                                                 src={p.imagenes[0].url}
                                                 alt={p.nombre}
-                                                className="h-full w-full object-cover"
+                                                className="h-full w-full object-contain"
                                             />
                                         ) : (
                                             <CakeIcon className="h-8 w-8 text-gray-300" />

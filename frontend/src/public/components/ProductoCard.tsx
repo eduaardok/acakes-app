@@ -7,8 +7,8 @@ import { CakeIcon } from "../../components/icons";
 export interface ProductoCardData {
     id: number;
     nombre: string;
-    tematica: string | null;
-    ocasion: string | null;
+    tematica: { id: string; nombre: string } | null;
+    ocasion: { id: string; nombre: string } | null;
     imagenes: { url: string }[];
 }
 
@@ -38,7 +38,7 @@ export function ProductoCard({ producto, animationDelayMs, accionExtra }: Props)
                         alt={producto.nombre}
                         loading="lazy"
                         decoding="async"
-                        className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                        className="h-full w-full object-contain transition-transform duration-300 ease-out group-hover:scale-105"
                     />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center text-gray-300">
@@ -52,12 +52,12 @@ export function ProductoCard({ producto, animationDelayMs, accionExtra }: Props)
                     <div className="mt-1.5 flex flex-wrap gap-1.5">
                         {producto.tematica && (
                             <span className="rounded-full bg-pink-50 px-2 py-0.5 text-xs font-medium text-pink-700">
-                                {producto.tematica}
+                                {producto.tematica.nombre}
                             </span>
                         )}
                         {producto.ocasion && (
                             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                                {producto.ocasion}
+                                {producto.ocasion.nombre}
                             </span>
                         )}
                     </div>

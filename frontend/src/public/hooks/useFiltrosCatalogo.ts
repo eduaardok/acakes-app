@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { publicApi } from "../lib/publicApi";
 
+export interface CategoriaFiltro {
+    id: string;
+    nombre: string;
+}
+
 interface ProductoFiltro {
-    tematica: string | null;
-    ocasion: string | null;
+    tematica: CategoriaFiltro | null;
+    ocasion: CategoriaFiltro | null;
 }
 
 interface CatalogoResponse {
@@ -16,21 +21,21 @@ interface CatalogoResponse {
  * grandes esto puede no cubrir el 100% de los valores existentes.
  */
 export function useFiltrosCatalogo() {
-    const [tematicas, setTematicas] = useState<string[]>([]);
-    const [ocasiones, setOcasiones] = useState<string[]>([]);
+    const [tematicas, setTematicas] = useState<CategoriaFiltro[]>([]);
+    const [ocasiones, setOcasiones] = useState<CategoriaFiltro[]>([]);
 
     useEffect(() => {
         publicApi
             .get<CatalogoResponse>("/catalogo?pageSize=50")
             .then((res) => {
-                const t = new Set<string>();
-                const o = new Set<string>();
+                const t = new Map<string, CategoriaFiltro>();
+                const o = new Map<string, CategoriaFiltro>();
                 for (const p of res.productos) {
-                    if (p.tematica) t.add(p.tematica);
-                    if (p.ocasion) o.add(p.ocasion);
+                    if (p.tematica) t.set(p.tematica.id, p.tematica);
+                    if (p.ocasion) o.set(p.ocasion.id, p.ocasion);
                 }
-                setTematicas([...t].sort());
-                setOcasiones([...o].sort());
+                setTematicas([...t.values()].sort((a, b) => a.nombre.localeCompare(b.nombre)));
+                setOcasiones([...o.values()].sort((a, b) => a.nombre.localeCompare(b.nombre)));
             })
             .catch(() => {
                 // Sin filtros disponibles no es un error bloqueante: el catálogo

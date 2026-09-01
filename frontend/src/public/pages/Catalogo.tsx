@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PublicLayout } from "../components/PublicLayout";
 import { ProductoCard } from "../components/ProductoCard";
 import { useCatalogo } from "../hooks/useCatalogo";
-import { useFiltrosCatalogo } from "../hooks/useFiltrosCatalogo";
+import { useFiltrosCatalogo, type CategoriaFiltro } from "../hooks/useFiltrosCatalogo";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { CakeIcon } from "../../components/icons";
 
@@ -13,7 +13,7 @@ function FiltroChips({
     onChange,
 }: {
     label: string;
-    opciones: string[];
+    opciones: CategoriaFiltro[];
     activo: string;
     onChange: (v: string) => void;
 }) {
@@ -35,14 +35,14 @@ function FiltroChips({
             </button>
             {opciones.map((o) => (
                 <button
-                    key={o}
+                    key={o.id}
                     type="button"
-                    onClick={() => onChange(o)}
+                    onClick={() => onChange(o.id)}
                     className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-[color,background-color,transform] duration-150 ease-out active:scale-95 ${
-                        activo === o ? "bg-pink-600 text-white" : "bg-white border border-gray-200 text-gray-600"
+                        activo === o.id ? "bg-pink-600 text-white" : "bg-white border border-gray-200 text-gray-600"
                     }`}
                 >
-                    {o}
+                    {o.nombre}
                 </button>
             ))}
         </div>
@@ -51,11 +51,11 @@ function FiltroChips({
 
 export default function Catalogo() {
     usePageTitle("Catálogo");
-    const [tematica, setTematica] = useState("");
-    const [ocasion, setOcasion] = useState("");
+    const [tematicaId, setTematicaId] = useState("");
+    const [ocasionId, setOcasionId] = useState("");
 
     const { tematicas, ocasiones } = useFiltrosCatalogo();
-    const { productos, loading, error, hayMas, cargarMas, refetch } = useCatalogo(tematica, ocasion);
+    const { productos, loading, error, hayMas, cargarMas, refetch } = useCatalogo(tematicaId, ocasionId);
 
     return (
         <PublicLayout>
@@ -66,8 +66,8 @@ export default function Catalogo() {
                 </p>
 
                 <div className="mt-4 space-y-2">
-                    <FiltroChips label="Temática" opciones={tematicas} activo={tematica} onChange={setTematica} />
-                    <FiltroChips label="Ocasión" opciones={ocasiones} activo={ocasion} onChange={setOcasion} />
+                    <FiltroChips label="Temática" opciones={tematicas} activo={tematicaId} onChange={setTematicaId} />
+                    <FiltroChips label="Ocasión" opciones={ocasiones} activo={ocasionId} onChange={setOcasionId} />
                 </div>
 
                 {error && (

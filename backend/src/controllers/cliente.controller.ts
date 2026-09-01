@@ -49,8 +49,8 @@ export async function misFavoritos(req: Request, res: Response) {
                 select: {
                     id: true,
                     nombre: true,
-                    tematica: true,
-                    ocasion: true,
+                    tematica: { select: { id: true, nombre: true } },
+                    ocasion: { select: { id: true, nombre: true } },
                     imagenes: { orderBy: { orden: 'asc' }, take: 1, select: { url: true } },
                 },
             },

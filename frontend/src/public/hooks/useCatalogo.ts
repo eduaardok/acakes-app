@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { publicApi } from "../lib/publicApi";
+import type { CategoriaFiltro } from "./useFiltrosCatalogo";
 
 const PAGE_SIZE = 12;
 
@@ -7,8 +8,8 @@ export interface ProductoResumen {
     id: number;
     nombre: string;
     descripcion: string | null;
-    tematica: string | null;
-    ocasion: string | null;
+    tematica: CategoriaFiltro | null;
+    ocasion: CategoriaFiltro | null;
     createdAt: string;
     imagenes: { id: number; url: string; orden: number }[];
 }
@@ -21,7 +22,7 @@ interface CatalogoResponse {
     totalPages: number;
 }
 
-export function useCatalogo(tematica: string, ocasion: string) {
+export function useCatalogo(tematicaId: string, ocasionId: string) {
     const [productos, setProductos] = useState<ProductoResumen[]>([]);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -33,14 +34,14 @@ export function useCatalogo(tematica: string, ocasion: string) {
     useEffect(() => {
         setProductos([]);
         setPage(1);
-    }, [tematica, ocasion]);
+    }, [tematicaId, ocasionId]);
 
     useEffect(() => {
         let cancelado = false;
 
         const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) });
-        if (tematica) params.set("tematica", tematica);
-        if (ocasion) params.set("ocasion", ocasion);
+        if (tematicaId) params.set("tematicaId", tematicaId);
+        if (ocasionId) params.set("ocasionId", ocasionId);
 
         setLoading(true);
         setError(null);
@@ -62,7 +63,7 @@ export function useCatalogo(tematica: string, ocasion: string) {
         return () => {
             cancelado = true;
         };
-    }, [tematica, ocasion, page, reloadToken]);
+    }, [tematicaId, ocasionId, page, reloadToken]);
 
     const refetch = useCallback(() => setReloadToken((n) => n + 1), []);
 

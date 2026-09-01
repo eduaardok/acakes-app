@@ -14,6 +14,7 @@ import Cuenta from "./pages/Cuenta";
 import Productos from "./pages/Productos";
 import NuevoProducto from "./pages/NuevoProducto";
 import DetalleProducto from "./pages/DetalleProducto";
+import Categorias from "./pages/Categorias";
 import { Layout } from "./components/Layout";
 import { ScrollToTop } from "./components/ScrollToTop";
 import Catalogo from "./public/pages/Catalogo";
@@ -58,6 +59,7 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="/panel/clientes/:id" element={<PrivateRoute><DetalleCliente /></PrivateRoute>} />
                 <Route path="/panel/productos/nuevo" element={<PrivateRoute><NuevoProducto /></PrivateRoute>} />
                 <Route path="/panel/productos/:id" element={<PrivateRoute><DetalleProducto /></PrivateRoute>} />
+                <Route path="/panel/categorias" element={<PrivateRoute><Categorias /></PrivateRoute>} />
 
                 {/* UI pública (catálogo/clientes finales) — sin auth de admin */}
                 <Route path="/" element={<Landing />} />

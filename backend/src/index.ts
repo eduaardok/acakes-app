@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.routes'
 import clientesRoutes from './routes/clientes.routes'
 import pedidosRoutes from './routes/pedidos.routes'
 import productoRoutes from './routes/producto.routes'
+import categoriasRoutes from './routes/categorias.routes'
 import publicRoutes from './routes/public.routes'
 import usuariosClienteRoutes from './routes/usuariosCliente.routes'
 import { authenticateToken } from './middleware/auth.middleware'
@@ -43,6 +44,7 @@ app.use('/auth', authRoutes)
 app.use('/clientes', authenticateToken, clientesRoutes)
 app.use('/pedidos', authenticateToken, pedidosRoutes)
 app.use('/productos', authenticateToken, productoRoutes)
+app.use('/categorias', authenticateToken, categoriasRoutes)
 app.use('/usuarios-cliente', authenticateToken, usuariosClienteRoutes)
 
 // Capa pública (catálogo + interacciones de clientes) — JWT con role: 'cliente',

@@ -1,12 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { publicApi } from "../lib/publicApi";
+import type { CategoriaFiltro } from "./useFiltrosCatalogo";
 
 export interface ProductoDetalle {
     id: number;
     nombre: string;
     descripcion: string | null;
-    tematica: string | null;
-    ocasion: string | null;
+    tematica: CategoriaFiltro | null;
+    ocasion: CategoriaFiltro | null;
     vistas: number;
     createdAt: string;
     imagenes: { id: number; url: string; orden: number }[];

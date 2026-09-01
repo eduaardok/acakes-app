@@ -101,12 +101,28 @@ model UsuarioCliente {
   fechasEspeciales FechaEspecial[]
 }
 
+model Tematica {
+  id        String     @id @default(uuid())
+  nombre    String     @unique
+  productos Producto[]
+  creadoEn  DateTime   @default(now())
+}
+
+model Ocasion {
+  id        String     @id @default(uuid())
+  nombre    String     @unique
+  productos Producto[]
+  creadoEn  DateTime   @default(now())
+}
+
 model Producto {
   id          Int             @id @default(autoincrement())
   nombre      String
   descripcion String?
-  tematica    String?
-  ocasion     String?
+  tematicaId  String?
+  tematica    Tematica?       @relation(fields: [tematicaId], references: [id])
+  ocasionId   String?
+  ocasion     Ocasion?        @relation(fields: [ocasionId], references: [id])
   vistas      Int             @default(0)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
@@ -115,7 +131,7 @@ model Producto {
   likes       LikeProducto[]
   favoritos   Favorito[]
 
-  @@index([tematica, ocasion])
+  @@index([tematicaId, ocasionId])
 }
 
 model ProductoImagen {

@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { usePageTitle } from "../hooks/usePageTitle";
 import type { ProductoDetalle } from "../hooks/useProducto";
+import type { Categoria } from "../hooks/useCategorias";
 import { Button } from "../components/Button";
 import { IconButton } from "../components/IconButton";
+import { CategoriaCombobox } from "../components/CategoriaCombobox";
 
 const MAX_IMAGENES = 8;
 
@@ -14,8 +16,8 @@ export default function NuevoProducto() {
 
     const [nombre, setNombre] = useState("");
     const [descripcion, setDescripcion] = useState("");
-    const [tematica, setTematica] = useState("");
-    const [ocasion, setOcasion] = useState("");
+    const [tematica, setTematica] = useState<Categoria | null>(null);
+    const [ocasion, setOcasion] = useState<Categoria | null>(null);
     const [archivos, setArchivos] = useState<File[]>([]);
     const [previews, setPreviews] = useState<string[]>([]);
     const [guardando, setGuardando] = useState(false);
@@ -50,8 +52,8 @@ export default function NuevoProducto() {
             const formData = new FormData();
             formData.set("nombre", nombre.trim());
             if (descripcion.trim()) formData.set("descripcion", descripcion.trim());
-            if (tematica.trim()) formData.set("tematica", tematica.trim());
-            if (ocasion.trim()) formData.set("ocasion", ocasion.trim());
+            if (tematica) formData.set("tematicaId", tematica.id);
+            if (ocasion) formData.set("ocasionId", ocasion.id);
             archivos.forEach((f) => formData.append("imagenes", f));
 
             const producto = await api.postForm<ProductoDetalle>("/productos", formData);
@@ -97,19 +99,19 @@ export default function NuevoProducto() {
                         rows={3}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white resize-none"
                     />
-                    <input
-                        type="text"
+                    <CategoriaCombobox
+                        tipo="tematicas"
+                        label="Temática (opcional)"
+                        placeholder="Buscar o crear temática"
                         value={tematica}
-                        onChange={(e) => setTematica(e.target.value)}
-                        placeholder="Temática (opcional)"
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white"
+                        onChange={setTematica}
                     />
-                    <input
-                        type="text"
+                    <CategoriaCombobox
+                        tipo="ocasiones"
+                        label="Ocasión (opcional)"
+                        placeholder="Buscar o crear ocasión"
                         value={ocasion}
-                        onChange={(e) => setOcasion(e.target.value)}
-                        placeholder="Ocasión (opcional)"
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white"
+                        onChange={setOcasion}
                     />
                 </section>
 

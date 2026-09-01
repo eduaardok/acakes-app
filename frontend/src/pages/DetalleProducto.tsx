@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { useProducto, type ProductoDetalle } from "../hooks/useProducto";
+import type { Categoria } from "../hooks/useCategorias";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { Button } from "../components/Button";
 import { IconButton } from "../components/IconButton";
 import { Skeleton } from "../components/Skeleton";
 import { CakeIcon } from "../components/icons";
+import { CategoriaCombobox } from "../components/CategoriaCombobox";
 
 const MAX_IMAGENES = 8;
 
@@ -18,8 +20,8 @@ export default function DetalleProducto() {
     const [editando, setEditando] = useState(false);
     const [nombreEdit, setNombreEdit] = useState("");
     const [descripcionEdit, setDescripcionEdit] = useState("");
-    const [tematicaEdit, setTematicaEdit] = useState("");
-    const [ocasionEdit, setOcasionEdit] = useState("");
+    const [tematicaEdit, setTematicaEdit] = useState<Categoria | null>(null);
+    const [ocasionEdit, setOcasionEdit] = useState<Categoria | null>(null);
     const [guardando, setGuardando] = useState(false);
     const [errorEdicion, setErrorEdicion] = useState<string | null>(null);
 
@@ -34,8 +36,8 @@ export default function DetalleProducto() {
         if (!producto) return;
         setNombreEdit(producto.nombre);
         setDescripcionEdit(producto.descripcion ?? "");
-        setTematicaEdit(producto.tematica ?? "");
-        setOcasionEdit(producto.ocasion ?? "");
+        setTematicaEdit(producto.tematica);
+        setOcasionEdit(producto.ocasion);
         setErrorEdicion(null);
         setEditando(true);
     };
@@ -51,8 +53,8 @@ export default function DetalleProducto() {
             await api.patch(`/productos/${id}`, {
                 nombre: nombreEdit.trim(),
                 descripcion: descripcionEdit.trim() || null,
-                tematica: tematicaEdit.trim() || null,
-                ocasion: ocasionEdit.trim() || null,
+                tematicaId: tematicaEdit?.id ?? null,
+                ocasionId: ocasionEdit?.id ?? null,
             });
             setEditando(false);
             await refetch();
@@ -213,11 +215,11 @@ export default function DetalleProducto() {
                             <div className="flex gap-4">
                                 <div className="flex-1">
                                     <p className="text-xs text-gray-400">Temática</p>
-                                    <p className="text-sm text-gray-600">{producto.tematica || "—"}</p>
+                                    <p className="text-sm text-gray-600">{producto.tematica?.nombre || "—"}</p>
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-xs text-gray-400">Ocasión</p>
-                                    <p className="text-sm text-gray-600">{producto.ocasion || "—"}</p>
+                                    <p className="text-sm text-gray-600">{producto.ocasion?.nombre || "—"}</p>
                                 </div>
                             </div>
                             <button type="button" onClick={abrirEdicion} className="text-sm font-medium text-pink-600">
@@ -240,19 +242,19 @@ export default function DetalleProducto() {
                                 rows={3}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 resize-none"
                             />
-                            <input
-                                type="text"
+                            <CategoriaCombobox
+                                tipo="tematicas"
+                                label="Temática"
+                                placeholder="Buscar o crear temática"
                                 value={tematicaEdit}
-                                onChange={(e) => setTematicaEdit(e.target.value)}
-                                placeholder="Temática"
-                                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
+                                onChange={setTematicaEdit}
                             />
-                            <input
-                                type="text"
+                            <CategoriaCombobox
+                                tipo="ocasiones"
+                                label="Ocasión"
+                                placeholder="Buscar o crear ocasión"
                                 value={ocasionEdit}
-                                onChange={(e) => setOcasionEdit(e.target.value)}
-                                placeholder="Ocasión"
-                                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
+                                onChange={setOcasionEdit}
                             />
                             {errorEdicion && <p className="text-xs text-red-600">{errorEdicion}</p>}
                             <div className="flex gap-2">
