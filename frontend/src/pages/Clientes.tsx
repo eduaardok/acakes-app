@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClientes } from "../hooks/useClientes";
 import { usePageTitle } from "../hooks/usePageTitle";
+import { IconButton } from "../components/IconButton";
+import { Skeleton } from "../components/Skeleton";
 
 export default function Clientes() {
     usePageTitle("Clientes");
@@ -16,10 +18,9 @@ export default function Clientes() {
                 <div className="max-w-lg mx-auto">
                     <div className="flex items-center justify-between gap-2 mb-3">
                         <h1 className="text-xl font-bold text-gray-900">Clientes</h1>
-                        <button
-                            type="button"
+                        <IconButton
+                            variant="solid"
                             onClick={() => navigate("/clientes/nuevo")}
-                            className="shrink-0 p-2.5 rounded-full bg-pink-600 text-white shadow-sm active:scale-95 transition-transform"
                             aria-label="Nuevo cliente"
                         >
                             <svg
@@ -35,7 +36,7 @@ export default function Clientes() {
                             >
                                 <path d="M12 5v14M5 12h14" />
                             </svg>
-                        </button>
+                        </IconButton>
                     </div>
                     <input
                         type="text"
@@ -53,9 +54,9 @@ export default function Clientes() {
                 {loading && clientes.length === 0 && (
                     <div className="space-y-3">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 animate-pulse">
-                                <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
-                                <div className="h-3 bg-gray-100 rounded w-1/3" />
+                            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 space-y-2">
+                                <Skeleton className="h-4 w-1/2" />
+                                <Skeleton className="h-3 w-1/3" />
                             </div>
                         ))}
                     </div>
