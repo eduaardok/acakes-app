@@ -376,6 +376,19 @@ export default function Dashboard() {
                                 animationDelayMs={Math.min(i, 8) * 35}
                             />
                         ))}
+
+                        {vista === "listado" && listado.hayMas && (
+                            <div className="pt-1 flex justify-center">
+                                <button
+                                    type="button"
+                                    onClick={listado.cargarMas}
+                                    disabled={loading}
+                                    className="rounded-full border border-pink-200 bg-white px-5 py-2.5 text-sm font-semibold text-pink-700 transition-[background-color,transform] duration-150 ease-out active:scale-95 disabled:opacity-50"
+                                >
+                                    {loading ? "Cargando..." : "Cargar más"}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
             </main>

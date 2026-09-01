@@ -3,6 +3,9 @@ import { prisma } from '../lib/prisma'
 import { EstadoPedido } from '@prisma/client'
 import { esTransicionValida } from '../lib/transiciones'
 
+const PAGE_SIZE_DEFAULT = 30
+const PAGE_SIZE_MAX = 100
+
 function getTzOffsetMinutes(req: Request): number | null {
     const raw = req.header('X-TZ-Offset-Minutes')
     if (!raw) return null
@@ -103,11 +106,44 @@ export async function getPedidos(req: Request, res: Response) {
         }
     }
 
+    const where = {
+        ...(estado ? { estado: estado as any } : {}),
+        ...(rangoFecha ? { fechaEntrega: rangoFecha } : {})
+    }
+
+    // Sin filtro de fecha ("todos los pedidos"): la tabla crece sin cota
+    // natural, así que se pagina. Con rango/día el resultado ya está acotado
+    // por la fecha, así que se mantiene la respuesta como arreglo simple.
+    if (!rangoFecha) {
+        const page = Math.max(1, Number(req.query.page) || 1)
+        const pageSize = Math.min(
+            PAGE_SIZE_MAX,
+            Math.max(1, Number(req.query.pageSize) || PAGE_SIZE_DEFAULT)
+        )
+
+        const [pedidos, total] = await Promise.all([
+            prisma.pedido.findMany({
+                where,
+                include: { cliente: true },
+                orderBy: { fechaEntrega: 'asc' },
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+            }),
+            prisma.pedido.count({ where }),
+        ])
+
+        res.json({
+            pedidos,
+            page,
+            pageSize,
+            total,
+            totalPages: Math.ceil(total / pageSize),
+        })
+        return
+    }
+
     const pedidos = await prisma.pedido.findMany({
-        where: {
-            ...(estado ? { estado: estado as any } : {}),
-            ...(rangoFecha ? { fechaEntrega: rangoFecha } : {})
-        },
+        where,
         include: { cliente: true },
         orderBy: { fechaEntrega: 'asc' }
     })
