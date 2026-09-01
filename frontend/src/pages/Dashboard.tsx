@@ -18,6 +18,8 @@ import {
 } from "../lib/fechasPeriodo";
 import { PedidoCard } from "../components/PedidoCard";
 import { usePageTitle } from "../hooks/usePageTitle";
+import { IconButton } from "../components/IconButton";
+import { Skeleton } from "../components/Skeleton";
 
 type VistaPrincipal = "dia" | "listado";
 type ListadoPeriodo = "semana" | "mes" | "año" | "todos";
@@ -129,12 +131,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                     <h1 className="text-xl font-bold text-gray-900">Pedidos</h1>
                     <div className="flex items-center gap-1">
-                        <button
-                            onClick={refetch}
-                            disabled={loading}
-                            className="p-2 rounded-full text-gray-400 hover:text-gray-600 active:bg-gray-100 active:scale-90 transition-[color,background-color,transform] duration-150 ease-out disabled:opacity-40"
-                            aria-label="Recargar pedidos"
-                        >
+                        <IconButton onClick={refetch} disabled={loading} spinning={loading} aria-label="Recargar pedidos">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="20"
@@ -145,11 +142,10 @@ export default function Dashboard() {
                                 strokeWidth="2"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                className={loading ? "animate-spin" : ""}
                             >
                                 <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                             </svg>
-                        </button>
+                        </IconButton>
                     </div>
                 </div>
 
@@ -180,10 +176,9 @@ export default function Dashboard() {
 
                 {vista === "dia" && (
                     <div className="mt-3 flex max-w-lg items-center gap-1">
-                        <button
-                            type="button"
+                        <IconButton
+                            className="shrink-0"
                             onClick={() => setFechaKey((k) => addDaysLocalKey(k, -1))}
-                            className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 active:scale-90 transition-[color,background-color,transform] duration-150 ease-out"
                             aria-label="Día anterior"
                         >
                             <svg
@@ -199,14 +194,13 @@ export default function Dashboard() {
                             >
                                 <path d="M15 18l-6-6 6-6" />
                             </svg>
-                        </button>
+                        </IconButton>
                         <p className="min-w-0 flex-1 text-center text-sm font-medium text-gray-700">
                             {formatFechaSelectorLabel(fechaKey)}
                         </p>
-                        <button
-                            type="button"
+                        <IconButton
+                            className="shrink-0"
                             onClick={() => setFechaKey((k) => addDaysLocalKey(k, 1))}
-                            className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 active:scale-90 transition-[color,background-color,transform] duration-150 ease-out"
                             aria-label="Día siguiente"
                         >
                             <svg
@@ -222,7 +216,7 @@ export default function Dashboard() {
                             >
                                 <path d="M9 18l6-6-6-6" />
                             </svg>
-                        </button>
+                        </IconButton>
                     </div>
                 )}
 
@@ -252,11 +246,10 @@ export default function Dashboard() {
                             ))}
                         </div>
                         <div className="flex items-center gap-1">
-                            <button
-                                type="button"
+                            <IconButton
+                                className="shrink-0"
                                 onClick={goPrevListado}
                                 disabled={!canPrevNextListado}
-                                className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 active:scale-90 transition-[color,background-color,transform] duration-150 ease-out disabled:opacity-30 disabled:pointer-events-none"
                                 aria-label="Periodo anterior"
                             >
                                 <svg
@@ -272,15 +265,14 @@ export default function Dashboard() {
                                 >
                                     <path d="M15 18l-6-6 6-6" />
                                 </svg>
-                            </button>
+                            </IconButton>
                             <p className="min-w-0 flex-1 text-center text-sm font-medium text-gray-700 leading-snug px-1">
                                 {listadoLabel}
                             </p>
-                            <button
-                                type="button"
+                            <IconButton
+                                className="shrink-0"
                                 onClick={goNextListado}
                                 disabled={!canPrevNextListado}
-                                className="shrink-0 p-2 rounded-full text-gray-500 hover:text-gray-800 active:bg-gray-100 active:scale-90 transition-[color,background-color,transform] duration-150 ease-out disabled:opacity-30 disabled:pointer-events-none"
                                 aria-label="Periodo siguiente"
                             >
                                 <svg
@@ -296,7 +288,7 @@ export default function Dashboard() {
                                 >
                                     <path d="M9 18l6-6-6-6" />
                                 </svg>
-                            </button>
+                            </IconButton>
                         </div>
                     </div>
                 )}
@@ -308,19 +300,19 @@ export default function Dashboard() {
                         {[1, 2, 3].map((i) => (
                             <div
                                 key={i}
-                                className="bg-white rounded-2xl border border-gray-100 p-4 min-h-[72px] animate-pulse"
+                                className="bg-white rounded-2xl border border-gray-100 p-4 min-h-[72px]"
                             >
                                 <div className="flex justify-between gap-3">
                                     <div className="flex-1 space-y-2">
-                                        <div className="h-4 bg-gray-200 rounded w-2/3" />
-                                        <div className="h-3 bg-gray-100 rounded w-1/2" />
+                                        <Skeleton className="h-4 w-2/3" />
+                                        <Skeleton className="h-3 w-1/2" />
                                     </div>
                                     <div className="space-y-2 items-end">
-                                        <div className="h-3 bg-gray-100 rounded w-12" />
-                                        <div className="h-4 bg-gray-200 rounded w-16" />
+                                        <Skeleton className="h-3 w-12" />
+                                        <Skeleton className="h-4 w-16" />
                                     </div>
                                 </div>
-                                <div className="mt-3 h-5 bg-gray-100 rounded-full w-20" />
+                                <Skeleton className="mt-3 h-5 rounded-full w-20" />
                             </div>
                         ))}
                     </div>
