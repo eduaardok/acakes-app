@@ -29,6 +29,78 @@
     .animate-rise-in {
         animation: rise-in 420ms var(--ease-out-quint) both;
     }
+
+    /* Revelado direccional para scroll (landing) — variantes para no repetir
+       la misma entrada en cada sección: sube, entra desde la izquierda,
+       entra desde la derecha. Arrancan ocultas; un observer agrega
+       .is-visible cuando el elemento entra en viewport. */
+    @keyframes fade-up {
+        from {
+            opacity: 0;
+            transform: translateY(28px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    @keyframes fade-left {
+        from {
+            opacity: 0;
+            transform: translateX(-36px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    @keyframes fade-right {
+        from {
+            opacity: 0;
+            transform: translateX(36px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .reveal-up,
+    .reveal-left,
+    .reveal-right {
+        opacity: 0;
+    }
+    .reveal-up.is-visible {
+        animation: fade-up 640ms var(--ease-out-quint) both;
+    }
+    .reveal-left.is-visible {
+        animation: fade-left 640ms var(--ease-out-quint) both;
+    }
+    .reveal-right.is-visible {
+        animation: fade-right 640ms var(--ease-out-quint) both;
+    }
+
+    /* Variantes que arrancan solas al montar (hero, ya visible sin scroll). */
+    .animate-fade-left {
+        animation: fade-left 640ms var(--ease-out-quint) both;
+    }
+    .animate-fade-right {
+        animation: fade-right 640ms var(--ease-out-quint) both;
+    }
+
+    /* Bloque decorativo flotante detrás del collage del hero. */
+    @keyframes float-slow {
+        0%,
+        100% {
+            transform: translateY(0) scale(1);
+        }
+        50% {
+            transform: translateY(-16px) scale(1.03);
+        }
+    }
+    .animate-float-slow {
+        animation: float-slow 7s var(--ease-out-cubic) infinite;
+    }
 }
 
 /* Respeta la preferencia del sistema: sin movimiento salvo lo esencial */
