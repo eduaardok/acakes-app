@@ -8,18 +8,27 @@ import { CakeIcon } from "../../components/icons";
 
 // Checkboxes múltiples por filtro (temática/ocasión): el catálogo filtra en AND
 // entre las seleccionadas, cada chip se puede activar/desactivar independiente.
+// acento por tipo: temática = rosa, ocasión = morado — misma lógica de color
+// que los chips de ProductoCard/ProductoDetalle, ahora también en el filtro activo.
+const ACENTO_ACTIVO: Record<"pink" | "purple", string> = {
+    pink: "bg-pink-600 text-white",
+    purple: "bg-brand-purple-700 text-white",
+};
+
 function FiltroChips({
     label,
     opciones,
     activos,
     onToggle,
     onLimpiar,
+    acento,
 }: {
     label: string;
     opciones: CategoriaFiltro[];
     activos: string[];
     onToggle: (id: string) => void;
     onLimpiar: () => void;
+    acento: "pink" | "purple";
 }) {
     if (opciones.length === 0) return null;
 
@@ -32,7 +41,7 @@ function FiltroChips({
                 type="button"
                 onClick={onLimpiar}
                 className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-[color,background-color,transform] duration-150 ease-out active:scale-95 ${
-                    activos.length === 0 ? "bg-pink-600 text-white" : "bg-white border border-gray-200 text-gray-600"
+                    activos.length === 0 ? ACENTO_ACTIVO[acento] : "bg-white border border-gray-200 text-gray-600"
                 }`}
             >
                 Todas
@@ -44,7 +53,7 @@ function FiltroChips({
                     onClick={() => onToggle(o.id)}
                     aria-pressed={activos.includes(o.id)}
                     className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-[color,background-color,transform] duration-150 ease-out active:scale-95 ${
-                        activos.includes(o.id) ? "bg-pink-600 text-white" : "bg-white border border-gray-200 text-gray-600"
+                        activos.includes(o.id) ? ACENTO_ACTIVO[acento] : "bg-white border border-gray-200 text-gray-600"
                     }`}
                 >
                     {o.nombre}
@@ -80,6 +89,7 @@ export default function Catalogo() {
                         activos={tematicaIds}
                         onToggle={toggleId(setTematicaIds)}
                         onLimpiar={() => setTematicaIds([])}
+                        acento="pink"
                     />
                     <FiltroChips
                         label="Ocasión"
@@ -87,6 +97,7 @@ export default function Catalogo() {
                         activos={ocasionIds}
                         onToggle={toggleId(setOcasionIds)}
                         onLimpiar={() => setOcasionIds([])}
+                        acento="purple"
                     />
                 </div>
 

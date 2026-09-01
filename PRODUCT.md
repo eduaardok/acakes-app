@@ -35,7 +35,7 @@ Zona de cobertura/entrega: El Empalme, Ecuador. *(Confirmado por el usuario.)*
 
 - Nombre: **Ainoa's Cakes**.
 - Logo existente: `frontend/public/logo.png` (usado en headers de admin y público).
-- Color de marca ya en uso en toda la UI: rosa (`pink-600` como acento primario).
+- Colores de marca en uso en la UI: rosa (`pink-600`, acento primario/CTA dominante) y morado (`#662889`, escala `brand-purple` en `frontend/src/index.css`, acento secundario) — ambos extraídos del logo de dos tonos. El morado se usa en momentos de marca puntuales (gradiente del CTA final de la landing, wash de sección, glow decorativo del hero) y como color categórico de "ocasión" (vs. rosa para "temática"), nunca compitiendo con el rosa como acción principal.
 
 ## Evidence on Hand
 

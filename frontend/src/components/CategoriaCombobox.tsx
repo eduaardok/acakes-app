@@ -16,8 +16,19 @@ interface Props {
  * vía el endpoint /categorias/:tipo/resolver (upsert por nombre). Las
  * seleccionadas se muestran como chips removibles arriba del input.
  */
+// Acento por tipo — misma convención que el resto del sistema: temática = rosa,
+// ocasión = morado (color de marca secundario, del logo).
+const ACENTO_CHIP: Record<TipoCategoria, { chip: string; quitar: string }> = {
+    tematicas: { chip: "bg-pink-50 text-pink-700", quitar: "text-pink-400 hover:text-pink-600" },
+    ocasiones: {
+        chip: "bg-brand-purple-50 text-brand-purple-700",
+        quitar: "text-brand-purple-400 hover:text-brand-purple-600",
+    },
+};
+
 export function CategoriaCombobox({ tipo, label, placeholder, value, onChange }: Props) {
     const { categorias, refetch } = useCategorias(tipo);
+    const acento = ACENTO_CHIP[tipo];
     const [query, setQuery] = useState("");
     const [open, setOpen] = useState(false);
     const [creando, setCreando] = useState(false);
@@ -65,14 +76,14 @@ export function CategoriaCombobox({ tipo, label, placeholder, value, onChange }:
                     {value.map((c) => (
                         <span
                             key={c.id}
-                            className="flex items-center gap-1 rounded-full bg-pink-50 px-2.5 py-1 text-xs font-medium text-pink-700"
+                            className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${acento.chip}`}
                         >
                             {c.nombre}
                             <button
                                 type="button"
                                 onClick={() => quitar(c.id)}
                                 aria-label={`Quitar ${c.nombre}`}
-                                className="text-pink-400 hover:text-pink-600"
+                                className={acento.quitar}
                             >
                                 ×
                             </button>

@@ -94,7 +94,7 @@ export default function Landing() {
                             aria-hidden
                         />
                         <div
-                            className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-amber-200/40 blur-3xl"
+                            className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-brand-purple-300/40 blur-3xl"
                             aria-hidden
                         />
 
@@ -145,28 +145,30 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* Destacados */}
+            {/* Destacados — wash sutil de marca para dar ritmo entre el hero blanco y la banda CTA sólida */}
             {(loading || destacados.length > 0) && (
-                <section className="mx-auto max-w-6xl px-4 pb-16 pt-4 lg:pb-24">
-                    <div ref={destacadosReveal.ref} className={`reveal-up ${destacadosReveal.visible ? "is-visible" : ""}`}>
-                        <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-                            Los favoritos de nuestros clientes
-                        </h2>
-                        <p className="mt-1 text-gray-500">Los diseños más vistos del catálogo, elegidos por ustedes.</p>
-                    </div>
+                <section className="w-full bg-brand-purple-50/40">
+                    <div className="mx-auto max-w-6xl px-4 pb-16 pt-4 lg:pb-24">
+                        <div ref={destacadosReveal.ref} className={`reveal-up ${destacadosReveal.visible ? "is-visible" : ""}`}>
+                            <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+                                Los favoritos de nuestros clientes
+                            </h2>
+                            <p className="mt-1 text-gray-500">Los diseños más vistos del catálogo, elegidos por ustedes.</p>
+                        </div>
 
-                    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                        {loading
-                            ? [1, 2, 3, 4].map((i) => <Skeleton key={i} className="aspect-square rounded-2xl" />)
-                            : destacados.map((p, i) => (
-                                  <ProductoCard key={p.id} producto={p} animationDelayMs={Math.min(i, 8) * 35} />
-                              ))}
+                        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                            {loading
+                                ? [1, 2, 3, 4].map((i) => <Skeleton key={i} className="aspect-square rounded-2xl" />)
+                                : destacados.map((p, i) => (
+                                      <ProductoCard key={p.id} producto={p} animationDelayMs={Math.min(i, 8) * 35} />
+                                  ))}
+                        </div>
                     </div>
                 </section>
             )}
 
-            {/* CTA final — banda a todo el ancho, comprometida con el color de marca */}
-            <section className="w-full bg-pink-600 py-16 lg:py-20">
+            {/* CTA final — banda a todo el ancho, gradiente rosa→morado (los dos tonos del logo) */}
+            <section className="w-full bg-gradient-to-br from-pink-600 to-brand-purple-700 py-16 lg:py-20">
                 <div
                     ref={ctaReveal.ref}
                     className={`reveal-up mx-auto max-w-2xl px-4 text-center ${ctaReveal.visible ? "is-visible" : ""}`}

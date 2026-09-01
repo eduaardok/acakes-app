@@ -32,12 +32,21 @@
       },
       {
         "rule": "gray-on-color",
-        "value": "text-gray-400",
+        "value": "*",
         "files": [
           "frontend/src/public/pages/ProductoDetalle.tsx"
         ],
-        "createdAt": "2026-09-01T22:25:50.873Z",
-        "reason": "false positive: gray-400 icon/text paired with gray-200 border on neutral/white background (inactive like/favorito toggle state), not gray text on a colored background"
+        "createdAt": "2026-09-01T22:40:00.000Z",
+        "reason": "false positive: text-gray-400 on bg-pink-50/bg-amber-50 is the inactive branch of the like/favorito toggle ternary (active branch never renders together with it); corrected from an earlier non-wildcard ignore-value entry that this rule's matcher silently ignores (gray-on-color has no extractable value key, only wildcard+files scoping works)"
+      },
+      {
+        "rule": "gray-on-color",
+        "value": "*",
+        "files": [
+          "frontend/src/components/CategoriaCombobox.tsx"
+        ],
+        "createdAt": "2026-09-01T22:40:00.000Z",
+        "reason": "pre-existing dropdown-option hover pattern (text-gray-700 hover:bg-pink-50), not touched by this session's edits; gray-700 has ample contrast on the very pale pink-50 wash; corrected from an earlier non-wildcard ignore-value entry that this rule's matcher silently ignores"
       }
     ]
   }
