@@ -139,11 +139,11 @@ export default function Ingresos() {
                                         className="mx-auto"
                                         aria-hidden
                                     >
-                                        <path d="M-14,-68 Q-18,-80 -8,-82 Q0,-88 8,-82 Q18,-80 14,-68" stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
-                                        <path d="M-14,-68 Q-20,-58 -22,-50 L22,-50 Q20,-58 14,-68" fill="#f3f4f6" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M-22,-50 Q-52,-40 -52,5 Q-52,55 0,58 Q52,55 52,5 Q52,-40 22,-50 Z" fill="#f3f4f6" stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <line x1="0" y1="-15" x2="0" y2="35" stroke="#d1d5db" stroke-width="2" stroke-linecap="round"/>
-                                        <path d="M12,-8 Q12,-18 0,-18 Q-12,-18 -12,-8 Q-12,2 0,2 Q12,2 12,12 Q12,22 0,22 Q-12,22 -12,12" stroke="#d1d5db" stroke-width="2" stroke-linecap="round"/>
+                                        <path d="M-14,-68 Q-18,-80 -8,-82 Q0,-88 8,-82 Q18,-80 14,-68" stroke="#d1d5db" strokeWidth="2.5" strokeLinecap="round"/>
+                                        <path d="M-14,-68 Q-20,-58 -22,-50 L22,-50 Q20,-58 14,-68" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M-22,-50 Q-52,-40 -52,5 Q-52,55 0,58 Q52,55 52,5 Q52,-40 22,-50 Z" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <line x1="0" y1="-15" x2="0" y2="35" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round"/>
+                                        <path d="M12,-8 Q12,-18 0,-18 Q-12,-18 -12,-8 Q-12,2 0,2 Q12,2 12,12 Q12,22 0,22 Q-12,22 -12,12" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round"/>
                                     </svg>
                                     <p className="text-gray-400 text-sm mt-2">
                                         Sin ingresos en este período
