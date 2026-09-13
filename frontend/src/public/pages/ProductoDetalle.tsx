@@ -37,7 +37,6 @@ export default function ProductoDetalle() {
     usePageTitle(producto?.nombre ?? "Producto");
 
     const [imagenActiva, setImagenActiva] = useState(0);
-    const [liked, setLiked] = useState(false);
     const [favorito, setFavorito] = useState(false);
     const [pendiente, setPendiente] = useState(false);
 
@@ -65,20 +64,18 @@ export default function ProductoDetalle() {
         }
     };
 
-    const toggle = async (tipo: "like" | "favorito") => {
+    const toggleFavorito = async () => {
         if (!id || pendiente) return;
         setPendiente(true);
-        const activo = tipo === "like" ? liked : favorito;
-        const setActivo = tipo === "like" ? setLiked : setFavorito;
         const headers = { "X-Visitante-Id": getVisitanteId() };
 
         try {
-            if (activo) {
-                await publicApi.del(`/producto/${id}/${tipo}`, headers);
+            if (favorito) {
+                await publicApi.del(`/producto/${id}/favorito`, headers);
             } else {
-                await publicApi.post(`/producto/${id}/${tipo}`, undefined, headers);
+                await publicApi.post(`/producto/${id}/favorito`, undefined, headers);
             }
-            setActivo(!activo);
+            setFavorito(!favorito);
         } catch {
             // Si falla, se mantiene el estado visual anterior.
         } finally {
@@ -96,10 +93,7 @@ export default function ProductoDetalle() {
                             <div className="h-6 w-2/3 animate-pulse rounded bg-gray-200" />
                             <div className="h-5 w-1/3 animate-pulse rounded-full bg-gray-100" />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-100" />
-                            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-100" />
-                        </div>
+                        <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-gray-100" />
                     </div>
                     <div className="mt-3 h-4 w-full animate-pulse rounded bg-gray-100" />
                     <div className="mt-1.5 h-4 w-2/3 animate-pulse rounded bg-gray-100" />
@@ -211,30 +205,17 @@ export default function ProductoDetalle() {
                         </div>
                     </div>
 
-                    <div className="flex shrink-0 gap-2">
-                        <button
-                            type="button"
-                            onClick={() => toggle("like")}
-                            aria-pressed={liked}
-                            aria-label="Me gusta"
-                            className={`flex h-10 w-10 items-center justify-center rounded-full border transition-[background-color,border-color,transform] duration-150 ease-out active:scale-90 ${
-                                liked ? "border-pink-500 bg-pink-50 text-pink-600" : "border-gray-200 text-gray-400"
-                            }`}
-                        >
-                            <HeartIcon className="h-5 w-5" filled={liked} />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => toggle("favorito")}
-                            aria-pressed={favorito}
-                            aria-label="Favorito"
-                            className={`flex h-10 w-10 items-center justify-center rounded-full border transition-[background-color,border-color,transform] duration-150 ease-out active:scale-90 ${
-                                favorito ? "border-amber-400 bg-amber-50 text-amber-500" : "border-gray-200 text-gray-400"
-                            }`}
-                        >
-                            <StarIcon className="h-5 w-5" filled={favorito} />
-                        </button>
-                    </div>
+                    <button
+                        type="button"
+                        onClick={toggleFavorito}
+                        aria-pressed={favorito}
+                        aria-label="Favorito"
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-[background-color,border-color,transform] duration-150 ease-out active:scale-90 ${
+                            favorito ? "border-pink-500 bg-pink-50 text-pink-600" : "border-gray-200 text-gray-400"
+                        }`}
+                    >
+                        <HeartIcon className="h-5 w-5" filled={favorito} />
+                    </button>
                 </div>
 
                 {producto.descripcion && (

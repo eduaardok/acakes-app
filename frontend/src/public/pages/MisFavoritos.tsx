@@ -4,7 +4,7 @@ import { ProductoCard } from "../components/ProductoCard";
 import { useMisFavoritos } from "../hooks/useMisFavoritos";
 import { getClienteToken } from "../lib/publicApi";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { HeartIcon, StarIcon } from "../../components/icons";
+import { HeartIcon } from "../../components/icons";
 
 export default function MisFavoritos() {
     usePageTitle("Mis favoritos");
@@ -76,9 +76,9 @@ export default function MisFavoritos() {
                                         }}
                                         disabled={quitandoId === f.producto.id}
                                         aria-label="Quitar de favoritos"
-                                        className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-amber-500 shadow-sm backdrop-blur transition-transform duration-150 ease-out active:scale-90 disabled:opacity-50"
+                                        className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-pink-600 shadow-sm backdrop-blur transition-transform duration-150 ease-out active:scale-90 disabled:opacity-50"
                                     >
-                                        <StarIcon className="h-4 w-4" filled />
+                                        <HeartIcon className="h-4 w-4" filled />
                                     </button>
                                 }
                             />
