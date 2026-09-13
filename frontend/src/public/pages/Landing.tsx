@@ -185,21 +185,24 @@ export default function Landing() {
                 </section>
             )}
 
-            {/* CTA final — banda a todo el ancho, gradiente rosa→morado (los dos tonos del logo) */}
-            <section className="w-full bg-gradient-to-br from-pink-600 to-brand-purple-700 py-16 lg:py-20">
+            {/* CTA final — banda a todo el ancho, degradado pastel (los dos tonos del logo, versión clara) */}
+            <section className="w-full bg-gradient-to-br from-pink-100 to-brand-purple-100 py-16 lg:py-20">
                 <div
                     ref={ctaReveal.ref}
                     className={`reveal-up mx-auto max-w-2xl px-4 text-center ${ctaReveal.visible ? "is-visible" : ""}`}
                 >
-                    <h2 className="text-3xl font-bold text-white sm:text-4xl">¿Tienes una idea en mente?</h2>
-                    <p className="mx-auto mt-3 max-w-sm text-pink-50">
-                        Cuéntanos qué estás celebrando y diseñamos el pastel juntos — sin compromiso.
+                    <h2 className="text-3xl font-bold text-brand-purple-700 sm:text-4xl">
+                        ¿Para cuándo es tu celebración?
+                    </h2>
+                    <p className="mx-auto mt-3 max-w-sm text-gray-600">
+                        Los pasteles personalizados se preparan a pedido — escríbenos hoy y aseguramos tu fecha, sin
+                        compromiso.
                     </p>
                     <a
                         href={whatsappContactoUrl()}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-semibold text-pink-700 shadow-xl shadow-pink-900/20 transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-2xl active:translate-y-0 active:scale-[0.98]"
+                        className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-pink-600 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-pink-600/25 transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-2xl hover:bg-pink-700 active:translate-y-0 active:scale-[0.98]"
                     >
                         Cotizar por WhatsApp
                     </a>
