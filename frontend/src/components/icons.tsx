@@ -233,6 +233,65 @@ export function TrashIcon({ className = "h-4 w-4" }: IconProps) {
     );
 }
 
+/** Lápiz — editar un registro existente. */
+export function PencilIcon({ className = "h-4 w-4" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M12.5 6.5l5 5L7 22H2v-5Z" />
+            <path d="M15.5 3.5a2.12 2.12 0 0 1 3 3L16 9l-3-3Z" />
+        </svg>
+    );
+}
+
+/** Check — confirmar/guardar una edición inline. */
+export function CheckIcon({ className = "h-4 w-4" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M20 6 9 17l-5-5" />
+        </svg>
+    );
+}
+
+/** X — cancelar una acción o edición inline. */
+export function XIcon({ className = "h-4 w-4" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M18 6 6 18" />
+            <path d="M6 6l12 12" />
+        </svg>
+    );
+}
+
 /** Más — agregar/crear, FAB de nuevo elemento. */
 export function PlusIcon({ className = "h-5 w-5" }: IconProps) {
     return (

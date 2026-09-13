@@ -5,6 +5,8 @@ import { useCategorias, type Categoria, type TipoCategoria } from "../hooks/useC
 import { IconButton } from "../components/IconButton";
 import { Button } from "../components/Button";
 import { Skeleton } from "../components/Skeleton";
+import { Spinner } from "../components/Spinner";
+import { PencilIcon, CheckIcon, XIcon, TrashIcon } from "../components/icons";
 
 function CategoriaSection({
     tipo,
@@ -123,40 +125,41 @@ function CategoriaSection({
                                         className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
                                         autoFocus
                                     />
-                                    <button
+                                    <IconButton
                                         type="button"
                                         onClick={() => handleGuardarEdicion(categoria.id)}
                                         disabled={guardandoEdit}
-                                        className="text-sm font-medium text-pink-600 disabled:opacity-50"
+                                        aria-label="Guardar"
                                     >
-                                        {guardandoEdit ? "..." : "Guardar"}
-                                    </button>
-                                    <button
+                                        {guardandoEdit ? <Spinner className="h-4 w-4" /> : <CheckIcon />}
+                                    </IconButton>
+                                    <IconButton
                                         type="button"
                                         onClick={() => setEditandoId(null)}
-                                        className="text-sm text-gray-400"
+                                        aria-label="Cancelar"
                                     >
-                                        Cancelar
-                                    </button>
+                                        <XIcon />
+                                    </IconButton>
                                 </>
                             ) : (
                                 <>
                                     <span className="flex-1 text-sm text-gray-800">{categoria.nombre}</span>
-                                    <button
+                                    <IconButton
                                         type="button"
                                         onClick={() => abrirEdicion(categoria)}
-                                        className="text-sm font-medium text-gray-500"
+                                        aria-label="Editar"
                                     >
-                                        Editar
-                                    </button>
-                                    <button
+                                        <PencilIcon />
+                                    </IconButton>
+                                    <IconButton
                                         type="button"
+                                        variant="danger"
                                         onClick={() => handleEliminar(categoria)}
                                         disabled={eliminandoId === categoria.id}
-                                        className="text-sm font-medium text-red-600 disabled:opacity-50"
+                                        aria-label="Eliminar"
                                     >
-                                        {eliminandoId === categoria.id ? "..." : "Eliminar"}
-                                    </button>
+                                        {eliminandoId === categoria.id ? <Spinner className="h-4 w-4" /> : <TrashIcon />}
+                                    </IconButton>
                                 </>
                             )}
                         </div>
