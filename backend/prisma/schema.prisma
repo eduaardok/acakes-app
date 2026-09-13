@@ -7,9 +7,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// DATABASE_URL apunta al pooler de Supabase en modo transacción (puerto 6543,
+// ?pgbouncer=true) — correcto para el runtime de la app, pero `prisma
+// migrate *` se cuelga contra ese modo (no soporta advisory locks/prepared
+// statements a nivel de sesión). directUrl usa el mismo pooler en modo
+// sesión (puerto 5432, sin pgbouncer=true) solo para migraciones.
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ─── Enums ───────────────────────────────────────────
