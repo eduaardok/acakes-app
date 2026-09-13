@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { prisma } from '../lib/prisma'
-import { EstadoPedido } from '@prisma/client'
+import { EstadoPedido, TipoProducto } from '@prisma/client'
 import { esTransicionValida } from '../lib/transiciones'
 
 const PAGE_SIZE_DEFAULT = 30
@@ -132,7 +132,7 @@ export async function getPedidos(req: Request, res: Response) {
         const [pedidos, total] = await Promise.all([
             prisma.pedido.findMany({
                 where,
-                include: { cliente: true },
+                include: { cliente: true, producto: true },
                 orderBy: { fechaEntrega: 'asc' },
                 skip: (page - 1) * pageSize,
                 take: pageSize,
@@ -152,7 +152,7 @@ export async function getPedidos(req: Request, res: Response) {
 
     const pedidos = await prisma.pedido.findMany({
         where,
-        include: { cliente: true },
+        include: { cliente: true, producto: true },
         orderBy: { fechaEntrega: 'asc' }
     })
 
@@ -192,7 +192,7 @@ export async function getPedidosHoy(req: Request, res: Response) {
         where: {
             fechaEntrega: { gte: inicio, lte: fin }
         },
-        include: { cliente: true },
+        include: { cliente: true, producto: true },
         orderBy: { fechaEntrega: 'asc' }
     })
 
@@ -205,7 +205,7 @@ export async function getPedidoById(req: Request, res: Response) {
 
     const pedido = await prisma.pedido.findUnique({
         where: { id: Number(id) },
-        include: { cliente: true }
+        include: { cliente: true, producto: true }
     })
 
     if (!pedido) {
@@ -219,7 +219,7 @@ export async function getPedidoById(req: Request, res: Response) {
 // PATCH /pedidos/:id — corregir descripción, precio, fecha de entrega o notas (sin cambiar estado)
 export async function updatePedido(req: Request, res: Response) {
     const { id } = req.params
-    const { descripcion, precio, fechaEntrega, notas } = req.body
+    const { descripcion, precio, fechaEntrega, notas, productoId } = req.body
 
     const pedido = await prisma.pedido.findUnique({ where: { id: Number(id) } })
     if (!pedido) {
@@ -232,6 +232,7 @@ export async function updatePedido(req: Request, res: Response) {
         precio?: number
         fechaEntrega?: Date
         notas?: string | null
+        productoId?: number | null
     } = {}
 
     if (descripcion !== undefined) {
@@ -267,6 +268,25 @@ export async function updatePedido(req: Request, res: Response) {
             return
         }
     }
+    // productoId: null/'' desvincula el pedido del catálogo; un id se valida
+    // contra Producto antes de aceptarlo.
+    if (productoId !== undefined) {
+        if (productoId === null || productoId === '') {
+            data.productoId = null
+        } else {
+            const n = Number(productoId)
+            if (!Number.isInteger(n)) {
+                res.status(400).json({ message: 'productoId inválido' })
+                return
+            }
+            const producto = await prisma.producto.findUnique({ where: { id: n } })
+            if (!producto) {
+                res.status(404).json({ message: 'Producto no encontrado' })
+                return
+            }
+            data.productoId = n
+        }
+    }
 
     if (Object.keys(data).length === 0) {
         res.status(400).json({ message: 'No hay datos para actualizar' })
@@ -276,15 +296,17 @@ export async function updatePedido(req: Request, res: Response) {
     const actualizado = await prisma.pedido.update({
         where: { id: Number(id) },
         data,
-        include: { cliente: true }
+        include: { cliente: true, producto: true }
     })
 
     res.json(actualizado)
 }
 
 // POST /pedidos
+// productoId es opcional: un pedido custom sin match en el catálogo público
+// sigue siendo válido sin vincularlo a un Producto.
 export async function createPedido(req: Request, res: Response) {
-    const { clienteId, descripcion, precio, fechaEntrega, notas, estado } = req.body
+    const { clienteId, descripcion, precio, fechaEntrega, notas, estado, productoId } = req.body
 
     if (!clienteId || !descripcion || !precio || !fechaEntrega) {
         res.status(400).json({ message: 'clienteId, descripcion, precio y fechaEntrega son requeridos' })
@@ -297,16 +319,31 @@ export async function createPedido(req: Request, res: Response) {
         return
     }
 
+    let productoIdValidado: number | undefined
+    if (productoId !== undefined && productoId !== null && productoId !== '') {
+        productoIdValidado = Number(productoId)
+        if (!Number.isInteger(productoIdValidado)) {
+            res.status(400).json({ message: 'productoId inválido' })
+            return
+        }
+        const producto = await prisma.producto.findUnique({ where: { id: productoIdValidado } })
+        if (!producto) {
+            res.status(404).json({ message: 'Producto no encontrado' })
+            return
+        }
+    }
+
     const pedido = await prisma.pedido.create({
         data: {
             clienteId: Number(clienteId),
+            productoId: productoIdValidado,
             descripcion,
             precio: Number(precio),
             fechaEntrega: new Date(fechaEntrega),
             notas,
             estado: estado ?? 'BORRADOR'
         },
-        include: { cliente: true }
+        include: { cliente: true, producto: true }
     })
 
     res.status(201).json(pedido)
@@ -337,7 +374,7 @@ export async function updateEstadoPedido(req: Request, res: Response) {
     const pedidoActualizado = await prisma.pedido.update({
         where: { id: Number(id) },
         data: { estado: estado as EstadoPedido },
-        include: { cliente: true }
+        include: { cliente: true, producto: true }
     })
 
     // Regla de negocio: NO_RETIRADO → crear observación automática
@@ -381,17 +418,33 @@ export const getIngresos = async (req: Request, res: Response) => {
                 lte: fechaHasta,
             },
         },
-        include: { cliente: true },
+        include: { cliente: true, producto: true },
         orderBy: { fechaEntrega: "desc" },
     });
 
     const total = pedidos.reduce((sum, p) => sum + p.precio.toNumber(), 0);
+
+    // Desglose por tipo de producto — solo pedidos CON productoId vinculado.
+    // Los pedidos sin vínculo (ej. encargos custom fuera del catálogo) no
+    // entran acá, pero sí siguen contando en `cantidad`/`total` de arriba.
+    const desglosePorTipo: Record<TipoProducto, { cantidad: number; total: number }> = {
+        PASTEL: { cantidad: 0, total: 0 },
+        CUPCAKE: { cantidad: 0, total: 0 },
+        OTRO: { cantidad: 0, total: 0 },
+    }
+    for (const p of pedidos) {
+        if (!p.producto) continue
+        const bucket = desglosePorTipo[p.producto.tipo]
+        bucket.cantidad += 1
+        bucket.total += p.precio.toNumber()
+    }
 
     return res.json({
         desde: fechaDesde.toISOString().split("T")[0],
         hasta: fechaHasta.toISOString().split("T")[0],
         cantidad: pedidos.length,
         total,
+        desglosePorTipo,
         pedidos,
     });
 };

@@ -2,11 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api";
 import type { ProductoImagen } from "./useProductos";
 import type { Categoria } from "./useCategorias";
+import type { TipoProducto } from "../lib/tipoProducto";
 
 export interface ProductoDetalle {
     id: number;
     nombre: string;
     descripcion: string | null;
+    tipo: TipoProducto;
     tematicas: Categoria[];
     ocasiones: Categoria[];
     createdAt: string;

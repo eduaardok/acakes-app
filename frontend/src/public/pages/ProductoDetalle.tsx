@@ -7,6 +7,7 @@ import { getVisitanteId } from "../lib/visitante";
 import { whatsappCotizarUrl } from "../lib/whatsapp";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { CakeIcon, StarIcon, HeartIcon } from "../../components/icons";
+import { TIPO_PRODUCTO_LABEL, TIPO_PRODUCTO_ICON } from "../../lib/tipoProducto";
 
 type Resena = ProductoDetalleData["resenas"][number];
 
@@ -181,6 +182,15 @@ export default function ProductoDetalle() {
                 <div className="mt-5 flex items-start justify-between gap-3">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">{producto.nombre}</h1>
+                        {(() => {
+                            const TipoIcon = TIPO_PRODUCTO_ICON[producto.tipo];
+                            return (
+                                <p className="mt-1 flex items-center gap-1 text-xs text-gray-400">
+                                    <TipoIcon className="h-3.5 w-3.5" />
+                                    {TIPO_PRODUCTO_LABEL[producto.tipo]}
+                                </p>
+                            );
+                        })()}
                         <div className="mt-1.5 flex flex-wrap gap-1.5">
                             {producto.tematicas.map((tematica) => (
                                 <span
@@ -233,7 +243,7 @@ export default function ProductoDetalle() {
 
                 {/* Cotizar por WhatsApp — único mecanismo de contacto, nunca precio */}
                 <a
-                    href={whatsappCotizarUrl(producto.nombre)}
+                    href={whatsappCotizarUrl(producto.nombre, producto.tipo)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 font-semibold text-white transition-[background-color,transform] duration-150 ease-out active:scale-[0.98] hover:bg-emerald-600"

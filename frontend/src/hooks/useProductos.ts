@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "../lib/api";
 import type { Categoria } from "./useCategorias";
+import type { TipoProducto } from "../lib/tipoProducto";
 
 const PAGE_SIZE = 20;
 
@@ -14,6 +15,7 @@ export interface ProductoLista {
     id: number;
     nombre: string;
     descripcion: string | null;
+    tipo: TipoProducto;
     tematicas: Categoria[];
     ocasiones: Categoria[];
     createdAt: string;

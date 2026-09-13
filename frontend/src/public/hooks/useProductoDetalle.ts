@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { publicApi } from "../lib/publicApi";
 import type { CategoriaFiltro } from "./useFiltrosCatalogo";
+import type { TipoProducto } from "../../lib/tipoProducto";
 
 export interface ProductoDetalle {
     id: number;
     nombre: string;
     descripcion: string | null;
+    tipo: TipoProducto;
     tematicas: CategoriaFiltro[];
     ocasiones: CategoriaFiltro[];
     vistas: number;

@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
 import type { ReactNode } from "react";
 import { CakeIcon } from "../../components/icons";
+import { TIPO_PRODUCTO_LABEL, TIPO_PRODUCTO_ICON, type TipoProducto } from "../../lib/tipoProducto";
 
 // Subconjunto de campos que la card necesita — permite reusarla con
 // respuestas distintas (catálogo completo vs. resumen de /mis-favoritos).
 export interface ProductoCardData {
     id: number;
     nombre: string;
+    tipo: TipoProducto;
     tematicas: { id: string; nombre: string }[];
     ocasiones: { id: string; nombre: string }[];
     imagenes: { url: string }[];
@@ -21,6 +23,7 @@ interface Props {
 
 export function ProductoCard({ producto, animationDelayMs, accionExtra }: Props) {
     const imagen = producto.imagenes[0];
+    const TipoIcon = TIPO_PRODUCTO_ICON[producto.tipo];
 
     return (
         <Link
@@ -31,6 +34,15 @@ export function ProductoCard({ producto, animationDelayMs, accionExtra }: Props)
             {accionExtra && (
                 <div className="absolute right-2 top-2 z-10">{accionExtra}</div>
             )}
+            {/* Ícono de tipo — gris y en la esquina opuesta a accionExtra, para no
+                competir con los pills de color de tematica/ocasion de abajo. */}
+            <span
+                aria-label={TIPO_PRODUCTO_LABEL[producto.tipo]}
+                title={TIPO_PRODUCTO_LABEL[producto.tipo]}
+                className="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/85 text-gray-500 backdrop-blur"
+            >
+                <TipoIcon className="h-4 w-4" />
+            </span>
             <div className="aspect-square w-full overflow-hidden bg-gray-100">
                 {imagen ? (
                     <img

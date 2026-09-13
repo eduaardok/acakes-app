@@ -7,6 +7,8 @@ import type { Categoria } from "../hooks/useCategorias";
 import { Button } from "../components/Button";
 import { IconButton } from "../components/IconButton";
 import { CategoriaCombobox } from "../components/CategoriaCombobox";
+import { TipoProductoSelect } from "../components/TipoProductoSelect";
+import type { TipoProducto } from "../lib/tipoProducto";
 
 const MAX_IMAGENES = 8;
 
@@ -16,6 +18,7 @@ export default function NuevoProducto() {
 
     const [nombre, setNombre] = useState("");
     const [descripcion, setDescripcion] = useState("");
+    const [tipo, setTipo] = useState<TipoProducto>("PASTEL");
     const [tematicas, setTematicas] = useState<Categoria[]>([]);
     const [ocasiones, setOcasiones] = useState<Categoria[]>([]);
     const [archivos, setArchivos] = useState<File[]>([]);
@@ -51,6 +54,7 @@ export default function NuevoProducto() {
         try {
             const formData = new FormData();
             formData.set("nombre", nombre.trim());
+            formData.set("tipo", tipo);
             if (descripcion.trim()) formData.set("descripcion", descripcion.trim());
             if (tematicas.length > 0) formData.set("tematicaIds", JSON.stringify(tematicas.map((c) => c.id)));
             if (ocasiones.length > 0) formData.set("ocasionIds", JSON.stringify(ocasiones.map((c) => c.id)));
@@ -99,6 +103,7 @@ export default function NuevoProducto() {
                         rows={3}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white resize-none"
                     />
+                    <TipoProductoSelect value={tipo} onChange={setTipo} />
                     <CategoriaCombobox
                         tipo="tematicas"
                         label="Temáticas (opcional)"

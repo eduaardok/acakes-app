@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { publicApi } from "../lib/publicApi";
 import type { CategoriaFiltro } from "./useFiltrosCatalogo";
+import type { TipoProducto } from "../../lib/tipoProducto";
 
 const PAGE_SIZE = 12;
 
@@ -8,6 +9,7 @@ export interface ProductoResumen {
     id: number;
     nombre: string;
     descripcion: string | null;
+    tipo: TipoProducto;
     tematicas: CategoriaFiltro[];
     ocasiones: CategoriaFiltro[];
     createdAt: string;
@@ -22,7 +24,7 @@ interface CatalogoResponse {
     totalPages: number;
 }
 
-export function useCatalogo(tematicaIds: string[], ocasionIds: string[]) {
+export function useCatalogo(tematicaIds: string[], ocasionIds: string[], tipo: TipoProducto | null) {
     const [productos, setProductos] = useState<ProductoResumen[]>([]);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -39,7 +41,7 @@ export function useCatalogo(tematicaIds: string[], ocasionIds: string[]) {
     useEffect(() => {
         setProductos([]);
         setPage(1);
-    }, [tematicaIdsKey, ocasionIdsKey]);
+    }, [tematicaIdsKey, ocasionIdsKey, tipo]);
 
     useEffect(() => {
         let cancelado = false;
@@ -47,6 +49,7 @@ export function useCatalogo(tematicaIds: string[], ocasionIds: string[]) {
         const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) });
         if (tematicaIdsKey) params.set("tematicaIds", tematicaIdsKey);
         if (ocasionIdsKey) params.set("ocasionIds", ocasionIdsKey);
+        if (tipo) params.set("tipo", tipo);
 
         setLoading(true);
         setError(null);
@@ -68,7 +71,7 @@ export function useCatalogo(tematicaIds: string[], ocasionIds: string[]) {
         return () => {
             cancelado = true;
         };
-    }, [tematicaIdsKey, ocasionIdsKey, page, reloadToken]);
+    }, [tematicaIdsKey, ocasionIdsKey, tipo, page, reloadToken]);
 
     const refetch = useCallback(() => setReloadToken((n) => n + 1), []);
 

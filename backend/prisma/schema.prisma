@@ -32,6 +32,12 @@ enum TipoObservacion {
   OTRO
 }
 
+enum TipoProducto {
+  PASTEL
+  CUPCAKE
+  OTRO
+}
+
 // ─── Modelos ─────────────────────────────────────────
 
 model Usuario {
@@ -42,27 +48,32 @@ model Usuario {
 }
 
 model Cliente {
-  id           Int            @id @default(autoincrement())
-  nombre       String
-  telefono     String         @unique
-  email        String?
-  creadoEn     DateTime       @default(now())
-  pedidos      Pedido[]
-  observaciones Observacion[]
+  id             Int             @id @default(autoincrement())
+  nombre         String
+  telefono       String          @unique
+  email          String?
+  creadoEn       DateTime        @default(now())
+  pedidos        Pedido[]
+  observaciones  Observacion[]
   usuarioCliente UsuarioCliente?
 }
 
 model Pedido {
-  id            Int          @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   clienteId     Int
+  productoId    Int?
   descripcion   String
-  precio        Decimal      @db.Decimal(10, 2)
+  precio        Decimal        @db.Decimal(10, 2)
   fechaEntrega  DateTime
-  estado        EstadoPedido @default(BORRADOR)
+  estado        EstadoPedido   @default(BORRADOR)
   notas         String?
-  creadoEn      DateTime     @default(now())
-  actualizadoEn DateTime     @updatedAt
-  cliente       Cliente      @relation(fields: [clienteId], references: [id])
+  creadoEn      DateTime       @default(now())
+  actualizadoEn DateTime       @updatedAt
+  cliente       Cliente        @relation(fields: [clienteId], references: [id])
+  // Vínculo opcional al producto de catálogo — un pedido custom sin match en
+  // el catálogo público sigue siendo válido sin este campo. onDelete SetNull:
+  // borrar el producto no debe romper ni borrar el pedido histórico.
+  producto      Producto?      @relation(fields: [productoId], references: [id], onDelete: SetNull)
   imagenes      PedidoImagen[]
 }
 
@@ -78,26 +89,26 @@ model PedidoImagen {
 }
 
 model Observacion {
-  id            Int             @id @default(autoincrement())
-  clienteId     Int
-  tipo          TipoObservacion
-  descripcion   String
-  fecha         DateTime        @default(now())
-  autoGenerada  Boolean         @default(false)
-  cliente       Cliente         @relation(fields: [clienteId], references: [id])
+  id           Int             @id @default(autoincrement())
+  clienteId    Int
+  tipo         TipoObservacion
+  descripcion  String
+  fecha        DateTime        @default(now())
+  autoGenerada Boolean         @default(false)
+  cliente      Cliente         @relation(fields: [clienteId], references: [id])
 }
 
 // ─── Capa pública (catálogo + interacciones sociales) ──
 
 model UsuarioCliente {
-  id             Int             @id @default(autoincrement())
-  email          String          @unique
-  passwordHash   String
-  nombre         String
-  createdAt      DateTime        @default(now())
-  clienteId      Int?            @unique
-  cliente        Cliente?        @relation(fields: [clienteId], references: [id])
-  resenas        Resena[]
+  id               Int             @id @default(autoincrement())
+  email            String          @unique
+  passwordHash     String
+  nombre           String
+  createdAt        DateTime        @default(now())
+  clienteId        Int?            @unique
+  cliente          Cliente?        @relation(fields: [clienteId], references: [id])
+  resenas          Resena[]
   fechasEspeciales FechaEspecial[]
 }
 
@@ -139,6 +150,10 @@ model Producto {
   id          Int                @id @default(autoincrement())
   nombre      String
   descripcion String?
+  // @default(PASTEL) obligatorio: los productos ya existentes en producción
+  // quedan clasificados como PASTEL sin backfill manual, hasta que el admin
+  // los reclasifique.
+  tipo        TipoProducto       @default(PASTEL)
   vistas      Int                @default(0)
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
@@ -148,6 +163,7 @@ model Producto {
   favoritos   Favorito[]
   tematicas   ProductoTematica[]
   ocasiones   ProductoOcasion[]
+  pedidos     Pedido[]
 }
 
 model ProductoImagen {

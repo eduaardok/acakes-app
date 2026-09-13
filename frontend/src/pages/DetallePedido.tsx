@@ -9,6 +9,8 @@ import { Button } from "../components/Button";
 import { IconButton } from "../components/IconButton";
 import { Skeleton } from "../components/Skeleton";
 import { CakeIcon } from "../components/icons";
+import { BuscadorProducto, type ProductoVinculado } from "../components/BuscadorProducto";
+import { TIPO_PRODUCTO_LABEL } from "../lib/tipoProducto";
 
 // Misma config que PedidoCard — colores por estado
 const estadoConfig: Record<EstadoPedido, { label: string; bg: string; text: string }> = {
@@ -68,6 +70,7 @@ export default function DetallePedido() {
     const [precioEdit, setPrecioEdit] = useState("");
     const [fechaEdit, setFechaEdit] = useState("");
     const [notasEdit, setNotasEdit] = useState("");
+    const [productoEdit, setProductoEdit] = useState<ProductoVinculado | null>(null);
     const [guardandoPedido, setGuardandoPedido] = useState(false);
     const [errorEdicion, setErrorEdicion] = useState<string | null>(null);
 
@@ -85,6 +88,7 @@ export default function DetallePedido() {
         setPrecioEdit(String(Number(pedido.precio)));
         setFechaEdit(fechaEntregaToDatetimeLocal(pedido.fechaEntrega));
         setNotasEdit(pedido.notas ?? "");
+        setProductoEdit(pedido.producto ?? null);
         setErrorEdicion(null);
         setEditandoPedido(true);
     };
@@ -110,6 +114,7 @@ export default function DetallePedido() {
                 precio: Number(precioEdit),
                 fechaEntrega: new Date(fechaEdit).toISOString(),
                 notas: notasEdit.trim() || null,
+                productoId: productoEdit?.id ?? null,
             });
             setEditandoPedido(false);
             await refetch();
@@ -263,6 +268,15 @@ export default function DetallePedido() {
                                 <p className="text-xs text-gray-400 mb-1">Notas</p>
                                 <p className="text-sm text-gray-600">{pedido.notas || "—"}</p>
                             </div>
+
+                            <div className="pt-1 border-t border-gray-50">
+                                <p className="text-xs text-gray-400 mb-1">Producto del catálogo</p>
+                                <p className="text-sm text-gray-600">
+                                    {pedido.producto
+                                        ? `${pedido.producto.nombre} (${TIPO_PRODUCTO_LABEL[pedido.producto.tipo]})`
+                                        : "Sin vincular"}
+                                </p>
+                            </div>
                         </>
                     ) : (
                         <div className="space-y-3">
@@ -305,6 +319,14 @@ export default function DetallePedido() {
                                     onChange={(e) => setFechaEdit(e.target.value)}
                                     className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
                                 />
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                    Producto del catálogo (opcional)
+                                </label>
+                                <div className="mt-1">
+                                    <BuscadorProducto value={productoEdit} onChange={setProductoEdit} />
+                                </div>
                             </div>
                             <div>
                                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">

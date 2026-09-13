@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "../lib/api";
 import type { EstadoPedido } from "./usePedidosHoy";
+import type { TipoProducto } from "../lib/tipoProducto";
 
 export interface PedidoDetalle {
     id: string;
@@ -16,6 +17,9 @@ export interface PedidoDetalle {
         telefono: string;
         email?: string | null;
     };
+    // Vínculo opcional a un producto del catálogo público — un pedido custom
+    // sin match en el catálogo sigue siendo válido con esto en null.
+    producto?: { id: number; nombre: string; tipo: TipoProducto } | null;
 }
 
 export function usePedido(id: string) {

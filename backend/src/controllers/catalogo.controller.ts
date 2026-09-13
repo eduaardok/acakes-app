@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Prisma } from '@prisma/client'
+import { Prisma, TipoProducto } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import { includeCategorias, aplanarCategorias } from '../lib/categoriasProducto'
 import { catalogoCache, productoDetalleCache, productoCacheKey, logCache } from '../lib/publicCache'
@@ -7,10 +7,22 @@ import { catalogoCache, productoDetalleCache, productoCacheKey, logCache } from 
 const PAGE_SIZE_DEFAULT = 20
 const PAGE_SIZE_MAX = 50
 const RESENAS_PAGE_SIZE = 10
+const TIPOS_PRODUCTO_VALIDOS = Object.values(TipoProducto)
 
 function parseIdsCsv(value: unknown): string[] {
     if (typeof value !== 'string' || !value.trim()) return []
     return value.split(',').map((v) => v.trim()).filter(Boolean)
+}
+
+// A diferencia de tematicaIds/ocasionIds (relación muchos-a-muchos, filtro
+// AND-múltiple con `some`), tipo es un solo valor por producto — un query
+// inválido/desconocido se ignora (sin filtro) en vez de dar 400, mismo
+// criterio permisivo que ya usa parseIdsCsv para query params del catálogo.
+function parseTipoQuery(value: unknown): TipoProducto | undefined {
+    if (typeof value === 'string' && (TIPOS_PRODUCTO_VALIDOS as string[]).includes(value)) {
+        return value as TipoProducto
+    }
+    return undefined
 }
 
 // Una key por combinación de filtros/página/orden — el catálogo acepta
@@ -21,6 +33,7 @@ function parseIdsCsv(value: unknown): string[] {
 function catalogoCacheKey(
     tematicaIds: string[],
     ocasionIds: string[],
+    tipo: TipoProducto | undefined,
     page: number,
     pageSize: number,
     ordenarPor: unknown
@@ -28,14 +41,16 @@ function catalogoCacheKey(
     const t = [...tematicaIds].sort().join(',')
     const o = [...ocasionIds].sort().join(',')
     const orden = typeof ordenarPor === 'string' ? ordenarPor : ''
-    return `catalogo:t=${t}|o=${o}|page=${page}|size=${pageSize}|orden=${orden}`
+    return `catalogo:t=${t}|o=${o}|tipo=${tipo ?? ''}|page=${page}|size=${pageSize}|orden=${orden}`
 }
 
-// GET /catalogo?tematicaIds=id1,id2&ocasionIds=id1,id2&page=1&pageSize=20&ordenarPor=vistas
+// GET /catalogo?tematicaIds=id1,id2&ocasionIds=id1,id2&tipo=PASTEL&page=1&pageSize=20&ordenarPor=vistas
 // AND múltiple: si se piden 2 tematicaIds, el producto debe tener AMBAS asignadas.
+// tipo no es AND-múltiple (un producto tiene un solo tipo): filtro simple `where: { tipo }`.
 export async function getCatalogo(req: Request, res: Response) {
     const tematicaIds = parseIdsCsv(req.query.tematicaIds)
     const ocasionIds = parseIdsCsv(req.query.ocasionIds)
+    const tipo = parseTipoQuery(req.query.tipo)
     const { ordenarPor } = req.query
 
     const page = Math.max(1, Number(req.query.page) || 1)
@@ -44,7 +59,7 @@ export async function getCatalogo(req: Request, res: Response) {
         Math.max(1, Number(req.query.pageSize) || PAGE_SIZE_DEFAULT)
     )
 
-    const cacheKey = catalogoCacheKey(tematicaIds, ocasionIds, page, pageSize, ordenarPor)
+    const cacheKey = catalogoCacheKey(tematicaIds, ocasionIds, tipo, page, pageSize, ordenarPor)
     const cacheado = catalogoCache.get(cacheKey)
     if (cacheado) {
         logCache('HIT', cacheKey)
@@ -57,7 +72,10 @@ export async function getCatalogo(req: Request, res: Response) {
         ...tematicaIds.map((id): Prisma.ProductoWhereInput => ({ tematicas: { some: { tematicaId: id } } })),
         ...ocasionIds.map((id): Prisma.ProductoWhereInput => ({ ocasiones: { some: { ocasionId: id } } })),
     ]
-    const where: Prisma.ProductoWhereInput = and.length > 0 ? { AND: and } : {}
+    const where: Prisma.ProductoWhereInput = {
+        ...(and.length > 0 ? { AND: and } : {}),
+        ...(tipo ? { tipo } : {}),
+    }
 
     // ordenarPor=vistas — usado por la landing pública para "destacados"
     const orderBy: Prisma.ProductoOrderByWithRelationInput =
@@ -70,6 +88,7 @@ export async function getCatalogo(req: Request, res: Response) {
                 id: true,
                 nombre: true,
                 descripcion: true,
+                tipo: true,
                 createdAt: true,
                 imagenes: {
                     orderBy: { orden: 'asc' },
@@ -135,6 +154,7 @@ export async function getProductoDetalle(req: Request, res: Response) {
                     id: true,
                     nombre: true,
                     descripcion: true,
+                    tipo: true,
                     vistas: true,
                     createdAt: true,
                     imagenes: {

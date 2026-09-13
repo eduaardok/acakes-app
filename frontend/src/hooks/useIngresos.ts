@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { api } from "../lib/api";
+import type { TipoProducto } from "../lib/tipoProducto";
 
 export interface PedidoIngreso {
     id: string;
@@ -17,6 +18,9 @@ export interface ResumenIngresos {
     hasta: string;
     cantidad: number;
     total: number;
+    // Solo pedidos ENTREGADO con productoId vinculado — los sin vínculo no
+    // entran aquí pero sí siguen contando en `cantidad`/`total` de arriba.
+    desglosePorTipo: Record<TipoProducto, { cantidad: number; total: number }>;
     pedidos: PedidoIngreso[];
 }
 

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Prisma } from '@prisma/client'
+import { Prisma, TipoProducto } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import { subirImagen, eliminarImagen } from '../lib/supabaseStorage'
 import { includeCategorias, aplanarCategorias, parseIdsInput } from '../lib/categoriasProducto'
@@ -8,10 +8,26 @@ import { invalidarCatalogo, invalidarProducto } from '../lib/publicCache'
 const PAGE_SIZE_DEFAULT = 20
 const PAGE_SIZE_MAX = 50
 const MAX_IMAGENES_POR_PRODUCTO = 8
+const TIPOS_PRODUCTO_VALIDOS = Object.values(TipoProducto)
 
 function parseIdsCsv(value: unknown): string[] {
     if (typeof value !== 'string' || !value.trim()) return []
     return value.split(',').map((v) => v.trim()).filter(Boolean)
+}
+
+// Valida el valor crudo de `tipo` que llega en el body (create/update). No
+// enviarlo es válido (create cae al @default(PASTEL) de Prisma, update no
+// toca el campo); enviarlo con un valor fuera del enum es 400.
+type ResultadoTipoProducto =
+    | { ok: true; valor: TipoProducto | undefined }
+    | { ok: false }
+
+function parseTipoProducto(value: unknown): ResultadoTipoProducto {
+    if (value === undefined) return { ok: true, valor: undefined }
+    if (typeof value === 'string' && (TIPOS_PRODUCTO_VALIDOS as string[]).includes(value)) {
+        return { ok: true, valor: value as TipoProducto }
+    }
+    return { ok: false }
 }
 
 // GET /productos?page=&pageSize=&tematicaIds=id1,id2&ocasionIds=id1,id2
@@ -94,6 +110,11 @@ export async function createProducto(req: Request, res: Response) {
         res.status(400).json({ message: `Máximo ${MAX_IMAGENES_POR_PRODUCTO} imágenes por producto` })
         return
     }
+    const tipoResultado = parseTipoProducto(req.body.tipo)
+    if (!tipoResultado.ok) {
+        res.status(400).json({ message: `tipo debe ser uno de: ${TIPOS_PRODUCTO_VALIDOS.join(', ')}` })
+        return
+    }
 
     // Se suben todas las imágenes primero; si alguna falla, se limpian las ya
     // subidas y no se crea el producto (para no dejarlo a medias).
@@ -108,6 +129,9 @@ export async function createProducto(req: Request, res: Response) {
             data: {
                 nombre: nombre.trim(),
                 descripcion: descripcion?.trim() || null,
+                // tipo omitido del data cuando no viene en el body: Prisma
+                // aplica @default(PASTEL) del schema.
+                ...(tipoResultado.valor !== undefined ? { tipo: tipoResultado.valor } : {}),
                 imagenes: {
                     create: urlsSubidas.map((url, index) => ({ url, orden: index })),
                 },
@@ -153,7 +177,7 @@ export async function updateProducto(req: Request, res: Response) {
         return
     }
 
-    const data: { nombre?: string; descripcion?: string | null } = {}
+    const data: { nombre?: string; descripcion?: string | null; tipo?: TipoProducto } = {}
 
     if (nombre !== undefined) {
         if (typeof nombre !== 'string' || !nombre.trim()) {
@@ -163,6 +187,13 @@ export async function updateProducto(req: Request, res: Response) {
         data.nombre = nombre.trim()
     }
     if (descripcion !== undefined) data.descripcion = descripcion === null ? null : String(descripcion).trim() || null
+
+    const tipoResultado = parseTipoProducto(req.body.tipo)
+    if (!tipoResultado.ok) {
+        res.status(400).json({ message: `tipo debe ser uno de: ${TIPOS_PRODUCTO_VALIDOS.join(', ')}` })
+        return
+    }
+    if (tipoResultado.valor !== undefined) data.tipo = tipoResultado.valor
 
     if (Object.keys(data).length === 0 && tematicaIds === undefined && ocasionIds === undefined) {
         res.status(400).json({ message: 'No hay datos para actualizar' })

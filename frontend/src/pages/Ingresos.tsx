@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useIngresos, hoy, haceDias } from "../hooks/useIngresos";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { Skeleton } from "../components/Skeleton";
+import { TIPOS_PRODUCTO, TIPO_PRODUCTO_LABEL, TIPO_PRODUCTO_ICON } from "../lib/tipoProducto";
 
 // Rangos rápidos predefinidos
 const RANGOS = [
@@ -121,6 +122,35 @@ export default function Ingresos() {
                                 {data.cantidad} pedido{data.cantidad !== 1 ? "s" : ""} entregado{data.cantidad !== 1 ? "s" : ""}
                             </p>
                         </div>
+
+                        {/* Desglose por tipo — solo pedidos con producto del catálogo vinculado */}
+                        {TIPOS_PRODUCTO.some((t) => data.desglosePorTipo[t].cantidad > 0) && (
+                            <div className="animate-rise-in bg-white rounded-2xl border border-gray-100 p-4">
+                                <p className="text-xs text-gray-400 uppercase tracking-wide font-medium mb-3">
+                                    Por tipo de producto
+                                </p>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {TIPOS_PRODUCTO.map((t) => {
+                                        const Icon = TIPO_PRODUCTO_ICON[t];
+                                        const bucket = data.desglosePorTipo[t];
+                                        return (
+                                            <div key={t} className="text-center">
+                                                <Icon className="mx-auto h-5 w-5 text-gray-400" />
+                                                <p className="mt-1 text-sm font-bold text-gray-900 tabular-nums">
+                                                    ${bucket.total.toFixed(2)}
+                                                </p>
+                                                <p className="text-xs text-gray-400">
+                                                    {TIPO_PRODUCTO_LABEL[t]} ({bucket.cantidad})
+                                                </p>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                <p className="mt-3 text-xs text-gray-300 text-center">
+                                    Solo pedidos vinculados a un producto del catálogo
+                                </p>
+                            </div>
+                        )}
 
                         {/* Lista de pedidos */}
                         <section className="space-y-2">

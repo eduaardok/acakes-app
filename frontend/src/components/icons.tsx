@@ -146,6 +146,48 @@ export function MapPinIcon({ className = "h-6 w-6" }: IconProps) {
     );
 }
 
+/** Cupcake — badge/selector de tipo de producto (TipoProducto.CUPCAKE). */
+export function CupcakeIcon({ className = "h-6 w-6" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M7 11h10l-1.3 8.3a2 2 0 0 1-2 1.7h-3.4a2 2 0 0 1-2-1.7L7 11Z" />
+            <path d="M6.5 11a5.5 5.5 0 0 1 11 0" />
+            <path d="M12 6.5V4" />
+            <circle cx="12" cy="3" r="1" fill="currentColor" stroke="none" />
+        </svg>
+    );
+}
+
+/** Etiqueta — badge/selector de tipo de producto genérico (TipoProducto.OTRO). */
+export function TagIcon({ className = "h-6 w-6" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M12.6 2.5H6.5a2 2 0 0 0-2 2v6.1c0 .5.2 1 .6 1.4l9 9a2 2 0 0 0 2.8 0l6-6a2 2 0 0 0 0-2.8l-9-9a2 2 0 0 0-1.3-.7Z" />
+            <circle cx="9" cy="8" r="1.4" />
+        </svg>
+    );
+}
+
 /** Triángulo de alerta — badges de atención/comportamiento negativo. */
 export function AlertTriangleIcon({ className = "h-4 w-4" }: IconProps) {
     return (

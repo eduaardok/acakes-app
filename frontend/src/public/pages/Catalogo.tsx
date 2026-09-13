@@ -5,6 +5,7 @@ import { useCatalogo } from "../hooks/useCatalogo";
 import { useFiltrosCatalogo, type CategoriaFiltro } from "../hooks/useFiltrosCatalogo";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { CakeIcon } from "../../components/icons";
+import { TIPOS_PRODUCTO, TIPO_PRODUCTO_LABEL, TIPO_PRODUCTO_ICON, type TipoProducto } from "../../lib/tipoProducto";
 
 // Checkboxes múltiples por filtro (temática/ocasión): el catálogo filtra en AND
 // entre las seleccionadas, cada chip se puede activar/desactivar independiente.
@@ -63,16 +64,62 @@ function FiltroChips({
     );
 }
 
+// tipo es un solo valor por producto (no AND-múltiple como tematica/ocasion),
+// así que el filtro es de selección única — gris, no pink/purple, para que
+// no se confunda con la semántica AND de los otros dos filtros.
+function FiltroTipoChips({
+    activo,
+    onSeleccionar,
+}: {
+    activo: TipoProducto | null;
+    onSeleccionar: (tipo: TipoProducto | null) => void;
+}) {
+    return (
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+            <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                Tipo
+            </span>
+            <button
+                type="button"
+                onClick={() => onSeleccionar(null)}
+                className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-[color,background-color,transform] duration-150 ease-out active:scale-95 ${
+                    activo === null ? "bg-gray-800 text-white" : "bg-white border border-gray-200 text-gray-600"
+                }`}
+            >
+                Todos
+            </button>
+            {TIPOS_PRODUCTO.map((tipo) => {
+                const Icon = TIPO_PRODUCTO_ICON[tipo];
+                return (
+                    <button
+                        key={tipo}
+                        type="button"
+                        onClick={() => onSeleccionar(activo === tipo ? null : tipo)}
+                        aria-pressed={activo === tipo}
+                        className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-[color,background-color,transform] duration-150 ease-out active:scale-95 ${
+                            activo === tipo ? "bg-gray-800 text-white" : "bg-white border border-gray-200 text-gray-600"
+                        }`}
+                    >
+                        <Icon className="h-3.5 w-3.5" />
+                        {TIPO_PRODUCTO_LABEL[tipo]}
+                    </button>
+                );
+            })}
+        </div>
+    );
+}
+
 export default function Catalogo() {
     usePageTitle("Catálogo");
     const [tematicaIds, setTematicaIds] = useState<string[]>([]);
     const [ocasionIds, setOcasionIds] = useState<string[]>([]);
+    const [tipo, setTipo] = useState<TipoProducto | null>(null);
 
     const toggleId = (setter: typeof setTematicaIds) => (id: string) =>
         setter((prev) => (prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]));
 
     const { tematicas, ocasiones } = useFiltrosCatalogo();
-    const { productos, loading, error, hayMas, cargarMas, refetch } = useCatalogo(tematicaIds, ocasionIds);
+    const { productos, loading, error, hayMas, cargarMas, refetch } = useCatalogo(tematicaIds, ocasionIds, tipo);
 
     return (
         <PublicLayout>
@@ -83,6 +130,7 @@ export default function Catalogo() {
                 </p>
 
                 <div className="mt-4 space-y-2">
+                    <FiltroTipoChips activo={tipo} onSeleccionar={setTipo} />
                     <FiltroChips
                         label="Temática"
                         opciones={tematicas}

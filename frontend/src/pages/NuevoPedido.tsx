@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { BuscadorCliente } from "../components/BuscadorCliente";
+import { BuscadorProducto, type ProductoVinculado } from "../components/BuscadorProducto";
 import type { ClienteResumen } from "../hooks/useClienteBusqueda";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { Button } from "../components/Button";
@@ -14,6 +15,9 @@ export default function NuevoPedido() {
 
     // Cliente seleccionado
     const [cliente, setCliente] = useState<ClienteResumen | null>(null);
+
+    // Producto del catálogo vinculado (opcional)
+    const [producto, setProducto] = useState<ProductoVinculado | null>(null);
 
     // Campos del pedido
     const [descripcion, setDescripcion] = useState("");
@@ -50,6 +54,7 @@ export default function NuevoPedido() {
         try {
             await api.post("/pedidos", {
                 clienteId: cliente.id,
+                productoId: producto?.id,
                 descripcion: descripcion.trim(),
                 precio: Number(precio),
                 fechaEntrega: new Date(fechaEntrega).toISOString(),
@@ -114,6 +119,23 @@ export default function NuevoPedido() {
                     ) : (
                         <BuscadorCliente onClienteSeleccionado={setCliente} />
                     )}
+                </section>
+
+                {/* Sección: Producto del catálogo (opcional) */}
+                <section className="space-y-2">
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                        Vincular a producto del catálogo (opcional)
+                    </label>
+                    <BuscadorProducto
+                        value={producto}
+                        onChange={(p) => {
+                            setProducto(p);
+                            // Sugerencia útil, no reemplazo: solo autocompleta si la
+                            // descripción sigue vacía — el admin la puede editar o
+                            // borrar libremente después.
+                            if (p && !descripcion.trim()) setDescripcion(p.nombre);
+                        }}
+                    />
                 </section>
 
                 {/* Sección: Datos del pedido */}

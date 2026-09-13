@@ -9,6 +9,8 @@ import { IconButton } from "../components/IconButton";
 import { Skeleton } from "../components/Skeleton";
 import { CakeIcon } from "../components/icons";
 import { CategoriaCombobox } from "../components/CategoriaCombobox";
+import { TipoProductoSelect } from "../components/TipoProductoSelect";
+import { TIPO_PRODUCTO_LABEL, TIPO_PRODUCTO_ICON, type TipoProducto } from "../lib/tipoProducto";
 
 const MAX_IMAGENES = 8;
 
@@ -20,6 +22,7 @@ export default function DetalleProducto() {
     const [editando, setEditando] = useState(false);
     const [nombreEdit, setNombreEdit] = useState("");
     const [descripcionEdit, setDescripcionEdit] = useState("");
+    const [tipoEdit, setTipoEdit] = useState<TipoProducto>("PASTEL");
     const [tematicasEdit, setTematicasEdit] = useState<Categoria[]>([]);
     const [ocasionesEdit, setOcasionesEdit] = useState<Categoria[]>([]);
     const [guardando, setGuardando] = useState(false);
@@ -36,6 +39,7 @@ export default function DetalleProducto() {
         if (!producto) return;
         setNombreEdit(producto.nombre);
         setDescripcionEdit(producto.descripcion ?? "");
+        setTipoEdit(producto.tipo);
         setTematicasEdit(producto.tematicas);
         setOcasionesEdit(producto.ocasiones);
         setErrorEdicion(null);
@@ -53,6 +57,7 @@ export default function DetalleProducto() {
             await api.patch(`/productos/${id}`, {
                 nombre: nombreEdit.trim(),
                 descripcion: descripcionEdit.trim() || null,
+                tipo: tipoEdit,
                 tematicaIds: tematicasEdit.map((c) => c.id),
                 ocasionIds: ocasionesEdit.map((c) => c.id),
             });
@@ -212,6 +217,16 @@ export default function DetalleProducto() {
                                 <p className="text-xs text-gray-400">Descripción</p>
                                 <p className="text-sm text-gray-600">{producto.descripcion || "—"}</p>
                             </div>
+                            <div>
+                                <p className="text-xs text-gray-400">Tipo</p>
+                                <p className="flex items-center gap-1.5 text-sm text-gray-600">
+                                    {(() => {
+                                        const Icon = TIPO_PRODUCTO_ICON[producto.tipo];
+                                        return <Icon className="h-4 w-4 text-gray-400" />;
+                                    })()}
+                                    {TIPO_PRODUCTO_LABEL[producto.tipo]}
+                                </p>
+                            </div>
                             <div className="flex gap-4">
                                 <div className="flex-1">
                                     <p className="text-xs text-gray-400">Temáticas</p>
@@ -246,6 +261,7 @@ export default function DetalleProducto() {
                                 rows={3}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 resize-none"
                             />
+                            <TipoProductoSelect value={tipoEdit} onChange={setTipoEdit} />
                             <CategoriaCombobox
                                 tipo="tematicas"
                                 label="Temáticas"
