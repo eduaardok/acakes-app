@@ -140,3 +140,8 @@ vite.config.ts.timestamp-*
 
 # Claude Code local settings (machine-specific; skills are still tracked)
 .claude/settings.local.json
+
+# Impeccable skill: engine binario y caches por-maquina (el launcher los
+# descarga y verifica por SHA256 solos si faltan; no van al repo)
+.claude/skills/impeccable/scripts/bin/
+.claude/skills/impeccable/scripts/data/
