@@ -61,7 +61,7 @@ export function ProductoCard({ producto, animationDelayMs, accionExtra }: Props)
                         {producto.ocasiones.map((ocasion) => (
                             <span
                                 key={ocasion.id}
-                                className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-medium text-brand-purple-800"
+                                className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-medium text-brand-purple-700"
                             >
                                 {ocasion.nombre}
                             </span>

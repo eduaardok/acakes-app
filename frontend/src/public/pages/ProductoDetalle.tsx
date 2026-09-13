@@ -193,7 +193,7 @@ export default function ProductoDetalle() {
                             {producto.ocasiones.map((ocasion) => (
                                 <span
                                     key={ocasion.id}
-                                    className="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-medium text-brand-purple-800"
+                                    className="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-medium text-brand-purple-700"
                                 >
                                     {ocasion.nombre}
                                 </span>

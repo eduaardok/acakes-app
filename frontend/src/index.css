@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
-/* Morado de marca secundario, actualizado a #7A5498 (rediseño de paleta 2026).
-   Escala oklch() derivada manteniendo el matiz (H≈308.7): el hex real ancla
-   el escalón 700, que es donde cae su luminosidad real (L≈51.5%), no el 600.
-   Round-trip verificado: oklch(51.519143% 0.111606 308.7108) -> #7A5498 exacto. */
+/* Morado de marca secundario, actualizado a #5F1880 (logo de referencia 2026).
+   Escala oklch() derivada manteniendo el matiz (H≈312.0): el hex real ancla
+   el escalón 700, que es donde cae su luminosidad real (L≈38.1%), no el 600.
+   Round-trip verificado: oklch(38.098047% 0.165257 311.9790) -> #5F1880 exacto. */
 @theme {
-    --color-brand-purple-50: oklch(97.7% 0.014 308.7108);
-    --color-brand-purple-100: oklch(94.6% 0.033 308.7108);
-    --color-brand-purple-200: oklch(89.4% 0.058 308.7108);
-    --color-brand-purple-300: oklch(81.1% 0.090 308.7108);
-    --color-brand-purple-400: oklch(70.2% 0.120 308.7108);
-    --color-brand-purple-500: oklch(58.6% 0.146 308.7108);
-    --color-brand-purple-600: oklch(49.4% 0.150 308.7108);
-    --color-brand-purple-700: oklch(51.519143% 0.111606 308.7108);
-    --color-brand-purple-800: oklch(33.8% 0.130 308.7108);
-    --color-brand-purple-900: oklch(27.6% 0.100 308.7108);
-    --color-brand-purple-950: oklch(18.0% 0.062 308.7108);
+    --color-brand-purple-50: oklch(97.7% 0.014 311.9790);
+    --color-brand-purple-100: oklch(94.6% 0.033 311.9790);
+    --color-brand-purple-200: oklch(89.4% 0.058 311.9790);
+    --color-brand-purple-300: oklch(81.1% 0.090 311.9790);
+    --color-brand-purple-400: oklch(70.2% 0.120 311.9790);
+    --color-brand-purple-500: oklch(58.6% 0.146 311.9790);
+    --color-brand-purple-600: oklch(49.4% 0.150 311.9790);
+    --color-brand-purple-700: oklch(38.098047% 0.165257 311.9790);
+    --color-brand-purple-800: oklch(33.8% 0.130 311.9790);
+    --color-brand-purple-900: oklch(27.6% 0.100 311.9790);
+    --color-brand-purple-950: oklch(18.0% 0.062 311.9790);
 
     /* Nuevo token de marca (rediseño 2026): formas decorativas/blobs de fondo.
        No forma parte de la escala brand-purple (distinta luminosidad/matiz);
@@ -28,13 +28,18 @@
     --font-script: "Caveat", cursive;
 }
 
-/* Rosa primario, actualizado a #E10080 (rediseño de paleta 2026). Pisa el
-   pink-600 por defecto de Tailwind (antes #DB2777) para que el acento sea
-   consistente en toda la app (admin y capa pública comparten el token). */
+/* Rosa primario, ajustado a #DE2471 (mismo hue/saturación del logo, luminosidad
+   bajada para pasar contraste WCAG 4.5:1 con texto blanco — #ED2679 daba
+   4.07:1). Pisa el pink-600 por defecto de Tailwind (antes #DB2777) para que
+   el acento sea consistente en toda la app (admin y capa pública comparten
+   el token). pink-50/pink-100 comparten el mismo matiz que el ancla 600
+   (H≈3.2) — misma metodología que brand-purple: un solo hue, luminosidad/
+   chroma por escalón. Round-trip verificado: oklch(59.336006% 0.220633
+   3.1997) -> #DE2471 exacto. */
 @theme {
-    --color-pink-50: oklch(96.758308% 0.017425 339.9219);
-    --color-pink-100: oklch(89.029091% 0.060384 339.2848);
-    --color-pink-600: oklch(59.213068% 0.241814 356.9380);
+    --color-pink-50: oklch(96.758308% 0.017425 3.1997);
+    --color-pink-100: oklch(89.029091% 0.060384 3.1997);
+    --color-pink-600: oklch(59.336006% 0.220633 3.1997);
 }
 
 /* iOS Safari: fuente mínima 16px en controles evita zoom automático al enfocar */
