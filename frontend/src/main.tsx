@@ -21,6 +21,8 @@ import Catalogo from "./public/pages/Catalogo";
 import ProductoDetalle from "./public/pages/ProductoDetalle";
 import LoginCliente from "./public/pages/LoginCliente";
 import RegistroCliente from "./public/pages/RegistroCliente";
+import OlvidePassword from "./public/pages/OlvidePassword";
+import RestablecerPassword from "./public/pages/RestablecerPassword";
 import MisFavoritos from "./public/pages/MisFavoritos";
 import Landing from "./public/pages/Landing";
 
@@ -67,6 +69,8 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="/producto/:id" element={<ProductoDetalle />} />
                 <Route path="/login-cliente" element={<LoginCliente />} />
                 <Route path="/registro-cliente" element={<RegistroCliente />} />
+                <Route path="/olvide-password" element={<OlvidePassword />} />
+                <Route path="/restablecer-password" element={<RestablecerPassword />} />
                 <Route path="/mis-favoritos" element={<MisFavoritos />} />
 
                 <Route path="*" element={<Navigate to="/" replace />} />

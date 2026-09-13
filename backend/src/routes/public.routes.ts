@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { getCatalogo, getProductoDetalle, getResenasProducto } from '../controllers/catalogo.controller'
-import { registroCliente, loginCliente } from '../controllers/clienteAuth.controller'
+import { registroCliente, loginCliente, olvidePassword, restablecerPassword } from '../controllers/clienteAuth.controller'
 import {
     crearResena,
     misFavoritos,
@@ -26,6 +26,8 @@ router.get('/producto/:id', getProductoDetalle)
 router.get('/producto/:id/resenas', getResenasProducto)
 router.post('/registro-cliente', registroCliente)
 router.post('/login-cliente', loginCliente)
+router.post('/olvide-password', olvidePassword)
+router.post('/restablecer-password', restablecerPassword)
 
 // ─── Protegidas por JWT de cliente ──────────────────────
 router.post('/producto/:id/resena', authenticateClienteToken, crearResena)

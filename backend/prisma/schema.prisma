@@ -107,15 +107,28 @@ model Observacion {
 // ─── Capa pública (catálogo + interacciones sociales) ──
 
 model UsuarioCliente {
-  id               Int             @id @default(autoincrement())
-  email            String          @unique
-  passwordHash     String
-  nombre           String
-  createdAt        DateTime        @default(now())
-  clienteId        Int?            @unique
-  cliente          Cliente?        @relation(fields: [clienteId], references: [id])
-  resenas          Resena[]
-  fechasEspeciales FechaEspecial[]
+  id                  Int                  @id @default(autoincrement())
+  email               String               @unique
+  passwordHash        String
+  nombre              String
+  createdAt           DateTime             @default(now())
+  clienteId           Int?                 @unique
+  cliente             Cliente?             @relation(fields: [clienteId], references: [id])
+  resenas             Resena[]
+  fechasEspeciales    FechaEspecial[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+// Token de un solo uso para "olvidé mi contraseña". Se guarda el hash del
+// token (nunca el valor plano enviado por email), análogo a passwordHash.
+model PasswordResetToken {
+  id        Int            @id @default(autoincrement())
+  usuarioId Int
+  token     String         @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime       @default(now())
+  usuario   UsuarioCliente @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 }
 
 model Tematica {

@@ -54,7 +54,12 @@ export default function LoginCliente() {
                         </div>
 
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-gray-700">Contraseña</label>
+                            <div className="mb-1 flex items-center justify-between">
+                                <label className="block text-sm font-medium text-gray-700">Contraseña</label>
+                                <Link to="/olvide-password" className="text-xs font-medium text-pink-700 underline">
+                                    ¿Olvidaste tu contraseña?
+                                </Link>
+                            </div>
                             <input
                                 type="password"
                                 value={password}
