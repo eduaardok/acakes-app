@@ -17,7 +17,7 @@ export default function MisFavoritos() {
 
     return (
         <PublicLayout>
-            <div className="mx-auto max-w-3xl px-4 py-6">
+            <div className="mx-auto max-w-6xl px-4 py-6">
                 <h1 className="text-2xl font-bold text-gray-900">Mis favoritos</h1>
                 <p className="mt-1 text-sm text-gray-500">
                     Los pasteles que guardaste para más tarde
@@ -33,7 +33,7 @@ export default function MisFavoritos() {
                 )}
 
                 {!error && loading && (
-                    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
                             <div key={i} className="animate-pulse overflow-hidden rounded-2xl border border-gray-100 bg-white">
                                 <div className="aspect-square bg-gray-100" />
@@ -60,7 +60,7 @@ export default function MisFavoritos() {
                 )}
 
                 {!error && favoritos.length > 0 && (
-                    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                         {favoritos.map((f, i) => (
                             <ProductoCard
                                 key={f.id}

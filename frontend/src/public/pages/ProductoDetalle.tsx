@@ -163,7 +163,7 @@ export default function ProductoDetalle() {
                                 type="button"
                                 onClick={() => setImagenActiva(i)}
                                 className={`h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 transition-colors duration-150 ease-out ${
-                                    i === imagenActiva ? "border-pink-500" : "border-transparent"
+                                    i === imagenActiva ? "border-pink-300" : "border-transparent"
                                 }`}
                             >
                                 <img
@@ -203,7 +203,7 @@ export default function ProductoDetalle() {
                             {producto.ocasiones.map((ocasion) => (
                                 <span
                                     key={ocasion.id}
-                                    className="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-medium text-brand-purple-700"
+                                    className="rounded-full bg-brand-purple-100 px-2.5 py-1 text-xs font-medium text-brand-purple-700"
                                 >
                                     {ocasion.nombre}
                                 </span>
@@ -246,7 +246,7 @@ export default function ProductoDetalle() {
                     href={whatsappCotizarUrl(producto.nombre, producto.tipo)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 font-semibold text-white transition-[background-color,transform] duration-150 ease-out active:scale-[0.98] hover:bg-emerald-600"
+                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-emerald-500 py-3 font-semibold text-white transition-[background-color,transform] duration-150 ease-out active:scale-[0.98] hover:bg-emerald-600"
                 >
                     Cotizar por WhatsApp
                 </a>

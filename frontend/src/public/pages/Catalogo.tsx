@@ -123,7 +123,7 @@ export default function Catalogo() {
 
     return (
         <PublicLayout>
-            <div className="mx-auto max-w-3xl px-4 py-6">
+            <div className="mx-auto max-w-6xl px-4 py-6">
                 <h1 className="text-2xl font-bold text-gray-900">Nuestras creaciones</h1>
                 <p className="mt-1 text-sm text-gray-500">
                     Cotiza el pastel perfecto para tu ocasión especial
@@ -159,7 +159,7 @@ export default function Catalogo() {
                 )}
 
                 {!error && productos.length === 0 && loading && (
-                    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
                             <div key={i} className="animate-pulse overflow-hidden rounded-2xl border border-gray-100 bg-white">
                                 <div className="aspect-square bg-gray-100" />
@@ -180,7 +180,7 @@ export default function Catalogo() {
                 )}
 
                 {productos.length > 0 && (
-                    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                         {productos.map((p, i) => (
                             <ProductoCard key={p.id} producto={p} animationDelayMs={Math.min(i, 8) * 35} />
                         ))}
