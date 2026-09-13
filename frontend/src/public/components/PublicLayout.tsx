@@ -15,7 +15,7 @@ export function PublicLayout({ children }: Props) {
     };
 
     return (
-        <div className="min-h-screen bg-pink-50/40">
+        <div className="min-h-screen bg-pink-50">
             <header className="sticky top-0 z-20 border-b border-gray-100 bg-white/90 backdrop-blur">
                 <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
                     <Link to="/" className="flex items-center gap-2">

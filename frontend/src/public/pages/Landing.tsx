@@ -47,12 +47,24 @@ export default function Landing() {
         <PublicLayout>
             {/* Hero */}
             <section className="relative overflow-hidden">
+                {/* Blob decorativo — único acento de fondo del hero, morado sutil detrás del contenido */}
+                <svg
+                    className="pointer-events-none absolute -right-32 -top-40 -z-10 h-[480px] w-[480px] opacity-60 sm:-right-24 sm:-top-32"
+                    viewBox="0 0 200 200"
+                    aria-hidden
+                >
+                    <path
+                        className="fill-purple-100"
+                        d="M154.96,100.00 C154.31,113.97 149.12,125.84 139.96,139.96 C130.80,154.07 115.63,182.38 100.00,184.69 C84.37,187.00 57.94,167.95 46.17,153.83 C34.39,139.72 28.27,116.88 29.34,100.00 C30.40,83.12 40.78,64.05 52.56,52.56 C64.34,41.07 84.79,30.44 100.00,31.04 C115.21,31.64 134.67,44.67 143.83,56.17 C152.99,67.66 155.61,86.03 154.96,100.00Z"
+                    />
+                </svg>
+
                 <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-14 pt-10 lg:grid-cols-2 lg:items-center lg:gap-16 lg:pb-24 lg:pt-16">
                     <div className="animate-fade-left relative z-10">
                         <h1 className="text-4xl font-bold leading-[1.05] tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
                             Pasteles a tu medida,
                             <br />
-                            para cada ocasión especial
+                            para cada <span className="text-brand-purple-700">ocasión especial</span>
                         </h1>
                         <p className="mt-5 max-w-md text-lg leading-relaxed text-gray-600">
                             Diseñamos y horneamos pasteles personalizados y temáticos en El Empalme —

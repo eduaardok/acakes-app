@@ -185,7 +185,7 @@ export default function ProductoDetalle() {
                             {producto.tematicas.map((tematica) => (
                                 <span
                                     key={tematica.id}
-                                    className="rounded-full bg-pink-50 px-2.5 py-1 text-xs font-medium text-pink-700"
+                                    className="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-medium text-pink-800"
                                 >
                                     {tematica.nombre}
                                 </span>
@@ -193,7 +193,7 @@ export default function ProductoDetalle() {
                             {producto.ocasiones.map((ocasion) => (
                                 <span
                                     key={ocasion.id}
-                                    className="rounded-full bg-brand-purple-50 px-2.5 py-1 text-xs font-medium text-brand-purple-700"
+                                    className="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-medium text-brand-purple-800"
                                 >
                                     {ocasion.nombre}
                                 </span>
