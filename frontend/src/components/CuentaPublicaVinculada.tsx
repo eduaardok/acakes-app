@@ -2,6 +2,7 @@ import { useState } from "react";
 import { api } from "../lib/api";
 import { useUsuarioClienteVinculado, type UsuarioClienteResumen } from "../hooks/useUsuarioClienteVinculado";
 import { Button } from "./Button";
+import { Skeleton } from "./Skeleton";
 
 interface Props {
     clienteId: string;
@@ -78,7 +79,15 @@ export function CuentaPublicaVinculada({ clienteId }: Props) {
             </p>
 
             <div className="bg-white rounded-2xl border border-gray-100 p-4">
-                {loading && <p className="text-sm text-gray-400">Cargando...</p>}
+                {loading && (
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0 flex-1 space-y-1.5">
+                            <Skeleton className="h-4 w-1/2" />
+                            <Skeleton className="h-3.5 w-2/3" />
+                        </div>
+                        <Skeleton className="h-4 w-20 shrink-0" />
+                    </div>
+                )}
 
                 {!loading && error && <p className="text-sm text-red-600">{error}</p>}
 
