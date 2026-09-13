@@ -68,6 +68,28 @@ export function HeartIcon({ className = "h-5 w-5", filled = false }: IconProps &
     );
 }
 
+/** Cuadrícula 2x2 — enlace "Catálogo" del navbar público. */
+export function GridIcon({ className = "h-5 w-5" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <rect x="3" y="3" width="8" height="8" rx="2" />
+            <rect x="13" y="3" width="8" height="8" rx="2" />
+            <rect x="3" y="13" width="8" height="8" rx="2" />
+            <rect x="13" y="13" width="8" height="8" rx="2" />
+        </svg>
+    );
+}
+
 /** Persona — estado vacío de listados de clientes/usuarios. */
 export function UserIcon({ className = "h-6 w-6" }: IconProps) {
     return (

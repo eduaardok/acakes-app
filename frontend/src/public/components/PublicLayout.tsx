@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { getClienteToken, clearClienteToken } from "../lib/publicApi";
+import { GridIcon, HeartIcon } from "../../components/icons";
 
 interface Props {
     children: React.ReactNode;
@@ -25,16 +26,18 @@ export function PublicLayout({ children }: Props) {
                     <nav className="flex items-center gap-3 text-sm font-medium text-gray-600">
                         <Link
                             to="/catalogo"
-                            className="rounded-full px-3 py-1.5 transition-colors duration-150 ease-out hover:bg-pink-50 hover:text-pink-700"
+                            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-colors duration-150 ease-out hover:bg-pink-50 hover:text-pink-700"
                         >
+                            <GridIcon className="h-4 w-4" />
                             Catálogo
                         </Link>
                         {logueado ? (
                             <>
                                 <Link
                                     to="/mis-favoritos"
-                                    className="rounded-full px-3 py-1.5 transition-colors duration-150 ease-out hover:bg-pink-50 hover:text-pink-700"
+                                    className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-colors duration-150 ease-out hover:bg-pink-50 hover:text-pink-700"
                                 >
+                                    <HeartIcon className="h-4 w-4" />
                                     Favoritos
                                 </Link>
                                 <button
