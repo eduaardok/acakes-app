@@ -21,6 +21,11 @@
        No forma parte de la escala brand-purple (distinta luminosidad/matiz);
        nombrado sin prefijo "brand-" a pedido explícito del brief. */
     --color-purple-100: oklch(80.674701% 0.052786 322.9886);
+
+    /* Fuente script del acento manuscrito del hero público (cargada en
+       index.html vía Google Fonts). Único uso tipográfico distinto del
+       sitio — se reserva para ese momento de marca, no para UI general. */
+    --font-script: "Caveat", cursive;
 }
 
 /* Rosa primario, actualizado a #E10080 (rediseño de paleta 2026). Pisa el

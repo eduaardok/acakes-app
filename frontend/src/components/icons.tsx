@@ -88,6 +88,64 @@ export function UserIcon({ className = "h-6 w-6" }: IconProps) {
     );
 }
 
+/** Destello — acento decorativo (línea manuscrita del hero, encabezados de sección). */
+export function SparkleIcon({ className = "h-5 w-5" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className={className}
+            aria-hidden
+        >
+            <path d="M12 2c.6 3.2 1.8 5.6 3.4 7.2C17 10.8 19.4 12 22.6 12c-3.2.6-5.6 1.8-7.2 3.4C13.8 17 12.6 19.4 12 22.6c-.6-3.2-1.8-5.6-3.4-7.2C6.9 13.8 4.5 12.6 1.4 12c3.2-.6 5.6-1.8 7.2-3.4C10.1 6.9 11.3 4.5 12 2z" />
+        </svg>
+    );
+}
+
+/** Paleta de pintor — valor de marca "diseño personalizado". */
+export function PaletteIcon({ className = "h-6 w-6" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M12 3c-4.97 0-9 3.69-9 8.25 0 3.02 2.46 4.75 5 4.75h1.2a1.3 1.3 0 0 1 1 2.13l-.4.47a1.3 1.3 0 0 0 1 2.15c4.53-.2 8.2-3.99 8.2-8.5C19 6.69 16.97 3 12 3Z" />
+            <circle cx="8" cy="12" r="1.4" />
+            <circle cx="10" cy="8" r="1" fill="currentColor" stroke="none" />
+            <circle cx="14.5" cy="8" r="1" fill="currentColor" stroke="none" />
+            <circle cx="16.5" cy="11.5" r="1" fill="currentColor" stroke="none" />
+        </svg>
+    );
+}
+
+/** Pin de ubicación — valor de marca "zona de entrega". */
+export function MapPinIcon({ className = "h-6 w-6" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11Z" />
+            <circle cx="12" cy="10" r="2.5" />
+        </svg>
+    );
+}
+
 /** Triángulo de alerta — badges de atención/comportamiento negativo. */
 export function AlertTriangleIcon({ className = "h-4 w-4" }: IconProps) {
     return (
