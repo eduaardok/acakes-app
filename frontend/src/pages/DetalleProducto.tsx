@@ -138,7 +138,7 @@ export default function DetalleProducto() {
     if (error || !producto) {
         return (
             <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-3">
-                <p className="text-red-500 text-sm">{error ?? "Producto no encontrado"}</p>
+                <p className="text-red-600 text-sm">{error ?? "Producto no encontrado"}</p>
                 <button onClick={() => navigate(-1)} className="text-sm text-gray-400 underline">
                     Volver
                 </button>

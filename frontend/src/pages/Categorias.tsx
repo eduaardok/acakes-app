@@ -153,7 +153,7 @@ function CategoriaSection({
                                         type="button"
                                         onClick={() => handleEliminar(categoria)}
                                         disabled={eliminandoId === categoria.id}
-                                        className="text-sm font-medium text-red-500 disabled:opacity-50"
+                                        className="text-sm font-medium text-red-600 disabled:opacity-50"
                                     >
                                         {eliminandoId === categoria.id ? "..." : "Eliminar"}
                                     </button>
