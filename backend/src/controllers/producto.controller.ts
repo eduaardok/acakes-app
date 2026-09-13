@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import { subirImagen, eliminarImagen } from '../lib/supabaseStorage'
 import { includeCategorias, aplanarCategorias, parseIdsInput } from '../lib/categoriasProducto'
+import { invalidarCatalogo, invalidarProducto } from '../lib/publicCache'
 
 const PAGE_SIZE_DEFAULT = 20
 const PAGE_SIZE_MAX = 50
@@ -119,6 +120,7 @@ export async function createProducto(req: Request, res: Response) {
             },
         })
 
+        invalidarCatalogo()
         res.status(201).json(aplanarCategorias(producto))
     } catch (err) {
         await Promise.allSettled(urlsSubidas.map((url) => eliminarImagen(url)))
@@ -201,6 +203,8 @@ export async function updateProducto(req: Request, res: Response) {
             },
         })
 
+        invalidarCatalogo()
+        invalidarProducto(id)
         res.json(aplanarCategorias(actualizado))
     } catch (err) {
         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2003') {
@@ -259,6 +263,8 @@ export async function addImagenesProducto(req: Request, res: Response) {
             where: { id },
             include: { imagenes: { orderBy: { orden: 'asc' } } },
         })
+        invalidarCatalogo()
+        invalidarProducto(id)
         res.status(201).json(actualizado)
     } catch (err) {
         await Promise.allSettled(urlsSubidas.map((url) => eliminarImagen(url)))
@@ -293,6 +299,8 @@ export async function deleteImagenProducto(req: Request, res: Response) {
     }
 
     await prisma.productoImagen.delete({ where: { id: imagenId } })
+    invalidarCatalogo()
+    invalidarProducto(id)
     res.status(204).send()
 }
 
@@ -323,5 +331,7 @@ export async function deleteProducto(req: Request, res: Response) {
     }
 
     await prisma.producto.delete({ where: { id } })
+    invalidarCatalogo()
+    invalidarProducto(id)
     res.status(204).send()
 }

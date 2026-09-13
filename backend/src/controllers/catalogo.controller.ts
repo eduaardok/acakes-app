@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { Prisma } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import { includeCategorias, aplanarCategorias } from '../lib/categoriasProducto'
+import { catalogoCache, productoDetalleCache, productoCacheKey, logCache } from '../lib/publicCache'
 
 const PAGE_SIZE_DEFAULT = 20
 const PAGE_SIZE_MAX = 50
@@ -10,6 +11,24 @@ const RESENAS_PAGE_SIZE = 10
 function parseIdsCsv(value: unknown): string[] {
     if (typeof value !== 'string' || !value.trim()) return []
     return value.split(',').map((v) => v.trim()).filter(Boolean)
+}
+
+// Una key por combinación de filtros/página/orden — el catálogo acepta
+// filtros, así que no se puede cachear un único resultado global (eso le
+// serviría el listado sin filtrar a quien sí filtró). Los ids se ordenan
+// para que el mismo conjunto de filtros en distinto orden pegue a la misma
+// entrada de cache.
+function catalogoCacheKey(
+    tematicaIds: string[],
+    ocasionIds: string[],
+    page: number,
+    pageSize: number,
+    ordenarPor: unknown
+): string {
+    const t = [...tematicaIds].sort().join(',')
+    const o = [...ocasionIds].sort().join(',')
+    const orden = typeof ordenarPor === 'string' ? ordenarPor : ''
+    return `catalogo:t=${t}|o=${o}|page=${page}|size=${pageSize}|orden=${orden}`
 }
 
 // GET /catalogo?tematicaIds=id1,id2&ocasionIds=id1,id2&page=1&pageSize=20&ordenarPor=vistas
@@ -24,6 +43,15 @@ export async function getCatalogo(req: Request, res: Response) {
         PAGE_SIZE_MAX,
         Math.max(1, Number(req.query.pageSize) || PAGE_SIZE_DEFAULT)
     )
+
+    const cacheKey = catalogoCacheKey(tematicaIds, ocasionIds, page, pageSize, ordenarPor)
+    const cacheado = catalogoCache.get(cacheKey)
+    if (cacheado) {
+        logCache('HIT', cacheKey)
+        res.json(cacheado)
+        return
+    }
+    logCache('MISS', cacheKey)
 
     const and: Prisma.ProductoWhereInput[] = [
         ...tematicaIds.map((id): Prisma.ProductoWhereInput => ({ tematicas: { some: { tematicaId: id } } })),
@@ -57,16 +85,22 @@ export async function getCatalogo(req: Request, res: Response) {
         prisma.producto.count({ where }),
     ])
 
-    res.json({
+    const payload = {
         productos: productos.map(aplanarCategorias),
         page,
         pageSize,
         total,
         totalPages: Math.ceil(total / pageSize),
-    })
+    }
+    catalogoCache.set(cacheKey, payload)
+    res.json(payload)
 }
 
 // GET /producto/:id
+// El incremento de vistas es un write y nunca pasa por cache: se dispara en
+// cada request, HIT o MISS. Solo el read (datos del producto + reseñas) se
+// sirve desde cache por 90s — por eso el conteo de vistas que ve el cliente
+// puede quedar hasta 90s atrás del real, es el trade-off aceptado del cache.
 export async function getProductoDetalle(req: Request, res: Response) {
     const id = Number(req.params.id)
     if (!Number.isInteger(id)) {
@@ -74,13 +108,29 @@ export async function getProductoDetalle(req: Request, res: Response) {
         return
     }
 
-    // update con increment atómico: evita el race condition de un
-    // findUnique + update en dos pasos bajo llamadas concurrentes.
     try {
-        const [producto, resenasTotal] = await Promise.all([
-            prisma.producto.update({
+        // select mínimo: a diferencia del read, este write no necesita devolver
+        // el producto completo (eso lo resuelve el cache o el findUnique de abajo).
+        const incrementoVistas = prisma.producto.update({
+            where: { id },
+            data: { vistas: { increment: 1 } },
+            select: { id: true },
+        })
+
+        const cacheKey = productoCacheKey(id)
+        const cacheado = productoDetalleCache.get(cacheKey)
+        if (cacheado) {
+            await incrementoVistas
+            logCache('HIT', cacheKey)
+            res.json(cacheado)
+            return
+        }
+        logCache('MISS', cacheKey)
+
+        const [, producto, resenasTotal] = await Promise.all([
+            incrementoVistas,
+            prisma.producto.findUnique({
                 where: { id },
-                data: { vistas: { increment: 1 } },
                 select: {
                     id: true,
                     nombre: true,
@@ -108,7 +158,14 @@ export async function getProductoDetalle(req: Request, res: Response) {
             prisma.resena.count({ where: { productoId: id } }),
         ])
 
-        res.json({ ...aplanarCategorias(producto), resenasTotal })
+        if (!producto) {
+            res.status(404).json({ message: 'Producto no encontrado' })
+            return
+        }
+
+        const payload = { ...aplanarCategorias(producto), resenasTotal }
+        productoDetalleCache.set(cacheKey, payload)
+        res.json(payload)
     } catch (err) {
         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
             res.status(404).json({ message: 'Producto no encontrado' })
