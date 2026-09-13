@@ -7,7 +7,8 @@ import { usePageTitle } from "../hooks/usePageTitle";
 import { Button } from "../components/Button";
 import { IconButton } from "../components/IconButton";
 import { Skeleton } from "../components/Skeleton";
-import { CakeIcon } from "../components/icons";
+import { Spinner } from "../components/Spinner";
+import { CakeIcon, TrashIcon } from "../components/icons";
 import { CategoriaCombobox } from "../components/CategoriaCombobox";
 import { TipoProductoSelect } from "../components/TipoProductoSelect";
 import { TIPO_PRODUCTO_LABEL, TIPO_PRODUCTO_ICON, type TipoProducto } from "../lib/tipoProducto";
@@ -172,10 +173,14 @@ export default function DetalleProducto() {
                                         type="button"
                                         onClick={() => handleEliminarImagen(img.id)}
                                         disabled={eliminandoImagenId === img.id}
-                                        className="absolute top-1 right-1 bg-black/60 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs leading-none disabled:opacity-50"
+                                        className="absolute top-1 right-1 bg-black/60 text-white rounded-full h-6 w-6 flex items-center justify-center disabled:opacity-50"
                                         aria-label="Eliminar foto"
                                     >
-                                        {eliminandoImagenId === img.id ? "…" : "×"}
+                                        {eliminandoImagenId === img.id ? (
+                                            <Spinner className="h-3.5 w-3.5" />
+                                        ) : (
+                                            <TrashIcon className="h-3.5 w-3.5" />
+                                        )}
                                     </button>
                                 </div>
                             ))}

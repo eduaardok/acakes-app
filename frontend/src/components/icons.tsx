@@ -210,6 +210,48 @@ export function TagIcon({ className = "h-6 w-6" }: IconProps) {
     );
 }
 
+/** Basura — eliminar foto/elemento. */
+export function TrashIcon({ className = "h-4 w-4" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M4 7h16" />
+            <path d="M9 7V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V7" />
+            <path d="M6 7l1 12.5a2 2 0 0 0 2 1.9h6a2 2 0 0 0 2-1.9L18 7" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+        </svg>
+    );
+}
+
+/** Más — agregar/crear, FAB de nuevo elemento. */
+export function PlusIcon({ className = "h-5 w-5" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M12 5v14M5 12h14" />
+        </svg>
+    );
+}
+
 /** Triángulo de alerta — badges de atención/comportamiento negativo. */
 export function AlertTriangleIcon({ className = "h-4 w-4" }: IconProps) {
     return (

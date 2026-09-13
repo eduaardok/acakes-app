@@ -8,6 +8,7 @@ import { Button } from "../components/Button";
 import { IconButton } from "../components/IconButton";
 import { CategoriaCombobox } from "../components/CategoriaCombobox";
 import { TipoProductoSelect } from "../components/TipoProductoSelect";
+import { TrashIcon } from "../components/icons";
 import type { TipoProducto } from "../lib/tipoProducto";
 
 const MAX_IMAGENES = 8;
@@ -133,10 +134,10 @@ export default function NuevoProducto() {
                                     <button
                                         type="button"
                                         onClick={() => quitarArchivo(i)}
-                                        className="absolute top-1 right-1 bg-black/60 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs leading-none"
+                                        className="absolute top-1 right-1 bg-black/60 text-white rounded-full h-6 w-6 flex items-center justify-center"
                                         aria-label="Quitar foto"
                                     >
-                                        ×
+                                        <TrashIcon className="h-3.5 w-3.5" />
                                     </button>
                                 </div>
                             ))}
