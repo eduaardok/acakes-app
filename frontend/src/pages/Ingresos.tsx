@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useIngresos, hoy, haceDias } from "../hooks/useIngresos";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { Skeleton } from "../components/Skeleton";
+import { CakeIcon } from "../components/icons";
 import { TIPOS_PRODUCTO, TIPO_PRODUCTO_LABEL, TIPO_PRODUCTO_ICON } from "../lib/tipoProducto";
 
 // Rangos rápidos predefinidos
@@ -115,7 +116,7 @@ export default function Ingresos() {
                             <p className="text-xs text-gray-400 uppercase tracking-wide font-medium mb-1">
                                 Total del período
                             </p>
-                            <p className="text-4xl font-bold text-gray-900 tabular-nums">
+                            <p className="text-4xl font-bold text-brand-purple-700 tabular-nums">
                                 ${Number(data.total).toFixed(2)}
                             </p>
                             <p className="text-sm text-gray-400 mt-1">
@@ -160,21 +161,7 @@ export default function Ingresos() {
 
                             {data.pedidos.length === 0 ? (
                                 <div className="text-center py-10">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="64"
-                                        height="64"
-                                        viewBox="-60 -100 120 170"
-                                        fill="none"
-                                        className="mx-auto"
-                                        aria-hidden
-                                    >
-                                        <path d="M-14,-68 Q-18,-80 -8,-82 Q0,-88 8,-82 Q18,-80 14,-68" stroke="#d1d5db" strokeWidth="2.5" strokeLinecap="round"/>
-                                        <path d="M-14,-68 Q-20,-58 -22,-50 L22,-50 Q20,-58 14,-68" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                        <path d="M-22,-50 Q-52,-40 -52,5 Q-52,55 0,58 Q52,55 52,5 Q52,-40 22,-50 Z" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                        <line x1="0" y1="-15" x2="0" y2="35" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round"/>
-                                        <path d="M12,-8 Q12,-18 0,-18 Q-12,-18 -12,-8 Q-12,2 0,2 Q12,2 12,12 Q12,22 0,22 Q-12,22 -12,12" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round"/>
-                                    </svg>
+                                    <CakeIcon className="mx-auto h-10 w-10 text-gray-300" />
                                     <p className="text-gray-400 text-sm mt-2">
                                         Sin ingresos en este período
                                     </p>

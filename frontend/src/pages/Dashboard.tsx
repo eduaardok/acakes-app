@@ -161,7 +161,7 @@ export default function Dashboard() {
                         onClick={() => setVista("dia")}
                         className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
                             vista === "dia"
-                                ? "bg-white text-gray-900 shadow-sm"
+                                ? "bg-white text-pink-700 shadow-sm"
                                 : "text-gray-500"
                         }`}
                     >
@@ -172,7 +172,7 @@ export default function Dashboard() {
                         onClick={() => setVista("listado")}
                         className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
                             vista === "listado"
-                                ? "bg-white text-gray-900 shadow-sm"
+                                ? "bg-white text-pink-700 shadow-sm"
                                 : "text-gray-500"
                         }`}
                     >
@@ -183,7 +183,7 @@ export default function Dashboard() {
                         onClick={() => setVista("calendario")}
                         className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
                             vista === "calendario"
-                                ? "bg-white text-gray-900 shadow-sm"
+                                ? "bg-white text-pink-700 shadow-sm"
                                 : "text-gray-500"
                         }`}
                     >
