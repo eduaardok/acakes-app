@@ -132,136 +132,66 @@ export default function Dashboard() {
     return (
         <div className="min-h-screen bg-gray-50">
             <header className="bg-white border-b border-gray-100 px-4 pt-safe pb-4 sticky top-0 z-10 shadow-sm">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-xl font-bold text-gray-900">Pedidos</h1>
-                    <div className="flex items-center gap-1">
-                        {vista !== "calendario" && (
-                            <IconButton
-                                onClick={refetch}
-                                disabled={loading}
-                                spinning={loading}
-                                aria-label="Recargar pedidos"
-                                className="bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
-                            >
-                                <RefreshIcon className="h-[18px] w-[18px]" />
-                            </IconButton>
-                        )}
-                    </div>
-                </div>
-
-                <div className="mt-3 flex rounded-xl bg-gray-100 p-1 max-w-lg">
-                    <button
-                        type="button"
-                        onClick={() => setVista("dia")}
-                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
-                            vista === "dia"
-                                ? "bg-white text-pink-700 shadow-sm"
-                                : "text-gray-500"
-                        }`}
-                    >
-                        Por día
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setVista("listado")}
-                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
-                            vista === "listado"
-                                ? "bg-white text-pink-700 shadow-sm"
-                                : "text-gray-500"
-                        }`}
-                    >
-                        Listado
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setVista("calendario")}
-                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
-                            vista === "calendario"
-                                ? "bg-white text-pink-700 shadow-sm"
-                                : "text-gray-500"
-                        }`}
-                    >
-                        Calendario
-                    </button>
-                </div>
-
-                {vista === "dia" && (
-                    <div className="mt-3 flex max-w-lg items-center gap-1">
-                        <IconButton
-                            className="shrink-0"
-                            onClick={() => setFechaKey((k) => addDaysLocalKey(k, -1))}
-                            aria-label="Día anterior"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="M15 18l-6-6 6-6" />
-                            </svg>
-                        </IconButton>
-                        <p className="min-w-0 flex-1 text-center text-sm font-medium text-gray-700">
-                            {formatFechaSelectorLabel(fechaKey)}
-                        </p>
-                        <IconButton
-                            className="shrink-0"
-                            onClick={() => setFechaKey((k) => addDaysLocalKey(k, 1))}
-                            aria-label="Día siguiente"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="M9 18l6-6-6-6" />
-                            </svg>
-                        </IconButton>
-                    </div>
-                )}
-
-                {vista === "listado" && (
-                    <div className="mt-3 space-y-3 max-w-lg">
-                        <div className="flex flex-wrap gap-1.5">
-                            {(
-                                [
-                                    ["semana", "Semana"],
-                                    ["mes", "Mes"],
-                                    ["año", "Año"],
-                                    ["todos", "Todos"],
-                                ] as const
-                            ).map(([id, label]) => (
-                                <button
-                                    key={id}
-                                    type="button"
-                                    onClick={() => setListadoPeriodo(id)}
-                                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-[color,background-color,transform] duration-150 ease-out active:scale-95 ${
-                                        listadoPeriodo === id
-                                            ? "bg-pink-600 text-white"
-                                            : "bg-gray-100 text-gray-600"
-                                    }`}
-                                >
-                                    {label}
-                                </button>
-                            ))}
-                        </div>
+                <div className="max-w-lg mx-auto">
+                    <div className="flex items-center justify-between">
+                        <h1 className="text-xl font-bold text-gray-900">Pedidos</h1>
                         <div className="flex items-center gap-1">
+                            {vista !== "calendario" && (
+                                <IconButton
+                                    onClick={refetch}
+                                    disabled={loading}
+                                    spinning={loading}
+                                    aria-label="Recargar pedidos"
+                                    className="bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+                                >
+                                    <RefreshIcon />
+                                </IconButton>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="mt-3 flex rounded-xl bg-gray-100 p-1">
+                        <button
+                            type="button"
+                            onClick={() => setVista("dia")}
+                            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
+                                vista === "dia"
+                                    ? "bg-white text-pink-700 shadow-sm"
+                                    : "text-gray-500"
+                            }`}
+                        >
+                            Por día
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setVista("listado")}
+                            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
+                                vista === "listado"
+                                    ? "bg-white text-pink-700 shadow-sm"
+                                    : "text-gray-500"
+                            }`}
+                        >
+                            Listado
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setVista("calendario")}
+                            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-[color,background-color,box-shadow] duration-200 ease-out ${
+                                vista === "calendario"
+                                    ? "bg-white text-pink-700 shadow-sm"
+                                    : "text-gray-500"
+                            }`}
+                        >
+                            Calendario
+                        </button>
+                    </div>
+
+                    {vista === "dia" && (
+                        <div className="mt-3 flex items-center gap-1">
                             <IconButton
                                 className="shrink-0"
-                                onClick={goPrevListado}
-                                disabled={!canPrevNextListado}
-                                aria-label="Periodo anterior"
+                                onClick={() => setFechaKey((k) => addDaysLocalKey(k, -1))}
+                                aria-label="Día anterior"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -277,14 +207,13 @@ export default function Dashboard() {
                                     <path d="M15 18l-6-6 6-6" />
                                 </svg>
                             </IconButton>
-                            <p className="min-w-0 flex-1 text-center text-sm font-medium text-gray-700 leading-snug px-1">
-                                {listadoLabel}
+                            <p className="min-w-0 flex-1 text-center text-sm font-medium text-gray-700">
+                                {formatFechaSelectorLabel(fechaKey)}
                             </p>
                             <IconButton
                                 className="shrink-0"
-                                onClick={goNextListado}
-                                disabled={!canPrevNextListado}
-                                aria-label="Periodo siguiente"
+                                onClick={() => setFechaKey((k) => addDaysLocalKey(k, 1))}
+                                aria-label="Día siguiente"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -301,8 +230,81 @@ export default function Dashboard() {
                                 </svg>
                             </IconButton>
                         </div>
-                    </div>
-                )}
+                    )}
+
+                    {vista === "listado" && (
+                        <div className="mt-3 space-y-3">
+                            <div className="flex flex-wrap gap-1.5">
+                                {(
+                                    [
+                                        ["semana", "Semana"],
+                                        ["mes", "Mes"],
+                                        ["año", "Año"],
+                                        ["todos", "Todos"],
+                                    ] as const
+                                ).map(([id, label]) => (
+                                    <button
+                                        key={id}
+                                        type="button"
+                                        onClick={() => setListadoPeriodo(id)}
+                                        className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-[color,background-color,transform] duration-150 ease-out active:scale-95 ${
+                                            listadoPeriodo === id
+                                                ? "bg-pink-600 text-white"
+                                                : "bg-gray-100 text-gray-600"
+                                        }`}
+                                    >
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <IconButton
+                                    className="shrink-0"
+                                    onClick={goPrevListado}
+                                    disabled={!canPrevNextListado}
+                                    aria-label="Periodo anterior"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path d="M15 18l-6-6 6-6" />
+                                    </svg>
+                                </IconButton>
+                                <p className="min-w-0 flex-1 text-center text-sm font-medium text-gray-700 leading-snug px-1">
+                                    {listadoLabel}
+                                </p>
+                                <IconButton
+                                    className="shrink-0"
+                                    onClick={goNextListado}
+                                    disabled={!canPrevNextListado}
+                                    aria-label="Periodo siguiente"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path d="M9 18l6-6-6-6" />
+                                    </svg>
+                                </IconButton>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </header>
 
             <main className="px-4 py-4 max-w-lg mx-auto">
