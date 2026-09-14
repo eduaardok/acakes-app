@@ -4,6 +4,7 @@ import { api } from "../lib/api";
 import { useCliente } from "../hooks/useCliente";
 import { usePageTitle } from "../hooks/usePageTitle";
 import type { TipoObservacion } from "../hooks/useCliente";
+import type { EstadoPedido } from "../hooks/usePedidosHoy";
 import { CuentaPublicaVinculada } from "../components/CuentaPublicaVinculada";
 import { Button } from "../components/Button";
 import { IconButton } from "../components/IconButton";
@@ -21,9 +22,15 @@ const obsConfig: Record<TipoObservacion, { label: string; bg: string; text: stri
     OTRO:              { label: "Otro",               bg: "bg-gray-100",   text: "text-gray-600" },
 };
 
-const estadoLabel: Record<string, string> = {
-    BORRADOR: "Borrador", CONFIRMADO: "Confirmado", EN_PROCESO: "En proceso",
-    LISTO: "¡Listo!", ENTREGADO: "Entregado", CANCELADO: "Cancelado", NO_RETIRADO: "No retirado",
+// Misma config que DetallePedido/PedidoCard — colores por estado
+const estadoConfig: Record<EstadoPedido, { label: string; bg: string; text: string }> = {
+    BORRADOR:    { label: "Borrador",    bg: "bg-gray-100",    text: "text-gray-600" },
+    CONFIRMADO:  { label: "Confirmado",  bg: "bg-blue-100",    text: "text-blue-700" },
+    EN_PROCESO:  { label: "En proceso",  bg: "bg-yellow-100",  text: "text-yellow-700" },
+    LISTO:       { label: "¡Listo!",     bg: "bg-green-100",   text: "text-green-700" },
+    ENTREGADO:   { label: "Entregado",   bg: "bg-emerald-100", text: "text-emerald-700" },
+    CANCELADO:   { label: "Cancelado",   bg: "bg-red-100",     text: "text-red-600" },
+    NO_RETIRADO: { label: "No retirado", bg: "bg-orange-100",  text: "text-orange-700" },
 };
 
 function formatFecha(fechaISO: string): string {
@@ -298,7 +305,9 @@ export default function DetalleCliente() {
                                     </div>
                                     <div className="flex justify-between items-center mt-1">
                                         <p className="text-xs text-gray-400">{formatFecha(p.fechaEntrega)}</p>
-                                        <span className="text-xs text-gray-500">{estadoLabel[p.estado]}</span>
+                                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${estadoConfig[p.estado].bg} ${estadoConfig[p.estado].text}`}>
+                                            {estadoConfig[p.estado].label}
+                                        </span>
                                     </div>
                                 </button>
                             ))}

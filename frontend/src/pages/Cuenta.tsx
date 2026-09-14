@@ -254,7 +254,7 @@ export default function Cuenta() {
                             Cierra la sesión solo en este dispositivo.
                         </p>
                     </div>
-                    <Button type="button" variant="secondary" size="sm" fullWidth onClick={handleLogout}>
+                    <Button type="button" variant="danger" size="sm" fullWidth onClick={handleLogout}>
                         Cerrar sesión
                     </Button>
                 </section>

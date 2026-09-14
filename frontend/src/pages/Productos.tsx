@@ -19,6 +19,7 @@ export default function Productos() {
                         <IconButton
                             onClick={() => navigate("/panel/categorias")}
                             aria-label="Gestionar categorías"
+                            className="bg-pink-50 text-pink-600 hover:bg-pink-100 hover:text-pink-700"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"

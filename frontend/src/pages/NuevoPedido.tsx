@@ -103,7 +103,7 @@ export default function NuevoPedido() {
 
                     {/* Cliente ya seleccionado */}
                     {cliente ? (
-                        <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 flex items-center justify-between">
+                        <div className="bg-pink-50 border border-pink-200 rounded-xl px-4 py-3 flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-900">{cliente.nombre}</p>
                                 <p className="text-xs text-gray-400">{cliente.telefono}</p>
