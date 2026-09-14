@@ -95,6 +95,9 @@ export async function getCatalogo(req: Request, res: Response) {
                     take: 1,
                     select: { id: true, url: true, orden: true },
                 },
+                // El listado solo trae la primera foto (arriba); _count da el total
+                // real para que el frontend pueda mostrar "+N fotos" sin traerlas todas.
+                _count: { select: { imagenes: true } },
                 ...includeCategorias,
             },
             orderBy,

@@ -13,7 +13,10 @@ export interface ProductoResumen {
     tematicas: CategoriaFiltro[];
     ocasiones: CategoriaFiltro[];
     createdAt: string;
+    // El listado solo trae la primera foto — _count.imagenes es el total real,
+    // usado para el badge de "+N fotos" en ProductoCard.
     imagenes: { id: number; url: string; orden: number }[];
+    _count: { imagenes: number };
 }
 
 interface CatalogoResponse {

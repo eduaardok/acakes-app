@@ -5,6 +5,26 @@ interface IconProps {
     className?: string;
 }
 
+/** Fotos apiladas — badge de "tiene más fotos" sobre una miniatura de producto. */
+export function ImagesIcon({ className = "h-3.5 w-3.5" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <rect x="7" y="7" width="14" height="14" rx="2" />
+            <path d="M17 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2" />
+        </svg>
+    );
+}
+
 /** Pastel — placeholder de imagen ausente y estados vacíos relacionados al catálogo. */
 export function CakeIcon({ className = "h-6 w-6" }: IconProps) {
     return (

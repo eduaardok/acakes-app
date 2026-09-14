@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { ReactNode } from "react";
 import { CakeIcon } from "../../components/icons";
+import { PhotoCountBadge } from "../../components/PhotoCountBadge";
 import { TIPO_PRODUCTO_LABEL, TIPO_PRODUCTO_ICON, type TipoProducto } from "../../lib/tipoProducto";
 
 // Subconjunto de campos que la card necesita — permite reusarla con
@@ -11,7 +12,9 @@ export interface ProductoCardData {
     tipo: TipoProducto;
     tematicas: { id: string; nombre: string }[];
     ocasiones: { id: string; nombre: string }[];
+    // El listado solo trae la primera foto — _count.imagenes es el total real.
     imagenes: { url: string }[];
+    _count: { imagenes: number };
 }
 
 interface Props {
@@ -43,7 +46,7 @@ export function ProductoCard({ producto, animationDelayMs, accionExtra }: Props)
             >
                 <TipoIcon className="h-4 w-4" />
             </span>
-            <div className="aspect-square w-full overflow-hidden bg-gray-100">
+            <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
                 {imagen ? (
                     <img
                         src={imagen.url}
@@ -57,6 +60,7 @@ export function ProductoCard({ producto, animationDelayMs, accionExtra }: Props)
                         <CakeIcon className="h-10 w-10" />
                     </div>
                 )}
+                <PhotoCountBadge count={producto._count.imagenes} />
             </div>
             <div className="p-3">
                 <p className="truncate font-semibold text-gray-900">{producto.nombre}</p>

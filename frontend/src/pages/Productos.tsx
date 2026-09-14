@@ -3,6 +3,7 @@ import { useProductos } from "../hooks/useProductos";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { IconButton } from "../components/IconButton";
 import { Skeleton } from "../components/Skeleton";
+import { PhotoCountBadge } from "../components/PhotoCountBadge";
 import { CakeIcon } from "../components/icons";
 
 export default function Productos() {
@@ -99,7 +100,7 @@ export default function Productos() {
                                     onClick={() => navigate(`/panel/productos/${p.id}`)}
                                     className="text-left bg-white rounded-2xl border border-gray-100 overflow-hidden active:bg-gray-50 transition-colors"
                                 >
-                                    <div className="h-28 w-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                                    <div className="relative h-28 w-full bg-gray-100 flex items-center justify-center overflow-hidden">
                                         {p.imagenes[0] ? (
                                             <img
                                                 src={p.imagenes[0].url}
@@ -109,6 +110,7 @@ export default function Productos() {
                                         ) : (
                                             <CakeIcon className="h-8 w-8 text-gray-300" />
                                         )}
+                                        <PhotoCountBadge count={p.imagenes.length} />
                                     </div>
                                     <div className="p-3">
                                         <p className="font-semibold text-gray-900 text-sm truncate">{p.nombre}</p>
