@@ -227,9 +227,11 @@ export default function ProductoDetalle() {
                     href={whatsappCotizarUrl(producto.nombre, producto.tipo)}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="Cotizar por WhatsApp"
                     className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-emerald-500 py-3 font-semibold text-white transition-[background-color,transform] duration-150 ease-out active:scale-[0.98] hover:bg-emerald-600"
                 >
-                    Cotizar por WhatsApp
+                    <img src="/WhatsApp.svg" alt="" className="h-5 w-5" aria-hidden="true" />
+                    Cotizar
                 </a>
 
                 {/* Reseñas */}

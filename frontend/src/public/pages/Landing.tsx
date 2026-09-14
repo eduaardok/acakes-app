@@ -85,9 +85,11 @@ export default function Landing() {
                                 href={whatsappContactoUrl()}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="rounded-full border-2 border-emerald-500 bg-white px-7 py-3.5 text-base font-semibold text-emerald-700 transition-[transform,background-color] duration-200 ease-out hover:-translate-y-0.5 hover:bg-emerald-50 active:translate-y-0 active:scale-[0.98]"
+                                aria-label="Cotizar por WhatsApp"
+                                className="inline-flex items-center gap-2 rounded-full border-2 border-emerald-500 bg-white px-7 py-3.5 text-base font-semibold text-emerald-700 transition-[transform,background-color] duration-200 ease-out hover:-translate-y-0.5 hover:bg-emerald-50 active:translate-y-0 active:scale-[0.98]"
                             >
-                                Cotizar por WhatsApp
+                                <img src="/WhatsApp.svg" alt="" className="h-5 w-5" aria-hidden="true" />
+                                Cotizar
                             </a>
                         </div>
                     </div>
