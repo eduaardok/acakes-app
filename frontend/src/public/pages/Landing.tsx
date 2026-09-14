@@ -69,8 +69,8 @@ export default function Landing() {
                             <span className="mt-2 block">para cada ocasión especial</span>
                         </h1>
                         <p className="mt-5 max-w-md text-lg leading-relaxed text-gray-600">
-                            Diseñamos y horneamos pasteles personalizados y temáticos en El Empalme —
-                            cumpleaños, quinceañeras, o cualquier fecha que quieras celebrar por todo lo alto.
+                            Diseños únicos hechos a mano, para cumpleaños, quinceañeras o cualquier
+                            fecha que quieras celebrar por todo lo alto.
                         </p>
 
                         <div className="mt-7 flex flex-wrap gap-3">
