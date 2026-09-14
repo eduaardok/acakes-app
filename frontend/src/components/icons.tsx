@@ -292,21 +292,24 @@ export function XIcon({ className = "h-4 w-4" }: IconProps) {
     );
 }
 
-/** Más — agregar/crear, FAB de nuevo elemento. */
-export function PlusIcon({ className = "h-5 w-5" }: IconProps) {
+/** Refrescar — dos flechas en círculo, recargar datos sin cambiar de pantalla. */
+export function RefreshIcon({ className = "h-5 w-5" }: IconProps) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2.25"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
             className={className}
             aria-hidden
         >
-            <path d="M12 5v14M5 12h14" />
+            <path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-6.32 3.09" />
+            <path d="M4 4v5h5" />
+            <path d="M4 12a8 8 0 0 0 8 8 8 8 0 0 0 6.32-3.09" />
+            <path d="M20 20v-5h-5" />
         </svg>
     );
 }

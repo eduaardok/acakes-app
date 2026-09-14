@@ -21,7 +21,7 @@ import { CalendarioPedidos } from "../components/CalendarioPedidos";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { IconButton } from "../components/IconButton";
 import { Skeleton } from "../components/Skeleton";
-import { CakeIcon } from "../components/icons";
+import { CakeIcon, RefreshIcon } from "../components/icons";
 
 type VistaPrincipal = "dia" | "listado" | "calendario";
 type ListadoPeriodo = "semana" | "mes" | "año" | "todos";
@@ -136,20 +136,14 @@ export default function Dashboard() {
                     <h1 className="text-xl font-bold text-gray-900">Pedidos</h1>
                     <div className="flex items-center gap-1">
                         {vista !== "calendario" && (
-                            <IconButton onClick={refetch} disabled={loading} spinning={loading} aria-label="Recargar pedidos">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="20"
-                                    height="20"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                                </svg>
+                            <IconButton
+                                onClick={refetch}
+                                disabled={loading}
+                                spinning={loading}
+                                aria-label="Recargar pedidos"
+                                className="bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+                            >
+                                <RefreshIcon className="h-[18px] w-[18px]" />
                             </IconButton>
                         )}
                     </div>
