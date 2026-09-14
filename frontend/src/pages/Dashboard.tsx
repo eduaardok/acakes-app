@@ -131,7 +131,7 @@ export default function Dashboard() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <header className="bg-white border-b border-gray-100 px-4 pt-safe pb-4 sticky top-0 z-10 shadow-sm">
+            <header className="bg-white border-b border-gray-100 px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-4 sticky top-0 z-10 shadow-sm">
                 <div className="max-w-lg mx-auto">
                     <div className="flex items-center justify-between">
                         <h1 className="text-xl font-bold text-gray-900">Pedidos</h1>
