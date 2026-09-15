@@ -31,11 +31,17 @@ app.use(cors({
 app.use(express.json())
 
 // Rutas públicas (sin auth)
+// bootTime: fijo por proceso — si dos requests devuelven distinto bootTime,
+// son procesos/instancias distintas (reinicio o múltiples réplicas). Temporal,
+// solo para diagnóstico del comportamiento del cache en producción.
+const BOOT_TIME = new Date().toISOString()
 app.get('/health', (req, res) => {
     res.json({
         status: 'ok',
         message: 'Servidor de pastelería funcionando',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        pid: process.pid,
+        bootTime: BOOT_TIME
     })
 })
 app.use('/auth', authRoutes)
