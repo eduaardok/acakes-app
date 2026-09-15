@@ -63,7 +63,11 @@ export async function getCatalogo(req: Request, res: Response) {
     const cacheado = catalogoCache.get(cacheKey)
     if (cacheado) {
         logCache('HIT', cacheKey)
-        res.json(cacheado)
+        // _debug temporal: confirma en el propio historial del cron si el
+        // request cayó en el mismo proceso (pid) y si fue HIT o MISS, sin
+        // depender de comparar curls sueltos. Quitar junto con el resto del
+        // diagnóstico de pid/bootTime en index.ts.
+        res.json({ ...(cacheado as object), _debug: { pid: process.pid, cache: 'HIT' } })
         return
     }
     logCache('MISS', cacheKey)
@@ -115,7 +119,8 @@ export async function getCatalogo(req: Request, res: Response) {
         totalPages: Math.ceil(total / pageSize),
     }
     catalogoCache.set(cacheKey, payload)
-    res.json(payload)
+    // _debug temporal — ver comentario arriba en la rama HIT.
+    res.json({ ...payload, _debug: { pid: process.pid, cache: 'MISS' } })
 }
 
 // GET /producto/:id
