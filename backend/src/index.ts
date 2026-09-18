@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 
 import authRoutes from './routes/auth.routes'
 import clientesRoutes from './routes/clientes.routes'
@@ -13,20 +14,21 @@ import usuariosClienteRoutes from './routes/usuariosCliente.routes'
 import { authenticateToken } from './middleware/auth.middleware'
 import { iniciarCronNotificaciones } from './jobs/notificarFechasEspeciales'
 import { auditLogMiddleware } from './middleware/auditLog.middleware'
-// import {prisma} from './lib/prisma'
-// // Smoke test — borra esto después
-// async function testDB() {
-//     const count = await prisma.cliente.count()
-//     console.log(`✅ Conexión OK — Clientes en DB: ${count}`)
-// }
-// testDB()
 
 const app = express()
 app.set('trust proxy', 1)
 const PORT = Number(process.env.PORT) || 3000;
 
+// crossOriginResourcePolicy en "cross-origin": por default helmet bloquea
+// que otros orígenes (ej. el frontend en Netlify) carguen recursos servidos
+// acá — pero las imágenes reales viven en Supabase Storage, no en este
+// servidor, así que esto solo evita falsos bloqueos si algo se sirve local.
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+}))
+
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:3000","http://192.168.1.9:5173","http://192.168.1.14:5173",
+    origin: ["http://localhost:5173", "http://localhost:3000",
         "https://calm-squirrel-5232fd.netlify.app", "https://ainoascakes.netlify.app"],
     credentials: true,
 }));
