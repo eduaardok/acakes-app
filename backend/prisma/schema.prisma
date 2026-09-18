@@ -204,6 +204,8 @@ model Resena {
   producto     Producto       @relation(fields: [productoId], references: [id], onDelete: Cascade)
   usuario      UsuarioCliente @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   likes        LikeResena[]
+
+  @@unique([productoId, usuarioId])
 }
 
 model LikeProducto {

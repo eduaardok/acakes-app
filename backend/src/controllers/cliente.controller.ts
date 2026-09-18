@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { Prisma } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import { includeCategorias, aplanarCategorias } from '../lib/categoriasProducto'
 
@@ -24,16 +25,25 @@ export async function crearResena(req: Request, res: Response) {
         return
     }
 
-    const resena = await prisma.resena.create({
-        data: {
-            productoId,
-            usuarioId,
-            calificacion: calificacion!,
-            comentario: comentario ?? null,
-        },
-    })
+    try {
+        const resena = await prisma.resena.create({
+            data: {
+                productoId,
+                usuarioId,
+                calificacion: calificacion!,
+                comentario: comentario ?? null,
+            },
+        })
 
-    res.status(201).json(resena)
+        res.status(201).json(resena)
+    } catch (err) {
+        // @@unique([productoId, usuarioId]) — un cliente ya dejó una reseña para este producto.
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+            res.status(409).json({ error: 'Ya dejaste una reseña para este producto' })
+            return
+        }
+        throw err
+    }
 }
 
 // GET /mis-favoritos — requiere JWT de cliente. Los favoritos anónimos (actorId
