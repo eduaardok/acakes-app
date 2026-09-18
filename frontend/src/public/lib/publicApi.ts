@@ -78,7 +78,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 }
 
 export const publicApi = {
-    get: <T,>(path: string) => request<T>(path),
+    get: <T,>(path: string, extraHeaders?: Record<string, string>) =>
+        request<T>(path, { headers: extraHeaders }),
     post: <T,>(path: string, body?: unknown, extraHeaders?: Record<string, string>) =>
         request<T>(path, {
             method: "POST",

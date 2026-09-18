@@ -87,6 +87,27 @@ export async function unlikeResena(req: Request, res: Response) {
     res.status(204).send()
 }
 
+// GET /producto/:id/favorito — estado del favorito para el actor actual.
+// Sin cache: a diferencia de getProductoDetalle (cacheado 90s y compartido
+// por todos los visitantes), esto es por actor y tiene que reflejar el
+// estado real de quien pregunta, no el de un visitante anterior.
+export async function getFavoritoProducto(req: Request, res: Response) {
+    const actorId = resolveActorId(req, res)
+    if (actorId === null) return
+
+    const productoId = Number(req.params.id)
+    if (!Number.isInteger(productoId)) {
+        res.status(400).json({ error: 'id de producto inválido' })
+        return
+    }
+
+    const favorito = await prisma.favorito.findUnique({
+        where: { productoId_actorId: { productoId, actorId } },
+    })
+
+    res.json({ esFavorito: favorito !== null })
+}
+
 // POST /producto/:id/favorito
 export async function favoritoProducto(req: Request, res: Response) {
     const actorId = resolveActorId(req, res)

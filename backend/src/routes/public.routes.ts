@@ -13,6 +13,7 @@ import {
     unlikeProducto,
     likeResena,
     unlikeResena,
+    getFavoritoProducto,
     favoritoProducto,
     unfavoritoProducto,
 } from '../controllers/interacciones.controller'
@@ -41,6 +42,7 @@ router.post('/producto/:id/like', optionalClienteToken, likeProducto)
 router.delete('/producto/:id/like', optionalClienteToken, unlikeProducto)
 router.post('/resena/:id/like', optionalClienteToken, likeResena)
 router.delete('/resena/:id/like', optionalClienteToken, unlikeResena)
+router.get('/producto/:id/favorito', optionalClienteToken, getFavoritoProducto)
 router.post('/producto/:id/favorito', optionalClienteToken, favoritoProducto)
 router.delete('/producto/:id/favorito', optionalClienteToken, unfavoritoProducto)
 

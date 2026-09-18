@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { PublicLayout } from "../components/PublicLayout";
 import { useProductoDetalle, type ProductoDetalle as ProductoDetalleData } from "../hooks/useProductoDetalle";
@@ -46,6 +46,31 @@ export default function ProductoDetalle() {
 
     const resenas = [...(producto?.resenas ?? []), ...resenasExtra];
     const hayMasResenas = producto ? resenas.length < producto.resenasTotal : false;
+
+    // Hidrata el estado real del favorito para este actor — getProductoDetalle
+    // no lo puede incluir porque su respuesta se cachea 90s compartida entre
+    // todos los visitantes (ver publicCache.ts), así que va en una consulta
+    // aparte, sin cache. Si falla, se deja favorito en false (mejora visual,
+    // no crítico) en vez de romper la página.
+    useEffect(() => {
+        if (!id) return;
+        let cancelado = false;
+
+        publicApi
+            .get<{ esFavorito: boolean }>(`/producto/${id}/favorito`, {
+                "X-Visitante-Id": getVisitanteId(),
+            })
+            .then((res) => {
+                if (!cancelado) setFavorito(res.esFavorito);
+            })
+            .catch(() => {
+                // Se mantiene favorito en false.
+            });
+
+        return () => {
+            cancelado = true;
+        };
+    }, [id]);
 
     const cargarMasResenas = async () => {
         if (!id || cargandoResenas) return;
