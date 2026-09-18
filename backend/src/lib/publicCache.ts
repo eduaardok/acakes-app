@@ -28,11 +28,3 @@ export function invalidarCatalogo(): void {
 export function invalidarProducto(id: number): void {
     productoDetalleCache.delete(productoCacheKey(id))
 }
-
-// Log de bajo nivel, temporal, para confirmar HIT/MISS reales en los logs de
-// Render mientras se verifica el comportamiento del cache en producción.
-// console.debug (no console.log) para poder filtrarlo fácil o quitarlo
-// después sin tocar lógica.
-export function logCache(evento: 'HIT' | 'MISS', key: string): void {
-    console.debug(`[cache:${evento}] ${key}`)
-}

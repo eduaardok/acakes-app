@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { Prisma, TipoProducto } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import { includeCategorias, aplanarCategorias } from '../lib/categoriasProducto'
-import { catalogoCache, productoDetalleCache, productoCacheKey, logCache } from '../lib/publicCache'
+import { catalogoCache, productoDetalleCache, productoCacheKey } from '../lib/publicCache'
 
 const PAGE_SIZE_DEFAULT = 20
 // Exportado: interacciones.controller.ts lo reutiliza como tope de ids en
@@ -65,11 +65,9 @@ export async function getCatalogo(req: Request, res: Response) {
     const cacheKey = catalogoCacheKey(tematicaIds, ocasionIds, tipo, page, pageSize, ordenarPor)
     const cacheado = catalogoCache.get(cacheKey)
     if (cacheado) {
-        logCache('HIT', cacheKey)
         res.json(cacheado)
         return
     }
-    logCache('MISS', cacheKey)
 
     const and: Prisma.ProductoWhereInput[] = [
         ...tematicaIds.map((id): Prisma.ProductoWhereInput => ({ tematicas: { some: { tematicaId: id } } })),
@@ -146,11 +144,9 @@ export async function getProductoDetalle(req: Request, res: Response) {
         const cacheado = productoDetalleCache.get(cacheKey)
         if (cacheado) {
             await incrementoVistas
-            logCache('HIT', cacheKey)
             res.json(cacheado)
             return
         }
-        logCache('MISS', cacheKey)
 
         const [, producto, resenasTotal] = await Promise.all([
             incrementoVistas,
