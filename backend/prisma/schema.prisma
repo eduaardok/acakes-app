@@ -241,3 +241,13 @@ model FechaEspecial {
   notificadoEmail Boolean        @default(false)
   usuario         UsuarioCliente @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 }
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  ruta      String
+  metodo    String
+  ip        String?
+  userAgent String?
+  usuarioId Int?
+  creadoEn  DateTime @default(now())
+}

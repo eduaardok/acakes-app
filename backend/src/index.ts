@@ -12,6 +12,7 @@ import publicRoutes from './routes/public.routes'
 import usuariosClienteRoutes from './routes/usuariosCliente.routes'
 import { authenticateToken } from './middleware/auth.middleware'
 import { iniciarCronNotificaciones } from './jobs/notificarFechasEspeciales'
+import { auditLogMiddleware } from './middleware/auditLog.middleware'
 // import {prisma} from './lib/prisma'
 // // Smoke test — borra esto después
 // async function testDB() {
@@ -29,6 +30,7 @@ app.use(cors({
     credentials: true,
 }));
 app.use(express.json())
+app.use(auditLogMiddleware)   
 
 // Rutas públicas (sin auth)
 app.get('/health', (req, res) => {
