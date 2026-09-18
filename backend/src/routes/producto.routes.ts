@@ -6,6 +6,8 @@ import {
     updateProducto,
     addImagenesProducto,
     deleteImagenProducto,
+    moverImagenProducto,
+    separarImagenProducto,
     deleteProducto,
 } from '../controllers/producto.controller'
 import { uploadImagen, manejarErrorUpload } from '../middleware/upload.middleware'
@@ -25,6 +27,8 @@ router.post(
     addImagenesProducto
 )
 router.delete('/:id/imagenes/:imagenId', deleteImagenProducto)
+router.patch('/:id/imagenes/:imagenId/mover', moverImagenProducto)
+router.post('/:id/imagenes/:imagenId/separar', separarImagenProducto)
 router.delete('/:id', deleteProducto)
 
 export default router

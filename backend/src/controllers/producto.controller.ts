@@ -335,6 +335,125 @@ export async function deleteImagenProducto(req: Request, res: Response) {
     res.status(204).send()
 }
 
+// PATCH /productos/:id/imagenes/:imagenId/mover — body { productoDestinoId }.
+// Solo reasigna productoId (mismo archivo en storage, no se re-sube nada). Se
+// le asigna un orden nuevo al final del destino para no colisionar con el
+// orden de sus imágenes existentes (orden solo es significativo dentro de un
+// mismo producto, no es único en la tabla).
+export async function moverImagenProducto(req: Request, res: Response) {
+    const id = Number(req.params.id)
+    const imagenId = Number(req.params.imagenId)
+    if (!Number.isInteger(id) || !Number.isInteger(imagenId)) {
+        res.status(400).json({ message: 'id inválido' })
+        return
+    }
+
+    const productoDestinoId = Number(req.body.productoDestinoId)
+    if (!Number.isInteger(productoDestinoId)) {
+        res.status(400).json({ message: 'productoDestinoId inválido' })
+        return
+    }
+
+    const imagen = await prisma.productoImagen.findUnique({ where: { id: imagenId } })
+    if (!imagen || imagen.productoId !== id) {
+        res.status(404).json({ message: 'Imagen no encontrada' })
+        return
+    }
+
+    if (productoDestinoId === id) {
+        res.status(400).json({ message: 'No puedes mover una imagen al mismo producto' })
+        return
+    }
+
+    const destino = await prisma.producto.findUnique({
+        where: { id: productoDestinoId },
+        include: { imagenes: true },
+    })
+    if (!destino) {
+        res.status(404).json({ message: 'Producto destino no encontrado' })
+        return
+    }
+    if (destino.imagenes.length >= MAX_IMAGENES_POR_PRODUCTO) {
+        res.status(400).json({ message: `Máximo ${MAX_IMAGENES_POR_PRODUCTO} imágenes por producto` })
+        return
+    }
+
+    const ordenNuevo = destino.imagenes.reduce((max, img) => Math.max(max, img.orden), -1) + 1
+
+    await prisma.productoImagen.update({
+        where: { id: imagenId },
+        data: { productoId: productoDestinoId, orden: ordenNuevo },
+    })
+
+    const actualizado = await prisma.producto.findUnique({
+        where: { id: productoDestinoId },
+        include: {
+            imagenes: { orderBy: { orden: 'asc' } },
+            ...includeCategorias,
+        },
+    })
+
+    invalidarCatalogo()
+    invalidarProducto(id)
+    invalidarProducto(productoDestinoId)
+    res.json(aplanarCategorias(actualizado!))
+}
+
+// POST /productos/:id/imagenes/:imagenId/separar — body { tipo? }. Crea un
+// producto nuevo a partir de una sola imagen existente ("separarla" del
+// producto original). El nombre se deriva del producto origen (+ " (copia)")
+// para que el admin pueda identificarlo en el listado hasta que lo renombre;
+// si no viene tipo en el body, hereda el del producto origen en vez de un
+// default fijo, porque la imagen que se separa podría ser de cualquier tipo.
+export async function separarImagenProducto(req: Request, res: Response) {
+    const id = Number(req.params.id)
+    const imagenId = Number(req.params.imagenId)
+    if (!Number.isInteger(id) || !Number.isInteger(imagenId)) {
+        res.status(400).json({ message: 'id inválido' })
+        return
+    }
+
+    const imagen = await prisma.productoImagen.findUnique({
+        where: { id: imagenId },
+        include: { producto: true },
+    })
+    if (!imagen || imagen.productoId !== id) {
+        res.status(404).json({ message: 'Imagen no encontrada' })
+        return
+    }
+
+    const tipoResultado = parseTipoProducto(req.body.tipo)
+    if (!tipoResultado.ok) {
+        res.status(400).json({ message: `tipo debe ser uno de: ${TIPOS_PRODUCTO_VALIDOS.join(', ')}` })
+        return
+    }
+    const tipoNuevo = tipoResultado.valor ?? imagen.producto.tipo
+
+    const productoNuevo = await prisma.producto.create({
+        data: {
+            nombre: `${imagen.producto.nombre} (copia)`,
+            tipo: tipoNuevo,
+        },
+    })
+
+    await prisma.productoImagen.update({
+        where: { id: imagenId },
+        data: { productoId: productoNuevo.id, orden: 0 },
+    })
+
+    const resultado = await prisma.producto.findUnique({
+        where: { id: productoNuevo.id },
+        include: {
+            imagenes: { orderBy: { orden: 'asc' } },
+            ...includeCategorias,
+        },
+    })
+
+    invalidarCatalogo()
+    invalidarProducto(id)
+    res.status(201).json(aplanarCategorias(resultado!))
+}
+
 // DELETE /productos/:id
 export async function deleteProducto(req: Request, res: Response) {
     const id = Number(req.params.id)
