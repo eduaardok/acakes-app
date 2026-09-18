@@ -88,6 +88,26 @@ export function HeartIcon({ className = "h-5 w-5", filled = false }: IconProps &
     );
 }
 
+/** Pulgar arriba — "me gusta" de producto/reseña (distinto del corazón, que es "favorito"). */
+export function ThumbUpIcon({ className = "h-5 w-5", filled = false }: IconProps & { filled?: boolean }) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill={filled ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M7 11v10H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h3Z" />
+            <path d="M7 11l4.2-7.6a1.8 1.8 0 0 1 2.4-.7c.9.5 1.3 1.5 1 2.5L13.7 9H18a2 2 0 0 1 2 2.3l-1.3 7A2 2 0 0 1 16.7 20H10a3 3 0 0 1-3-3" />
+        </svg>
+    );
+}
+
 /** Cuadrícula 2x2 — enlace "Catálogo" del navbar público. */
 export function GridIcon({ className = "h-5 w-5" }: IconProps) {
     return (

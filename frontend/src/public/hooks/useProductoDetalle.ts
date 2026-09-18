@@ -19,6 +19,10 @@ export interface ProductoDetalle {
         comentario: string | null;
         createdAt: string;
         usuario: { id: number; nombre: string };
+        // Agregado, cacheado junto con el resto del payload (ver Fase 1 backend:
+        // catalogo.controller.ts). "meGusta" del actor no viaja acá — se resuelve
+        // aparte vía GET /resenas/likes.
+        likesCount: number;
     }[];
     resenasTotal: number;
 }
