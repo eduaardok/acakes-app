@@ -9,8 +9,10 @@ import {
     deleteFechaEspecial,
 } from '../controllers/cliente.controller'
 import {
+    getLikesProducto,
     likeProducto,
     unlikeProducto,
+    getLikesResenas,
     likeResena,
     unlikeResena,
     getFavoritoProducto,
@@ -38,8 +40,10 @@ router.get('/fechas-especiales', authenticateClienteToken, getFechasEspeciales)
 router.delete('/fechas-especiales/:id', authenticateClienteToken, deleteFechaEspecial)
 
 // ─── Interacciones anónimas o autenticadas (actorId) ────
+router.get('/producto/:id/likes', optionalClienteToken, getLikesProducto)
 router.post('/producto/:id/like', optionalClienteToken, likeProducto)
 router.delete('/producto/:id/like', optionalClienteToken, unlikeProducto)
+router.get('/resenas/likes', optionalClienteToken, getLikesResenas)
 router.post('/resena/:id/like', optionalClienteToken, likeResena)
 router.delete('/resena/:id/like', optionalClienteToken, unlikeResena)
 router.get('/producto/:id/favorito', optionalClienteToken, getFavoritoProducto)

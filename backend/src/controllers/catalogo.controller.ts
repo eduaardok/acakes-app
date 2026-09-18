@@ -5,11 +5,14 @@ import { includeCategorias, aplanarCategorias } from '../lib/categoriasProducto'
 import { catalogoCache, productoDetalleCache, productoCacheKey, logCache } from '../lib/publicCache'
 
 const PAGE_SIZE_DEFAULT = 20
-const PAGE_SIZE_MAX = 50
+// Exportado: interacciones.controller.ts lo reutiliza como tope de ids en
+// GET /resenas/likes — ese batch nunca necesita más ids que el tamaño máximo
+// de página de reseñas, que ya usa esta misma constante (ver getResenasProducto).
+export const PAGE_SIZE_MAX = 50
 const RESENAS_PAGE_SIZE = 10
 const TIPOS_PRODUCTO_VALIDOS = Object.values(TipoProducto)
 
-function parseIdsCsv(value: unknown): string[] {
+export function parseIdsCsv(value: unknown): string[] {
     if (typeof value !== 'string' || !value.trim()) return []
     return value.split(',').map((v) => v.trim()).filter(Boolean)
 }
@@ -173,6 +176,11 @@ export async function getProductoDetalle(req: Request, res: Response) {
                             comentario: true,
                             createdAt: true,
                             usuario: { select: { id: true, nombre: true } },
+                            // Agregado, no por-actor: a diferencia de "meGusta" (que
+                            // depende de quién pregunta), esto es seguro de cachear
+                            // 90s junto con el resto del payload — mismo trade-off ya
+                            // aceptado para `vistas` más abajo.
+                            _count: { select: { likes: true } },
                         },
                     },
                     ...includeCategorias,
@@ -186,7 +194,14 @@ export async function getProductoDetalle(req: Request, res: Response) {
             return
         }
 
-        const payload = { ...aplanarCategorias(producto), resenasTotal }
+        const payload = {
+            ...aplanarCategorias(producto),
+            resenas: producto.resenas.map(({ _count, ...resena }) => ({
+                ...resena,
+                likesCount: _count.likes,
+            })),
+            resenasTotal,
+        }
         productoDetalleCache.set(cacheKey, payload)
         res.json(payload)
     } catch (err) {
@@ -225,13 +240,14 @@ export async function getResenasProducto(req: Request, res: Response) {
                 comentario: true,
                 createdAt: true,
                 usuario: { select: { id: true, nombre: true } },
+                _count: { select: { likes: true } },
             },
         }),
         prisma.resena.count({ where: { productoId } }),
     ])
 
     res.json({
-        resenas,
+        resenas: resenas.map(({ _count, ...resena }) => ({ ...resena, likesCount: _count.likes })),
         page,
         pageSize,
         total,
