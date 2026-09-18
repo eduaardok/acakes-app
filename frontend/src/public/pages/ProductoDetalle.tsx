@@ -6,7 +6,7 @@ import { publicApi, getClienteToken } from "../lib/publicApi";
 import { getVisitanteId } from "../lib/visitante";
 import { whatsappCotizarUrl } from "../lib/whatsapp";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { CakeIcon, StarIcon, HeartIcon, ThumbUpIcon } from "../../components/icons";
+import { CakeIcon, StarIcon, HeartIcon, ThumbUpIcon, XIcon } from "../../components/icons";
 import { TIPO_PRODUCTO_LABEL, TIPO_PRODUCTO_ICON } from "../../lib/tipoProducto";
 
 type Resena = ProductoDetalleData["resenas"][number];
@@ -76,6 +76,7 @@ export default function ProductoDetalle() {
     const [imagenActiva, setImagenActiva] = useState(0);
     const [favorito, setFavorito] = useState(false);
     const [pendiente, setPendiente] = useState(false);
+    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
     const [totalLikes, setTotalLikes] = useState(0);
     const [meGustaProducto, setMeGustaProducto] = useState(false);
@@ -209,6 +210,26 @@ export default function ProductoDetalle() {
             cancelado = true;
         };
     }, [id, producto?.resenas, resenasExtra, misResenasNuevas]);
+
+    // Lightbox: Escape para cerrar + bloqueo de scroll del body mientras está
+    // abierto (se restaura el valor previo, no simplemente "" — evita pisar un
+    // overflow ya seteado por otra parte del layout).
+    useEffect(() => {
+        if (!isLightboxOpen) return;
+
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") setIsLightboxOpen(false);
+        };
+        document.addEventListener("keydown", onKeyDown);
+
+        const overflowPrevio = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            document.removeEventListener("keydown", onKeyDown);
+            document.body.style.overflow = overflowPrevio;
+        };
+    }, [isLightboxOpen]);
 
     const cargarMasResenas = async () => {
         if (!id || cargandoResenas) return;
@@ -399,7 +420,14 @@ export default function ProductoDetalle() {
         <PublicLayout>
             <div className="animate-rise-in mx-auto max-w-3xl px-4 py-6">
                 {/* Galería */}
-                <div className="aspect-square w-full overflow-hidden rounded-2xl bg-gray-100">
+                <div
+                    className={`aspect-square w-full overflow-hidden rounded-2xl bg-gray-100 ${
+                        imagenes[imagenActiva] ? "cursor-zoom-in" : ""
+                    }`}
+                    onClick={() => {
+                        if (imagenes[imagenActiva]) setIsLightboxOpen(true);
+                    }}
+                >
                     {imagenes[imagenActiva] ? (
                         <img
                             src={imagenes[imagenActiva].url}
@@ -414,6 +442,28 @@ export default function ProductoDetalle() {
                         </div>
                     )}
                 </div>
+
+                {isLightboxOpen && imagenes[imagenActiva] && (
+                    <div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+                        onClick={() => setIsLightboxOpen(false)}
+                    >
+                        <button
+                            type="button"
+                            onClick={() => setIsLightboxOpen(false)}
+                            aria-label="Cerrar"
+                            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-150 ease-out hover:bg-white/20"
+                        >
+                            <XIcon className="h-5 w-5" />
+                        </button>
+                        <img
+                            src={imagenes[imagenActiva].url}
+                            alt={producto.nombre}
+                            className="max-h-full max-w-full object-contain"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </div>
+                )}
 
                 {imagenes.length > 1 && (
                     <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
@@ -508,7 +558,7 @@ export default function ProductoDetalle() {
 
                 {/* Cotizar por WhatsApp — único mecanismo de contacto, nunca precio */}
                 <a
-                    href={whatsappCotizarUrl(producto.nombre, producto.tipo)}
+                    href={whatsappCotizarUrl(producto.nombre, producto.tipo, imagenes[imagenActiva]?.url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Cotizar por WhatsApp"
