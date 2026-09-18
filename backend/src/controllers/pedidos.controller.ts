@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { prisma } from '../lib/prisma'
-import { EstadoPedido, TipoProducto } from '@prisma/client'
+import { Prisma, EstadoPedido, TipoProducto } from '@prisma/client'
 import { esTransicionValida } from '../lib/transiciones'
 
 const PAGE_SIZE_DEFAULT = 30
@@ -313,12 +313,6 @@ export async function createPedido(req: Request, res: Response) {
         return
     }
 
-    const cliente = await prisma.cliente.findUnique({ where: { id: Number(clienteId) } })
-    if (!cliente) {
-        res.status(404).json({ message: 'Cliente no encontrado' })
-        return
-    }
-
     let productoIdValidado: number | undefined
     if (productoId !== undefined && productoId !== null && productoId !== '') {
         productoIdValidado = Number(productoId)
@@ -326,27 +320,40 @@ export async function createPedido(req: Request, res: Response) {
             res.status(400).json({ message: 'productoId inválido' })
             return
         }
-        const producto = await prisma.producto.findUnique({ where: { id: productoIdValidado } })
-        if (!producto) {
-            res.status(404).json({ message: 'Producto no encontrado' })
-            return
-        }
     }
 
-    const pedido = await prisma.pedido.create({
-        data: {
-            clienteId: Number(clienteId),
-            productoId: productoIdValidado,
-            descripcion,
-            precio: Number(precio),
-            fechaEntrega: new Date(fechaEntrega),
-            notas,
-            estado: estado ?? 'BORRADOR'
-        },
-        include: { cliente: true, producto: true }
-    })
+    // Sin pre-checks de existencia (findUnique de cliente/producto): se deja
+    // que la FK constraint falle en el create y se traduce el P2003 abajo —
+    // 1 round-trip en el happy path en vez de 3.
+    try {
+        const pedido = await prisma.pedido.create({
+            data: {
+                clienteId: Number(clienteId),
+                productoId: productoIdValidado,
+                descripcion,
+                precio: Number(precio),
+                fechaEntrega: new Date(fechaEntrega),
+                notas,
+                estado: estado ?? 'BORRADOR'
+            },
+            include: { cliente: true, producto: true }
+        })
 
-    res.status(201).json(pedido)
+        res.status(201).json(pedido)
+    } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2003') {
+            const campo = String(err.meta?.field_name ?? '')
+            if (campo.includes('clienteId')) {
+                res.status(404).json({ message: 'Cliente no encontrado' })
+            } else if (campo.includes('productoId')) {
+                res.status(404).json({ message: 'Producto no encontrado' })
+            } else {
+                res.status(404).json({ message: 'Referencia inválida (cliente o producto no existe)' })
+            }
+            return
+        }
+        throw err
+    }
 }
 // PATCH /pedidos/:id/estado
 export async function updateEstadoPedido(req: Request, res: Response) {
