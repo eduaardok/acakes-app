@@ -22,6 +22,7 @@ import { auditLogMiddleware } from './middleware/auditLog.middleware'
 // testDB()
 
 const app = express()
+app.set('trust proxy', 1)
 const PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors({
@@ -30,7 +31,6 @@ app.use(cors({
     credentials: true,
 }));
 app.use(express.json())
-app.use(auditLogMiddleware)   
 
 // Rutas públicas (sin auth)
 app.get('/health', (req, res) => {
@@ -40,14 +40,14 @@ app.get('/health', (req, res) => {
         timestamp: new Date().toISOString()
     })
 })
-app.use('/auth', authRoutes)
+app.use('/auth', auditLogMiddleware, authRoutes)
 
 // Rutas protegidas (con auth) — ADMIN, privadas, JWT con role: 'admin'
-app.use('/clientes', authenticateToken, clientesRoutes)
-app.use('/pedidos', authenticateToken, pedidosRoutes)
-app.use('/productos', authenticateToken, productoRoutes)
-app.use('/categorias', authenticateToken, categoriasRoutes)
-app.use('/usuarios-cliente', authenticateToken, usuariosClienteRoutes)
+app.use('/clientes', authenticateToken, auditLogMiddleware, clientesRoutes)
+app.use('/pedidos', authenticateToken, auditLogMiddleware, pedidosRoutes)
+app.use('/productos', authenticateToken, auditLogMiddleware, productoRoutes)
+app.use('/categorias', authenticateToken, auditLogMiddleware, categoriasRoutes)
+app.use('/usuarios-cliente', authenticateToken, auditLogMiddleware, usuariosClienteRoutes)
 
 // Capa pública (catálogo + interacciones de clientes) — JWT con role: 'cliente',
 // completamente separada de las rutas de admin de arriba (ver auth.cliente.middleware.ts)
