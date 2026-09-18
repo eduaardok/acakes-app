@@ -5,6 +5,10 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const PUBLIC_BASE = "/api/public";
 
+// Cold-start de Render puede tardar varios segundos en responder al primer
+// request — sin esto, un fetch colgado deja la UI cargando indefinidamente.
+const REQUEST_TIMEOUT_MS = 15000;
+
 const CLIENTE_TOKEN_KEY = "clienteToken";
 
 export function getClienteToken(): string | null {
@@ -22,14 +26,43 @@ export function clearClienteToken(): void {
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const token = getClienteToken();
 
-    const res = await fetch(`${API_URL}${PUBLIC_BASE}${path}`, {
-        ...options,
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            ...options.headers,
-        },
-    });
+    // AbortController propio para el timeout, combinado con un signal del
+    // caller si trae uno (ningún caller lo usa hoy, pero no lo rompe si se
+    // agrega después).
+    const controller = new AbortController();
+    const externalSignal = options.signal;
+    if (externalSignal) {
+        if (externalSignal.aborted) controller.abort();
+        else externalSignal.addEventListener("abort", () => controller.abort(), { once: true });
+    }
+
+    let timedOut = false;
+    const timeoutId = setTimeout(() => {
+        timedOut = true;
+        controller.abort();
+    }, REQUEST_TIMEOUT_MS);
+
+    let res: Response;
+    try {
+        res = await fetch(`${API_URL}${PUBLIC_BASE}${path}`, {
+            ...options,
+            signal: controller.signal,
+            headers: {
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                ...options.headers,
+            },
+        });
+    } catch (err) {
+        // Solo el abort disparado por nuestro propio timeout se traduce a
+        // este mensaje — un abort externo (signal del caller) se relanza tal cual.
+        if (timedOut && err instanceof DOMException && err.name === "AbortError") {
+            throw new Error("La conexión tardó demasiado. Intenta de nuevo.");
+        }
+        throw err;
+    } finally {
+        clearTimeout(timeoutId);
+    }
 
     if (!res.ok) {
         const error = await res.json().catch(() => ({}));
