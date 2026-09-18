@@ -47,6 +47,15 @@
         ],
         "createdAt": "2026-09-01T22:40:00.000Z",
         "reason": "pre-existing dropdown-option hover pattern (text-gray-700 hover:bg-pink-50), not touched by this session's edits; gray-700 has ample contrast on the very pale pink-50 wash; corrected from an earlier non-wildcard ignore-value entry that this rule's matcher silently ignores"
+      },
+      {
+        "rule": "gray-on-color",
+        "value": "*",
+        "files": [
+          "frontend/src/pages/DetalleProducto.tsx"
+        ],
+        "createdAt": "2026-09-18T23:29:30.564Z",
+        "reason": "text-gray-700 on hover:bg-pink-50 dropdown items — matches existing convention already shipped identically in CategoriaCombobox.tsx and BuscadorProducto.tsx; pink-50 is a near-white tint so contrast is fine"
       }
     ]
   }

@@ -8,9 +8,10 @@ import { Button } from "../components/Button";
 import { IconButton } from "../components/IconButton";
 import { Skeleton } from "../components/Skeleton";
 import { Spinner } from "../components/Spinner";
-import { CakeIcon, TrashIcon } from "../components/icons";
+import { CakeIcon, TrashIcon, DotsVerticalIcon, XIcon } from "../components/icons";
 import { CategoriaCombobox } from "../components/CategoriaCombobox";
 import { TipoProductoSelect } from "../components/TipoProductoSelect";
+import { BuscadorProducto, type ProductoVinculado } from "../components/BuscadorProducto";
 import { TIPO_PRODUCTO_LABEL, TIPO_PRODUCTO_ICON, type TipoProducto } from "../lib/tipoProducto";
 
 const MAX_IMAGENES = 8;
@@ -33,6 +34,17 @@ export default function DetalleProducto() {
     const [errorFotos, setErrorFotos] = useState<string | null>(null);
     const [eliminandoImagenId, setEliminandoImagenId] = useState<number | null>(null);
     const [eliminandoProducto, setEliminandoProducto] = useState(false);
+
+    const [menuImagenId, setMenuImagenId] = useState<number | null>(null);
+
+    const [imagenASepararId, setImagenASepararId] = useState<number | null>(null);
+    const [tipoSeparar, setTipoSeparar] = useState<TipoProducto>("PASTEL");
+    const [separando, setSeparando] = useState(false);
+    const [errorSeparar, setErrorSeparar] = useState<string | null>(null);
+
+    const [imagenAMoverId, setImagenAMoverId] = useState<number | null>(null);
+    const [moviendo, setMoviendo] = useState(false);
+    const [errorMover, setErrorMover] = useState<string | null>(null);
 
     usePageTitle(producto?.nombre ?? "Producto");
 
@@ -106,6 +118,53 @@ export default function DetalleProducto() {
         }
     };
 
+    const abrirSepararModal = (imagenId: number) => {
+        if (!producto) return;
+        setMenuImagenId(null);
+        setTipoSeparar(producto.tipo);
+        setErrorSeparar(null);
+        setImagenASepararId(imagenId);
+    };
+
+    const confirmarSeparar = async () => {
+        if (imagenASepararId == null) return;
+        setSeparando(true);
+        setErrorSeparar(null);
+        try {
+            const nuevo = await api.post<ProductoDetalle>(
+                `/productos/${id}/imagenes/${imagenASepararId}/separar`,
+                { tipo: tipoSeparar }
+            );
+            navigate(`/panel/productos/${nuevo.id}`);
+        } catch (err) {
+            setErrorSeparar(err instanceof Error ? err.message : "Error al separar la imagen");
+            setSeparando(false);
+        }
+    };
+
+    const abrirMoverModal = (imagenId: number) => {
+        setMenuImagenId(null);
+        setErrorMover(null);
+        setImagenAMoverId(imagenId);
+    };
+
+    const confirmarMover = async (destino: ProductoVinculado) => {
+        if (imagenAMoverId == null) return;
+        setMoviendo(true);
+        setErrorMover(null);
+        try {
+            await api.patch(`/productos/${id}/imagenes/${imagenAMoverId}/mover`, {
+                productoDestinoId: destino.id,
+            });
+            setImagenAMoverId(null);
+            await refetch();
+        } catch (err) {
+            setErrorMover(err instanceof Error ? err.message : "Error al mover la imagen");
+        } finally {
+            setMoviendo(false);
+        }
+    };
+
     const handleEliminarProducto = async () => {
         if (!window.confirm("¿Eliminar este producto y todas sus fotos? Esta acción no se puede deshacer.")) return;
         setEliminandoProducto(true);
@@ -167,8 +226,25 @@ export default function DetalleProducto() {
                     {producto.imagenes.length > 0 ? (
                         <div className="grid grid-cols-4 gap-2">
                             {producto.imagenes.map((img) => (
-                                <div key={img.id} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100">
+                                <div
+                                    key={img.id}
+                                    className="relative aspect-square rounded-xl overflow-hidden bg-gray-100"
+                                    onBlur={(e) => {
+                                        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                                            setMenuImagenId((actual) => (actual === img.id ? null : actual));
+                                        }
+                                    }}
+                                >
                                     <img src={img.url} alt="" className="h-full w-full object-cover" />
+                                    <button
+                                        type="button"
+                                        onClick={() => setMenuImagenId(menuImagenId === img.id ? null : img.id)}
+                                        className="absolute top-1 left-1 bg-black/60 text-white rounded-full h-6 w-6 flex items-center justify-center"
+                                        aria-label="Más opciones de esta foto"
+                                        aria-expanded={menuImagenId === img.id}
+                                    >
+                                        <DotsVerticalIcon className="h-3.5 w-3.5" />
+                                    </button>
                                     <button
                                         type="button"
                                         onClick={() => handleEliminarImagen(img.id)}
@@ -182,6 +258,25 @@ export default function DetalleProducto() {
                                             <TrashIcon className="h-3.5 w-3.5" />
                                         )}
                                     </button>
+
+                                    {menuImagenId === img.id && (
+                                        <div className="absolute top-8 left-1 z-10 w-36 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-lg">
+                                            <button
+                                                type="button"
+                                                onClick={() => abrirSepararModal(img.id)}
+                                                className="block w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-pink-50"
+                                            >
+                                                Separar como producto nuevo
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => abrirMoverModal(img.id)}
+                                                className="block w-full border-t border-gray-100 px-3 py-2 text-left text-xs text-gray-700 hover:bg-pink-50"
+                                            >
+                                                Mover a otro producto
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -318,6 +413,85 @@ export default function DetalleProducto() {
 
                 <div className="h-6" />
             </main>
+
+            {imagenASepararId !== null && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div className="w-full max-w-sm space-y-3 rounded-2xl bg-white p-4">
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm font-semibold text-gray-900">Separar como producto nuevo</p>
+                            <button
+                                type="button"
+                                onClick={() => setImagenASepararId(null)}
+                                disabled={separando}
+                                aria-label="Cerrar"
+                                className="text-gray-400 disabled:opacity-50"
+                            >
+                                <XIcon className="h-4 w-4" />
+                            </button>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                            Se creará un producto nuevo con esta foto. Confirmá o ajustá su tipo.
+                        </p>
+                        <TipoProductoSelect value={tipoSeparar} onChange={setTipoSeparar} />
+                        {errorSeparar && <p className="text-xs text-red-600">{errorSeparar}</p>}
+                        <div className="flex gap-2">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                className="flex-1"
+                                disabled={separando}
+                                onClick={() => setImagenASepararId(null)}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button
+                                type="button"
+                                size="sm"
+                                className="flex-1"
+                                loading={separando}
+                                onClick={confirmarSeparar}
+                            >
+                                {separando ? "Creando..." : "Crear producto"}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {imagenAMoverId !== null && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div className="w-full max-w-sm space-y-3 rounded-2xl bg-white p-4">
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm font-semibold text-gray-900">Mover a otro producto</p>
+                            <button
+                                type="button"
+                                onClick={() => setImagenAMoverId(null)}
+                                disabled={moviendo}
+                                aria-label="Cerrar"
+                                className="text-gray-400 disabled:opacity-50"
+                            >
+                                <XIcon className="h-4 w-4" />
+                            </button>
+                        </div>
+                        {moviendo ? (
+                            <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500">
+                                <Spinner className="h-4 w-4" />
+                                Moviendo imagen...
+                            </div>
+                        ) : (
+                            <BuscadorProducto
+                                value={null}
+                                onChange={(destino) => {
+                                    if (destino) confirmarMover(destino);
+                                }}
+                                excludeId={producto.id}
+                            />
+                        )}
+                        {errorMover && <p className="text-xs text-red-600">{errorMover}</p>}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

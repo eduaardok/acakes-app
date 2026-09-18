@@ -19,6 +19,8 @@ export interface ProductoVinculado {
 interface Props {
     value: ProductoVinculado | null;
     onChange: (producto: ProductoVinculado | null) => void;
+    /** Excluye un producto puntual de los resultados (ej. el producto origen al mover/separar una imagen). */
+    excludeId?: number;
 }
 
 /**
@@ -28,7 +30,7 @@ interface Props {
  * no existe un endpoint de búsqueda por texto en /productos, y el catálogo
  * de esta pastelería es chico, así que no se justifica agregar uno.
  */
-export function BuscadorProducto({ value, onChange }: Props) {
+export function BuscadorProducto({ value, onChange, excludeId }: Props) {
     const [productos, setProductos] = useState<ProductoLista[]>([]);
     const [query, setQuery] = useState("");
     const [open, setOpen] = useState(false);
@@ -43,9 +45,9 @@ export function BuscadorProducto({ value, onChange }: Props) {
     }, []);
 
     const queryTrim = query.trim().toLowerCase();
-    const resultados = queryTrim
-        ? productos.filter((p) => p.nombre.toLowerCase().includes(queryTrim))
-        : productos;
+    const resultados = (
+        queryTrim ? productos.filter((p) => p.nombre.toLowerCase().includes(queryTrim)) : productos
+    ).filter((p) => p.id !== excludeId);
 
     if (value) {
         return (

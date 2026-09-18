@@ -354,6 +354,23 @@ export function RefreshIcon({ className = "h-5 w-5" }: IconProps) {
     );
 }
 
+/** Tres puntos verticales — abre un menú de opciones adicionales (thumbnails de imagen). */
+export function DotsVerticalIcon({ className = "h-4 w-4" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className={className}
+            aria-hidden
+        >
+            <circle cx="12" cy="5" r="1.75" />
+            <circle cx="12" cy="12" r="1.75" />
+            <circle cx="12" cy="19" r="1.75" />
+        </svg>
+    );
+}
+
 /** Triángulo de alerta — badges de atención/comportamiento negativo. */
 export function AlertTriangleIcon({ className = "h-4 w-4" }: IconProps) {
     return (
