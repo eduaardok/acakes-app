@@ -18,7 +18,7 @@ export const auditLogMiddleware = (req: Request, res: Response, next: NextFuncti
             metodo: req.method,
             ip: req.ip,
             userAgent: req.headers["user-agent"] ?? null,
-            usuarioId: req.usuario?.usuarioId ?? null,
+            usuarioId: req.usuario?.usuarioId != null ? Number(req.usuario.usuarioId) : null,
         }
     }).catch(() => {})
 
