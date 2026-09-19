@@ -11,7 +11,10 @@ import productoRoutes from './routes/producto.routes'
 import categoriasRoutes from './routes/categorias.routes'
 import publicRoutes from './routes/public.routes'
 import usuariosClienteRoutes from './routes/usuariosCliente.routes'
+import adminRoutes from './routes/admin.routes'
 import { authenticateToken } from './middleware/auth.middleware'
+import { requireRole } from './middleware/requireRole.middleware'
+import { RolUsuario } from '@prisma/client'
 import { iniciarCronNotificaciones } from './jobs/notificarFechasEspeciales'
 import { auditLogMiddleware } from './middleware/auditLog.middleware'
 
@@ -50,6 +53,12 @@ app.use('/pedidos', authenticateToken, auditLogMiddleware, pedidosRoutes)
 app.use('/productos', authenticateToken, auditLogMiddleware, productoRoutes)
 app.use('/categorias', authenticateToken, auditLogMiddleware, categoriasRoutes)
 app.use('/usuarios-cliente', authenticateToken, auditLogMiddleware, usuariosClienteRoutes)
+
+// Gestión de usuarios y roles — SYSTEM_ADMIN únicamente. auditLogMiddleware
+// va antes de requireRole a propósito: así queda registrado también el
+// intento de un ADMIN que no tiene permiso (el 403 se audita).
+app.use('/admin', authenticateToken, auditLogMiddleware,
+    requireRole(RolUsuario.SYSTEM_ADMIN), adminRoutes)
 
 // Capa pública (catálogo + interacciones de clientes) — JWT con role: 'cliente',
 // completamente separada de las rutas de admin de arriba (ver auth.cliente.middleware.ts)
