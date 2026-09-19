@@ -92,8 +92,10 @@ export const updateMe = async (req: Request, res: Response) => {
         select: { id: true, email: true, creadoEn: true },
     });
 
+    // El rol no se toca aquí; lo reemitimos tal cual venía de la DB para que
+    // el token nuevo no degrade a un SYSTEM_ADMIN que cambió su contraseña.
     const token = jwt.sign(
-        { usuarioId: actualizado.id, email: actualizado.email, role: "admin" },
+        { usuarioId: actualizado.id, email: actualizado.email, role: usuario.role },
         process.env.JWT_SECRET as string,
         { expiresIn: "7d" }
     );
@@ -121,7 +123,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign(
-        { usuarioId: usuario.id, email: usuario.email, role: "admin" },
+        { usuarioId: usuario.id, email: usuario.email, role: usuario.role },
         process.env.JWT_SECRET as string,
         { expiresIn: "7d" }  // hardcodeado, sin la variable de entorno
     );
