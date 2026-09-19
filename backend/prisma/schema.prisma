@@ -44,13 +44,23 @@ enum TipoProducto {
   OTRO
 }
 
+// ADMIN: administrador de negocio (el rol que todo Usuario tuvo siempre).
+// SYSTEM_ADMIN: administrador del sistema, con permisos sobre la gestión de
+// usuarios y roles. @default(ADMIN) en Usuario para que las filas ya
+// existentes en producción conserven su rol actual sin backfill manual.
+enum RolUsuario {
+  ADMIN
+  SYSTEM_ADMIN
+}
+
 // ─── Modelos ─────────────────────────────────────────
 
 model Usuario {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
   passwordHash String
-  creadoEn     DateTime @default(now())
+  role         RolUsuario @default(ADMIN)
+  creadoEn     DateTime   @default(now())
 }
 
 model Cliente {
