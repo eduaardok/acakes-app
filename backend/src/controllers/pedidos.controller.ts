@@ -399,7 +399,10 @@ export async function updateEstadoPedido(req: Request, res: Response) {
     res.json(pedidoActualizado)
 }
 
-// POST /clientes/:id/observaciones  — este va en clientes, pero lo dejamos aquí por ahora
+// GET /pedidos/ingresos?desde=&hasta= — reporte de ingresos por pedidos ENTREGADOs
+// en el rango de fechaEntrega, con desglose por TipoProducto. Vive en pedidos.controller.ts
+// porque reporta sobre Pedido, no sobre Cliente (el include de cliente es solo para
+// mostrar el nombre en cada fila).
 export const getIngresos = async (req: Request, res: Response) => {
     const { desde, hasta } = req.query;
 
