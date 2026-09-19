@@ -23,6 +23,32 @@ export function clearClienteToken(): void {
     localStorage.removeItem(CLIENTE_TOKEN_KEY);
 }
 
+function base64UrlDecode(segmento: string): string {
+    const base64 = segmento.replace(/-/g, "+").replace(/_/g, "/");
+    const relleno = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
+    return atob(relleno);
+}
+
+// Lee el usuarioId del payload del JWT de cliente sin verificar su firma — el
+// backend ya la verificó al emitirlo; acá solo se usa para UI ("esta reseña
+// es mía"), nunca para autorizar una acción. No hay un GET /me del lado
+// cliente hoy, así que decodificar el token ya guardado es la fuente más
+// simple disponible.
+export function getUsuarioClienteId(): number | null {
+    const token = getClienteToken();
+    if (!token) return null;
+
+    const payloadB64 = token.split(".")[1];
+    if (!payloadB64) return null;
+
+    try {
+        const payload = JSON.parse(base64UrlDecode(payloadB64)) as { usuarioId?: unknown };
+        return typeof payload.usuarioId === "number" ? payload.usuarioId : null;
+    } catch {
+        return null;
+    }
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const token = getClienteToken();
 
@@ -66,11 +92,13 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
     if (!res.ok) {
         const error = await res.json().catch(() => ({}));
-        throw new Error(
+        const mensaje =
             (error as { error?: string; message?: string }).error ||
-                (error as { message?: string }).message ||
-                "Error del servidor"
-        );
+            (error as { message?: string }).message ||
+            "Error del servidor";
+        const err = new Error(mensaje) as Error & { status: number };
+        err.status = res.status;
+        throw err;
     }
 
     if (res.status === 204) return undefined as T;

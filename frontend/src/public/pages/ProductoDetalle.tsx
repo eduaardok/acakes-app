@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { PublicLayout } from "../components/PublicLayout";
 import { useProductoDetalle, type ProductoDetalle as ProductoDetalleData } from "../hooks/useProductoDetalle";
-import { publicApi, getClienteToken } from "../lib/publicApi";
+import { publicApi, getClienteToken, getUsuarioClienteId } from "../lib/publicApi";
 import { getVisitanteId } from "../lib/visitante";
 import { whatsappCotizarUrl } from "../lib/whatsapp";
 import { usePageTitle } from "../../hooks/usePageTitle";
@@ -72,6 +72,7 @@ export default function ProductoDetalle() {
     const { producto, loading, error, refetch } = useProductoDetalle(id);
     usePageTitle(producto?.nombre ?? "Producto");
     const logueado = Boolean(getClienteToken());
+    const usuarioClienteId = getUsuarioClienteId();
 
     const [imagenActiva, setImagenActiva] = useState(0);
     const [favorito, setFavorito] = useState(false);
@@ -97,9 +98,17 @@ export default function ProductoDetalle() {
     const [nuevoComentario, setNuevoComentario] = useState("");
     const [enviandoResena, setEnviandoResena] = useState(false);
     const [errorResena, setErrorResena] = useState<string | null>(null);
+    // Se confirma explícitamente al enviar con éxito o al recibir un 409 del
+    // backend — cubre los casos donde la reseña propia todavía no está en la
+    // lista cargada (recién enviada, u otra reseña previa desde otro
+    // dispositivo/página de "cargar más" no visitada).
+    const [resenaPropiaConfirmada, setResenaPropiaConfirmada] = useState(false);
 
     const resenas = [...misResenasNuevas, ...(producto?.resenas ?? []), ...resenasExtra];
     const hayMasResenas = producto ? resenas.length < producto.resenasTotal : false;
+    const resenaPropiaEnLista =
+        usuarioClienteId != null && resenas.some((r) => r.usuario.id === usuarioClienteId);
+    const yaTieneResena = resenaPropiaEnLista || resenaPropiaConfirmada;
 
     // Hidrata el estado real del favorito para este actor — getProductoDetalle
     // no lo puede incluir porque su respuesta se cachea 90s compartida entre
@@ -361,10 +370,20 @@ export default function ProductoDetalle() {
             setMisResenasNuevas((prev) => [resenaLocal, ...prev]);
             setResenaLikes((prev) => ({ ...prev, [resenaLocal.id]: { likesCount: 0, meGusta: false } }));
             idsConsultadosRef.current.add(resenaLocal.id);
+            setResenaPropiaConfirmada(true);
             setNuevaCalificacion(5);
             setNuevoComentario("");
         } catch (err) {
-            setErrorResena(err instanceof Error ? err.message : "No se pudo enviar tu reseña.");
+            const status = err instanceof Error ? (err as Error & { status?: number }).status : undefined;
+            if (status === 409) {
+                // Red de seguridad: el backend sabe que ya existe una reseña propia
+                // aunque no estuviera en la lista cargada — se trata igual que si la
+                // hubiéramos detectado nosotros, no como un error genérico.
+                setResenaPropiaConfirmada(true);
+                setErrorResena(null);
+            } else {
+                setErrorResena(err instanceof Error ? err.message : "No se pudo enviar tu reseña.");
+            }
         } finally {
             setEnviandoResena(false);
         }
@@ -575,28 +594,34 @@ export default function ProductoDetalle() {
                     </h2>
 
                     {logueado ? (
-                        <form
-                            onSubmit={enviarResena}
-                            className="mt-3 space-y-3 rounded-2xl border border-gray-100 bg-white p-4"
-                        >
-                            <EstrellasInput valor={nuevaCalificacion} onChange={setNuevaCalificacion} />
-                            <textarea
-                                value={nuevoComentario}
-                                onChange={(e) => setNuevoComentario(e.target.value)}
-                                placeholder="Contanos qué te pareció (opcional)"
-                                rows={2}
-                                maxLength={1000}
-                                className="w-full resize-none rounded-xl border border-gray-200 p-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-pink-300 focus:outline-none"
-                            />
-                            {errorResena && <p className="text-sm text-red-600">{errorResena}</p>}
-                            <button
-                                type="submit"
-                                disabled={enviandoResena}
-                                className="rounded-full bg-pink-600 px-5 py-2 text-sm font-semibold text-white transition-[background-color,transform] duration-150 ease-out active:scale-95 disabled:opacity-50 hover:bg-pink-700"
+                        yaTieneResena ? (
+                            <div className="mt-3 rounded-2xl border border-gray-100 bg-gray-50 p-4 text-center text-sm text-gray-500">
+                                Ya dejaste tu reseña para este producto.
+                            </div>
+                        ) : (
+                            <form
+                                onSubmit={enviarResena}
+                                className="mt-3 space-y-3 rounded-2xl border border-gray-100 bg-white p-4"
                             >
-                                {enviandoResena ? "Enviando..." : "Publicar reseña"}
-                            </button>
-                        </form>
+                                <EstrellasInput valor={nuevaCalificacion} onChange={setNuevaCalificacion} />
+                                <textarea
+                                    value={nuevoComentario}
+                                    onChange={(e) => setNuevoComentario(e.target.value)}
+                                    placeholder="Contanos qué te pareció (opcional)"
+                                    rows={2}
+                                    maxLength={1000}
+                                    className="w-full resize-none rounded-xl border border-gray-200 p-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-pink-300 focus:outline-none"
+                                />
+                                {errorResena && <p className="text-sm text-red-600">{errorResena}</p>}
+                                <button
+                                    type="submit"
+                                    disabled={enviandoResena}
+                                    className="rounded-full bg-pink-600 px-5 py-2 text-sm font-semibold text-white transition-[background-color,transform] duration-150 ease-out active:scale-95 disabled:opacity-50 hover:bg-pink-700"
+                                >
+                                    {enviandoResena ? "Enviando..." : "Publicar reseña"}
+                                </button>
+                            </form>
+                        )
                     ) : (
                         <div className="mt-3 rounded-2xl border border-gray-100 bg-gray-50 p-4 text-center text-sm text-gray-500">
                             <Link to="/login-cliente" className="font-medium text-pink-700 underline">
