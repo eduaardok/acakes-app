@@ -4,6 +4,8 @@ import { api } from "../lib/api";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { Button } from "../components/Button";
 import { Skeleton } from "../components/Skeleton";
+import { ShieldIcon } from "../components/icons";
+import { esSystemAdmin } from "../lib/authAdmin";
 
 interface UsuarioMe {
     id: number;
@@ -25,6 +27,12 @@ export default function Cuenta() {
     const [guardando, setGuardando] = useState(false);
     const [perfilCargado, setPerfilCargado] = useState(false);
     const [reintentoPerfil, setReintentoPerfil] = useState(0);
+
+    // Gate de UX: la sección solo se ofrece a quien el JWT dice que es
+    // SYSTEM_ADMIN. No es seguridad — el backend rechaza /admin/* con 403
+    // aunque alguien fuerce este valor; acá solo evitamos mostrar un
+    // camino que terminaría en error.
+    const puedeAdministrarSistema = esSystemAdmin();
 
     useEffect(() => {
         let cancel = false;
@@ -244,6 +252,29 @@ export default function Cuenta() {
                         Gestionar productos
                     </Button>
                 </section>
+
+                {puedeAdministrarSistema && (
+                    <section className="border-t border-gray-200 pt-6 space-y-3">
+                        <div>
+                            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                Administración del sistema
+                            </h2>
+                            <p className="text-xs text-gray-400 mt-1">
+                                Usuarios del panel, roles y cuentas de clientes del catálogo.
+                            </p>
+                        </div>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            fullWidth
+                            onClick={() => navigate("/panel/sistema/usuarios")}
+                        >
+                            <ShieldIcon className="h-4 w-4" />
+                            Gestionar usuarios y roles
+                        </Button>
+                    </section>
+                )}
 
                 <section className="border-t border-gray-200 pt-6 space-y-3">
                     <div>

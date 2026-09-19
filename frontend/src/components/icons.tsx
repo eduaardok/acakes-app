@@ -391,3 +391,44 @@ export function AlertTriangleIcon({ className = "h-4 w-4" }: IconProps) {
         </svg>
     );
 }
+
+/** Escudo — sección de administración del sistema (gestión de usuarios y roles). */
+export function ShieldIcon({ className = "h-5 w-5" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M12 3l7 3v5.5c0 4.2-2.9 8.1-7 9.5-4.1-1.4-7-5.3-7-9.5V6z" />
+            <path d="M9.5 12l1.8 1.8 3.4-3.6" />
+        </svg>
+    );
+}
+
+/** Grupo de personas — listado de cuentas (usuarios del panel o clientes). */
+export function UsersIcon({ className = "h-5 w-5" }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <circle cx="9" cy="8" r="3.5" />
+            <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+            <path d="M16 5.2a3.5 3.5 0 0 1 0 5.6M18 14.4c1.8.9 3 2.7 3 4.6" />
+        </svg>
+    );
+}
