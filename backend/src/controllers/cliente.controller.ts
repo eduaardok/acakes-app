@@ -60,6 +60,7 @@ export async function misFavoritos(req: Request, res: Response) {
                 select: {
                     id: true,
                     nombre: true,
+                    tipo: true,
                     imagenes: { orderBy: { orden: 'asc' }, take: 1, select: { url: true } },
                     _count: { select: { imagenes: true } },
                     ...includeCategorias,
